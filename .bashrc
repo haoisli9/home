@@ -25,7 +25,7 @@ shopt -s nocaseglob
 
 PS1="[\[\e[32;40m\]\u@\h \[\e[33;40m\]\W\e[m] \$ "
 
-. ~/misc/z-master/z.sh
+. /d/Unix/bin/z.sh
 
 # use zsh
 # bash -c zsh
