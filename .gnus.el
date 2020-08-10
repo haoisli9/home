@@ -13,11 +13,9 @@
 (setq gnus-select-method '(nnml ""))
 ;; set pop server 
 (setq mail-sources 
-     '((pop :server "xamail.datangmobile.cn"   ;; 在这里设置 pop3 服务器
+      '((pop :server "xamail.datangmobile.cn"   ;; 在这里设置 pop3 服务器
              :leave 14                         ;; leave the article on server.
              :port "pop3"
-             :user "lihao@datangmobile.cn"     ;; 用户名
-             :password "Internet@2"        ;; 密码
              )))
 ;; set smtp 
 ;; (setq smtpmail-auth-credentials 
