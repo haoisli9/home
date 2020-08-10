@@ -16,6 +16,7 @@ fonts/
 .z
 .viminfo
 .wget-hsts
+.lesshst
 .newsrc*
 *cache
 .pop3*
