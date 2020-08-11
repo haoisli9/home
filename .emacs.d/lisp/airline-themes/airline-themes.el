@@ -336,7 +336,7 @@ Valid Values: airline-directory-full, airline-directory-shortened, nil (disabled
                      (if (and (or (not airline-hide-vc-branch-on-inactive-buffers)
                                   (and airline-hide-vc-branch-on-inactive-buffers active))
                               buffer-file-name vc-mode)
-                         (powerline-raw (airline-get-vc) inner-face))
+                         (powerline-raw (airline-get-vc) inner-face 'l))
 
                      ;; Separator >
                      (powerline-raw " " inner-face)
