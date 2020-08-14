@@ -1,0 +1,10 @@
+;; 日出而作, 日落而息
+%%(diary-sunrise)
+%%(diary-sunset)
+;;%%(diary-lunar-phases)
+;; 标准时间
+;;%%(diary-iso-date)
+;; 中国农历
+;;%%(diary-chinese-date)
+;; 生日
+%%(diary-anniversary 3 13 1975) My Birthday (%d years old)

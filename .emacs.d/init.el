@@ -388,7 +388,7 @@
 
 ;;{{{ recentf-mode
 (setq recentf-keep '(file-remote-p file-readable-p))
-(setq recentf-max-saved-items 200
+(setq recentf-max-saved-items 100
       recentf-exclude '("/tmp/"
 			"/ssh:"
 			"/sudo:"
@@ -938,8 +938,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (add-hook 'after-init-hook 'global-company-mode)
 
 ;; Trigger completion immediately.
-(setq company-idle-delay 0.5)
-(setq company-minimum-prefix-length 3)
+(setq company-idle-delay 0.2)
+(setq company-minimum-prefix-length 2)
 (setq company-tooltip-align-annotations t)
 ;; Number the candidates (use M-1, M-2 etc to select completions).
 (setq company-show-numbers t)
@@ -1245,7 +1245,7 @@ Defaults to today's date if DATE is not given."
 (setq org-agenda-files '("~/org/task.org"
                          "~/org/done.org"
                          "~/org/captures.org"
-                         "~/org/diary.org"))
+                         ))
 (setq org-agenda-use-time-grid t)
 (setq org-agenda-include-all-todo nil)
 (setq org-agenda-skip-scheduled-if-done t)
@@ -1256,9 +1256,43 @@ Defaults to today's date if DATE is not given."
 (setq org-agenda-default-appointment-duration 60)
 (setq org-agenda-mouse-1-follows-link t)
 (setq org-agenda-skip-unavailable-files t)
+(setq org-agenda-to-appt t)
+
+(setq org-agenda-include-diary t)
+(setq org-agenda-diary-file "~/diary")
+(setq diary-file "~/diary")
+
+;;Sunrise and Sunset
+;;日出而作, 日落而息
+(defun diary-sunrise ()
+  (let ((dss (diary-sunrise-sunset)))
+    (with-temp-buffer
+      (insert dss)
+      (goto-char (point-min))
+      (while (re-search-forward " ([^)]*)" nil t)
+        (replace-match "" nil nil))
+      (goto-char (point-min))
+      (search-forward ",")
+      (buffer-substring (point-min) (match-beginning 0)))))
+
+(defun diary-sunset ()
+  (let ((dss (diary-sunrise-sunset))
+        start end)
+    (with-temp-buffer
+      (insert dss)
+      (goto-char (point-min))
+      (while (re-search-forward " ([^)]*)" nil t)
+        (replace-match "" nil nil))
+      (goto-char (point-min))
+      (search-forward ", ")
+      (setq start (match-end 0))
+      (search-forward " at")
+      (setq end (match-beginning 0))
+      (goto-char start)
+      (capitalize-word 1)
+      (buffer-substring start end))))
 
 (setq org-agenda-format-date 'my/org-agenda-format-date-aligned)
-
 (defun my/org-agenda-format-date-aligned (date)
   "Format a DATE string for display in the daily/weekly agenda, or timeline.
       This function makes sure that dates are aligned for easy reading."
@@ -2362,6 +2396,13 @@ Defaults to today's date if DATE is not given."
      (set-face-attribute 'org-level-8 nil
                          :foreground "#f8f8f2"
                          :height 1.0)
+     (set-face-attribute 'org-agenda-current-time nil
+                         :foreground "green")
+     (set-face-attribute 'org-agenda-date-today nil
+                         :foreground "green")
+     (set-face-attribute 'org-agenda-date-weekend nil
+                         :foreground "light blue")
+     
      ))
 ;;}}}
 ;;----------------------------------------------------------------
@@ -2745,7 +2786,8 @@ Defaults to today's date if DATE is not given."
 ;; 在括号内时就高亮包含内容的两个括号
 ;; (define-advice show-paren-function (:around (fn) fix-show-paren-function)
 ;;   "Highlight enclosing parens."
-;;   (cond ((looking-at-p "\\s(") (funcall fn))
+;;   (cond ((looking-at-p "\\s(") (funcall fn)
+
 ;;         (t (save-excursion
 ;;              (ignore-errors (backward-up-list))
 ;;              (funcall fn)))))

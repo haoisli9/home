@@ -30,11 +30,12 @@ fonts/
 *.elc
 auto-save-list
 tramp
+bookmark[s]
 .\#*
-diary
 ido.*
 .lsp-session*
 abbrev_defs
+.youdao
 *places
 smex-items
 recentf
