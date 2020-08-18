@@ -30,14 +30,7 @@ PS1="[\[\e[32;40m\]\u@\h \[\e[33;40m\]\W\e[m] \$ "
 # use zsh
 # bash -c zsh
 
-# TMUX
-# if which tmux >/dev/null 2>&1; then
-#     # if no session is started, start a new session
-#     test -z ${TMUX} && tmux
-
-#     # when quitting tmux, try to attach
-#     while test -z ${TMUX}; do
-#         tmux attach || break
-#     done
-# fi
+# If not running interactively, do not do anything
+# [[ $- != *i* ]] && return
+# [[ -z "$TMUX" ]] && exec tmux
 

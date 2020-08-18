@@ -1048,7 +1048,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (setq calendar-remove-frame-by-deleting t)
 ;; (setq mark-diary-entries-in-calendar t)       ; 标记有记录的日子  
 (setq calendar-mark-holidays-flag t)          ; 标记节假日  
-(setq calendar-mark-diary-entries-flag t)     ; 让calendar自动标记出记有待办事项的日期
+;; (setq calendar-mark-diary-entries-flag t)     ; 让calendar自动标记出记有待办事项的日期
 (setq calendar-week-start-day 0) ; 设置星期一为每周的第一天，否则星期数有些对不上
 
 ;;除去基督徒的节日、希伯来人的节日和伊斯兰教的节日。  
@@ -1074,7 +1074,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (add-hook 'calendar-today-visible-hook 'calendar-mark-today)  
 
 ;; 保存日记的文件  
-(setq diary-file "~/.emacs.d/diary")
+(setq diary-file "~/diary")
 ;; appointment  
 (setq appt-issue-message t)  
 ;; 在mode-line上倒计时
@@ -1242,9 +1242,9 @@ Defaults to today's date if DATE is not given."
       org-src-fontify-natively t
       org-tags-column -80)
 
-(setq org-agenda-files '("~/org/task.org"
-                         "~/org/done.org"
-                         "~/org/captures.org"
+(setq org-agenda-files '("~/../org/task.org"
+                         "~/../org/done.org"
+                         "~/../org/captures.org"
                          ))
 (setq org-agenda-use-time-grid t)
 (setq org-agenda-include-all-todo nil)
@@ -1349,14 +1349,14 @@ Defaults to today's date if DATE is not given."
     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 
-(setq org-default-capture-file "~/org/captures.org")
+(setq org-default-capture-file "~/../org/captures.org")
 
 (setq org-capture-templates
       '(("n" "Note" entry (file+headline org-default-capture-file "Note")
          "** TODO %?%i\n   - Added: %T")
         ("r" "Remember" entry (file+headline org-default-capture-file "Memo")
          "** %T  %?%i\n")
-        ("d" "Diary" entry (file+datetree "~/org/diary.org" "Diary")
+        ("d" "Diary" entry (file+datetree org-default-capture-file "Diary")
          "** Entered on %U\n + %?%i\n")))
 
 ;; refiles
@@ -1806,6 +1806,16 @@ Defaults to today's date if DATE is not given."
 (global-set-key (kbd "C-'") #'imenu-list-smart-toggle)
 (setq imenu-list-focus-after-activation t)
 (setq imenu-list-auto-resize t)
+
+;;---------------------------------------------------
+;; magit
+;; (use-package magit
+;;   :ensure t
+;;   :config
+;;   (progn
+;;     (setq magit-git-executable "d:/msys64/usr/lib/git-core/git.exe"))
+;;   )
+
 
 ;;------------------------------------------------------------
 ;;{{{ treemacs
@@ -3052,7 +3062,7 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
  '(initial-major-mode 'org-mode)
  '(org-support-shift-select t)
  '(package-selected-packages
-   '(ivy-xref magit lsp-ivy lsp-mode spinner powerline all-the-icons-dired treemacs-icons-dired treemacs-projectile treemacs-evil treemacs dracula-theme org-download centered-cursor-mode general evil-anzu youdao-dictionary monokai-pro-theme evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy counsel-projectile all-the-icons-ivy-rich srcery-theme org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode detour evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim projectile counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
+   '(ivy-xref lsp-ivy lsp-mode spinner powerline all-the-icons-dired treemacs-icons-dired treemacs-projectile treemacs-evil treemacs dracula-theme org-download centered-cursor-mode general evil-anzu youdao-dictionary monokai-pro-theme evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy counsel-projectile all-the-icons-ivy-rich srcery-theme org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode detour evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim projectile counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
  '(recentf-mode t)
  '(save-place-mode t)
  '(show-paren-mode t)
