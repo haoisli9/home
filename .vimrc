@@ -1,31 +1,6 @@
 
 set nocp
 
-"-----------------------------------------------------------------------------
-" < 判断是终端还是 Gvim >
-"-----------------------------------------------------------------------------
-if has("gui_running")
-   let g:isGUI = 1
-else
-    let g:isGUI = 0
-endif
-
-" no use for WSL.
-if (!g:isGUI)
-    if exists('$TMUX') 
-        let t_SI = "<Esc>[3 q"
-        let t_EI = "<Esc>[0 q"
-    else
-        let t_SI = "<Esc>]50;CursorShape=1x7"
-        let t_EI = "<Esc>]50;CursorShape=0x7"
-    endif
-endif
-
-" let $VIMFILES='~/.vim'
-let g:python3_host_prog='/c/Python38/python.exe'
-let g:python_host_prog='/c/Python38/python.exe'
-
-
 " - Avoid using standard Vim directory names like 'plugin'
 call plug#begin('~/.vim/plugged')
 
@@ -96,11 +71,9 @@ set encoding=utf-8
 
 set fileformats=unix,dos,mac " EOL formats(\r\n or \n or \r) in order
 
-if (g:isGUI)
-    set gfn=Sarasa\ Mono\ SC:h20
+set gfn=Sarasa\ Mono\ SC:h20
 "    set gfn=Fira\ Code:h20:cANSI
     "set gfw=楷体:h20:cGB2312
-endif
 
 set gfn=Sarasa\ Mono\ SC:h20
 set background=dark
@@ -559,9 +532,9 @@ let g:gutentags_modules = []
 if executable('ctags')
     let g:gutentags_modules += ['ctags']
 endif
-if executable('gtags-cscope') && executable('gtags')
-    let g:gutentags_modules += ['gtags_cscope']
-endif
+" if executable('gtags-cscope') && executable('gtags')
+"     let g:gutentags_modules += ['gtags_cscope']
+" endif
 
 " 配置 ctags 的参数 "
 let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
