@@ -20,6 +20,8 @@ alias fgrep='fgrep --color=auto' # show differences in colour
 
 alias rld='exec bash'
 
+alias vim='nvim'
+
 # no case sensitive when autocomplete
 shopt -s nocaseglob
 

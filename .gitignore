@@ -14,14 +14,14 @@ fonts/
 ê»*/
 *history
 .z
-.viminfo
+*viminfo*
 .wget-hsts
 .lesshst
 .newsrc*
 *cache
 .pop3*
 .authinfo
-
+.zcompdump*
 # ------------------------------------emacs----------------------------------------
 *~
 \#*\#
@@ -110,6 +110,10 @@ tags
 # Persistent undo
 [._]*.un~
 
+# nvim
+AppData/
+
+# -------------------------------------system-----------------------------------------
 # windows system ignore
 $RECYCLE.BIN/
 .DS_Store

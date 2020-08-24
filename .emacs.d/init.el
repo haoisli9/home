@@ -1208,6 +1208,14 @@ Defaults to today's date if DATE is not given."
              (cal-china-x-get-futian-string date)
              )))
 
+(defun calendar-get-fu-jiu-string (date)
+  "Day of Futian and JiuTian for date under cursor."
+  (format "%s%s"
+          (cal-china-x-get-several-nines-string date)
+          (cal-china-x-get-futian-string date)
+          ))
+
+
 ;;------------------------------------------------------------
 
 (message "chinese calendar loaded.") 
@@ -1259,7 +1267,7 @@ Defaults to today's date if DATE is not given."
 (setq org-agenda-to-appt t)
 
 (setq org-agenda-include-diary t)
-(setq org-agenda-diary-file "~/diary")
+(setq org-agenda-diary-file "~/../org/diary.org")
 (setq diary-file "~/diary")
 
 ;;Sunrise and Sunset
@@ -1354,9 +1362,9 @@ Defaults to today's date if DATE is not given."
 (setq org-capture-templates
       '(("n" "Note" entry (file+headline org-default-capture-file "Note")
          "** TODO %?%i\n   - Added: %T")
-        ("r" "Remember" entry (file+headline org-default-capture-file "Memo")
+        ("r" "Reminder" entry (file+headline org-default-capture-file "Reminder")
          "** %T  %?%i\n")
-        ("d" "Diary" entry (file+datetree org-default-capture-file "Diary")
+        ("j" "Journal" entry (file+datetree org-agenda-diary-file "Journal")
          "** Entered on %U\n + %?%i\n")))
 
 ;; refiles
@@ -1402,20 +1410,22 @@ Defaults to today's date if DATE is not given."
 
 ;;------------------------------------------------------------
 ;; "◉" "○" "▷" "✸"
-;; ♥ ● ◇ ✚ ✜ ☯ ◆ ♠ ♣ ♦ ☢ ❀ ◆ ◖ ▶
+;; ♥ ● ◇ ✚ ✜ ☯ ◆ ♠ ♣ ♦ ☢ ❀ ✿ ◆ ◖ ▶
 ;; ► • ★ ▸
 ;; A nice collection of unicode bullets:
 ;; http://nadeausoftware.com/articles/2007/11/latency_friendly_customized_bullets_using_unicode_characters
 (setq org-superstar-headline-bullets-list
       '(
         "◉"
+        "●"
         "○"
-        "❀"
-        "✿"))
+        "•"
+        ))
 (setq org-superstar-item-bullet-alist
-      '((?* . ?•)
-        (?- . ?•)
-        (?+ . 9671)
+      '(
+        (?- . ?▶)
+        (?+ . ?▷)
+        ;; (?+ . 9671)
         ))
 (setq org-superstar-special-todo-items nil)
 (setq org-ellipsis " ▼ ")
@@ -1432,7 +1442,7 @@ Defaults to today's date if DATE is not given."
   (defun org-buffer-face-mode-variable ()
     (interactive)
     (make-face 'width-font-face)
-    (set-face-attribute 'width-font-face nil :font "FiraCode NF 16")
+    (set-face-attribute 'width-font-face nil :font "Cascadia Mono PL 16")   ;; FiraCode NF 16
     (setq buffer-face-mode-face 'width-font-face)
     (buffer-face-mode))
     (add-hook 'org-mode-hook 'org-buffer-face-mode-variable))
@@ -1478,6 +1488,16 @@ Defaults to today's date if DATE is not given."
 	      (goto-char (point-min))
 	      (insert meta-info)
 	      (write-file file))))))
+
+(defun my-add-org-header-info (arg)
+  (interactive "sTitle: ")
+  (let* ((title (if (not (eq arg "")) arg (buffer-name)))
+         (date (format-time-string "%F %T" (current-time)))
+         (meta-info (format "#+TITLE: %s\n#+DATE: %s\n#+LANGUAGE: zh-CN\n#+OPTIONS: toc:t H:4 html-postamble:nil\n#+STYLE: %s\n\n" title date "<link rel='stylesheet' type='text/css' href='css/org.css'/>"))
+         (buffer (buffer-name)))
+    (insert-buffer buffer)
+    (goto-char (point-min))
+    (insert meta-info)))
 
 (defun org-insert-clipboard (&optional captionp)
   (interactive "P")
@@ -2319,26 +2339,26 @@ Defaults to today's date if DATE is not given."
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
 ;;------------------------------------------------------------
-(defun my-c-mode-set ()
-  (c-set-style "k&r")
-  ;; 设置C/C++语言缩进字符数
-  (setq c-basic-offset 4))
-(add-hook 'c-mode-hook 'my-c-mode-set)  
-(add-hook 'c++-mode-hook 'my-c-mode-set)  
+(dolist (hook (list
+               'c-mode-hook
+               'c++-mode-hook
+               ))
+  (add-hook hook '(lambda ()
+                    (c-set-style "stroustrup")
+                    )))
+
 ;; C20 syntax support.
 (add-hook 'c++-mode-hook #'modern-c++-font-lock-mode)
-
-(defun my-py-mode-set ()
-  (setq python-indent-offset 4))
-(add-hook 'python-mode-hook 'my-py-mode-set) 
 
 (dolist (hook (list
                'python-mode-hook
                'make-mode-hook
                ))
   (add-hook hook '(lambda ()
-                    (setq indent-tabs-mode t)
+                    (setq-local indent-tabs-mode t)
+                    (setq-local tab-width 4)
                     )))
+
 ;; flymake disabled.
 (setq lsp-diagnostic-package :none)
 ;; yasnappet disabled.
@@ -2346,7 +2366,6 @@ Defaults to today's date if DATE is not given."
 (setq lsp-enable-symbol-highlighting nil)
 
 (dolist (hook (list
-               'python-mode-hook
                'c-mode-hook
                'c++-mode-hook
                ))
@@ -2354,6 +2373,12 @@ Defaults to today's date if DATE is not given."
                     (lsp)
                     ;; (push '(company-capf :with company-tabnine :separate) company-backends)
                     )))
+
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp))))  ; or lsp-deferred
 
 ;;-----------------------------------------------------------------
 (setq dracula-alternate-mode-line-and-minibuffer t)
@@ -2804,6 +2829,48 @@ Defaults to today's date if DATE is not given."
 
 ;;}}}
 
+;;----------------------------------------------------------------
+;; emacs buildin mode.
+;;----------------------------------------------------------------
+(use-package winner-mode
+  :ensure nil
+  :hook (after-init . winner-mode))
+
+(use-package ediff
+  :ensure nil
+  :hook (ediff-quit . winner-undo))
+
+(use-package hideshow
+  :ensure nil
+  :bind (:map prog-mode-map
+         ("C-c TAB" . hs-toggle-hiding)
+         ("M-+" . hs-show-all))
+  :hook (prog-mode . hs-minor-mode)
+  :custom
+  (hs-special-modes-alist
+   (mapcar 'purecopy
+           '((c-mode "{" "}" "/[*/]" nil nil)
+             (c++-mode "{" "}" "/[*/]" nil nil)
+             (rust-mode "{" "}" "/[*/]" nil nil)))))
+
+;; 这里额外启用了 :box t 属性使得提示更加明显
+(defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :box t))))
+
+(defun hideshow-folded-overlay-fn (ov)
+    (when (eq 'code (overlay-get ov 'hs))
+      (let* ((nlines (count-lines (overlay-start ov) (overlay-end ov)))
+             (info (format " ... #%d " nlines)))
+        (overlay-put ov 'display (propertize info 'face hideshow-folded-face)))))
+
+(setq hs-set-up-overlay 'hideshow-folded-overlay-fn)
+
+(use-package whitespace
+  :ensure nil
+  :hook ((prog-mode markdown-mode conf-mode) . whitespace-mode)
+  :config
+  (setq whitespace-style '(face trailing)))
+
+
 ;;------------------------------------------------------------
 ;;{{{ desktop.
 
@@ -2889,7 +2956,6 @@ hide-_l_ines-matching   hide-lines-_n_ot-matching   hide-lines-show-_a_ll
   ("h" fold-dwim-hide-all)
   ("s" fold-dwim-show-all))
 
-(require 'whitespace)
 (require 'linum-relative)
 ;; (require 'evil-pinyin)
 (defhydra hydra-toggle (:color pink)
@@ -3057,12 +3123,35 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(calendar-mode-line-format
+   '(#("<" 0 1
+       (keymap
+        (keymap
+         (mode-line keymap
+                    (mouse-1 . calendar-scroll-right)))
+        mouse-face mode-line-highlight help-echo "mouse-1: previous month"))
+     "Calendar"
+     (cal-china-x-get-holiday date)
+     (concat " "
+             (calendar-date-string date t)
+             (format " 第%d周"
+                     (funcall
+                      (if cal-china-x-custom-week-start-date 'cal-china-x-custom-week-of-date 'cal-china-x-week-of-date)
+                      date)))
+     (cal-china-x-chinese-date-string date)
+     (calendar-get-fu-jiu-string date)
+     #(">" 0 1
+       (keymap
+        (keymap
+         (mode-line keymap
+                    (mouse-1 . calendar-scroll-left)))
+        mouse-face mode-line-highlight help-echo "mouse-1: next month"))))
  '(column-number-mode t)
  '(inhibit-startup-screen t)
  '(initial-major-mode 'org-mode)
  '(org-support-shift-select t)
  '(package-selected-packages
-   '(ivy-xref lsp-ivy lsp-mode spinner powerline all-the-icons-dired treemacs-icons-dired treemacs-projectile treemacs-evil treemacs dracula-theme org-download centered-cursor-mode general evil-anzu youdao-dictionary monokai-pro-theme evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy counsel-projectile all-the-icons-ivy-rich srcery-theme org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode detour evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim projectile counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
+   '(lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline all-the-icons-dired treemacs-icons-dired treemacs-projectile treemacs-evil treemacs dracula-theme org-download centered-cursor-mode general evil-anzu youdao-dictionary monokai-pro-theme evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy counsel-projectile all-the-icons-ivy-rich srcery-theme org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode detour evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim projectile counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
  '(recentf-mode t)
  '(save-place-mode t)
  '(show-paren-mode t)

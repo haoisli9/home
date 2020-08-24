@@ -430,11 +430,11 @@ Valid Values: airline-directory-full, airline-directory-shortened, nil (disabled
                      ;; (powerline-raw "%l/%I" outer-face 'l)
                      ;; Current Line / Number of lines
                      (powerline-raw
-                      (format "%%l/%d" (count-lines (point-min) (point-max))) outer-face 'l)
+                      (format "%%3l/%3d" (count-lines (point-min) (point-max))) outer-face 'l)
 
                      (powerline-raw ":" outer-face 'l)
                      ;; Current Column
-                     (powerline-raw "%c " outer-face 'l)
+                     (powerline-raw "%2c " outer-face 'l)
 
                      ;; ;; position in file image
                      ;; (when powerline-display-hud
