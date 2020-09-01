@@ -1,4 +1,4 @@
- ;; -*- coding: utf-8; lexical-binding: t; -*-
+;; -*- coding: utf-8; lexical-binding: t; -*-
 
 ;; Author: lihao
 
@@ -10,7 +10,7 @@
 
 ;;------------------------------------------------------------
 
-;;{{{ basic configuration. 
+;;{{{ basic configuration.
 ;; start server mode
 ;; (require 'server)
 ;; (if (not (server-running-p)) (server-start))
@@ -54,7 +54,7 @@
 (add-hook 'emacs-startup-hook #'my-display-benchmark)
 
 ;; Emacs配置文件内容写到下面.
-;;------------------------------------------------------------  
+;;------------------------------------------------------------
 ;; enverioment configuration.
 ;; (setenv "GTAGSCONF" "~/.globalrc")
 
@@ -62,7 +62,7 @@
 (setq visible-bell t)
 
 ;; (if (display-graphic-p)
-;;     (progn 
+;;     (progn
 ;;       ;;设置窗口位置为屏库左上角(0,0)
 ;;       (set-frame-position (selected-frame) 20 10)
 ;;       ;;设置宽和高
@@ -100,10 +100,20 @@
 ;;                     charset
 ;;                     (font-spec :family "微软雅黑" :size 26)))  ;; 微软雅黑，24
 
+;;-----------------------------------------------------------------
+(setq dracula-alternate-mode-line-and-minibuffer t)
+(load-theme 'dracula t)
+;; (load-theme 'wombat t)
+;; (load-theme 'spacemacs-dark t)
+;; (load-theme 'monokai-pro t)
+
+;;-----------------------------------------------------------------
 (setq show-paren-style 'parenthesis)
 
 ;; auto close bracket insertion. New in emacs 24
 (electric-pair-mode 1)
+(add-hook 'minibuffer-setup-hook
+          (lambda () (electric-pair-local-mode -1)))
 
 (fset 'yes-or-no-p 'y-or-n-p)
 ;;(mouse-avoidance-mode 'animate)
@@ -114,8 +124,8 @@
 
 ;; 把这些缺省禁用的功能打开
 ;;(put 'set-goal-column 'disabled nil)
-(put 'narrow-to-region 'disabled nil)  
-(put 'narrow-to-page 'disabled nil)   
+(put 'narrow-to-region 'disabled nil)
+(put 'narrow-to-page 'disabled nil)
 (put 'narrow-to-defun 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
@@ -138,7 +148,7 @@
 (display-line-numbers-mode t)
 (toggle-indicate-empty-lines nil)
 
-;; 高亮显示选中的区域 
+;; 高亮显示选中的区域
 (transient-mark-mode t)
 (delete-selection-mode)
 (setq track-eol t)
@@ -170,7 +180,7 @@
 (setq backup-directory-alist '((".*" . "~/auto-save-list/")))
 (setq auto-save-list-file-prefix "~/auto-save-list/.saves-")
 (message "backup policy loaded.")
-;; backup end 
+;; backup end
 
 ;; hippie complete
 (setq dabbrev-always-check-other-buffers t)
@@ -214,14 +224,14 @@
 (setq dired-dwim-target t)
 
 ;; switch --group-directories-first do not work.
-(defun directory-dired-sort ()   
+(defun directory-dired-sort ()
   "dired-mode中让目录显示在文件前"
   (save-excursion
-    (let 
+    (let
       (buffer-read-only)
       (forward-line 2) ;; beyond dir. header
       (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max))))
-  (and 
+  (and
    (featurep 'xemacs)
    (fboundp 'dired-insert-set-properties)
    (dired-insert-set-properties (point-min) (point-max)))
@@ -293,7 +303,7 @@
                             (lambda (proc change)
                               (when (string-match "\\(finished\\|exited\\)" change)
                                 (kill-buffer (process-buffer proc))))))))
- 
+
 ;; 退出term的时候关闭term对应的buffer
 (add-hook 'shell-mode-hook 'kill-buffer-when-shell-command-exit)
 
@@ -432,9 +442,9 @@
 (setq ediff-split-window-function (if (> (frame-width) 150)
 				      'split-window-horizontally
 				    'split-window-vertically))
-;; ediff from EmacsClient, it used to be not selected by default. 
+;; ediff from EmacsClient, it used to be not selected by default.
 ;; (add-hook 'ediff-startup-hook
-;; 	  (lambda () 
+;; 	  (lambda ()
 ;; 	    (progn
 ;; 	      (select-frame-by-name "Ediff")
 ;; 	      (set-frame-size(selected-frame) 40 10))))
@@ -517,15 +527,13 @@
 
 ;;-----------------------------------------------------------
 ;; bookmarks configuration.
-(require 'bm)
-(eval-after-load "bm"
-  '(progn
-     (set-face-attribute 'bm-face nil  
-                         :background "DeepPink4"
-                         :foreground nil)))
-(global-set-key (kbd "<C-f2>") 'bm-toggle)
-(global-set-key (kbd "<f2>")   'bm-next)
-(global-set-key (kbd "<S-f2>") 'bm-previous)
+(use-package bm
+  :ensure t
+  :bind
+  ("<C-f2>" . bm-toggle)
+  ("<f2>" . bm-next)
+  ("<S-f2>" . bm-previous)
+  )
 
 (message "bm loaded.")
 ;;------------------------------------------------------------
@@ -540,10 +548,6 @@
 ;; htmlize configuration.
 (setq htmlize-output-type 'inline-css)
 
-(require 'detour)
-(setq detour-register 8)
-
-(message "detour loaded.")
 ;;------------------------------------------------------------
 ;;{{{ dired-single mode.
 (defun my-dired-init ()
@@ -556,7 +560,7 @@
   (define-key dired-mode-map "^"
     (function
      (lambda nil (interactive) (dired-single-buffer "..")))))
- 
+
 ;; if dired's already loaded, then the keymap will be bound
 (if (boundp 'dired-mode-map)
     ;; we're good to go; just add our bindings
@@ -642,7 +646,7 @@
 (define-key evil-normal-state-map (kbd "<up>") 'previous-line)
 (define-key evil-normal-state-map (kbd "<down>") 'next-line)
 (define-key evil-normal-state-map (kbd "C-e") 'end-of-visual-line)
-
+(define-key evil-normal-state-map (kbd "q") 'quit-window)
 
 ;;------------------------------------------------------------
 ;; better way to set insert mapping to emacs. set evil-disable-insert-state-bindings to t.
@@ -885,7 +889,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;;------------------------------------------------------------
 (require 'expand-region)
-(global-set-key (kbd "C-=") 'er/expand-region) 
+(global-set-key (kbd "C-=") 'er/expand-region)
 
 ;;------------------------------------------------------------
 ;; (setq markdown-command "pandoc")
@@ -950,7 +954,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;; Use the tab-and-go frontend.
 ;; Allows TAB to select and complete at the same time.
-;; (company-tng-configure-default)
+(company-tng-configure-default)
 
 (define-key company-active-map (kbd "C-n") 'company-select-next)
 (define-key company-active-map (kbd "C-p") 'company-select-previous)
@@ -1040,50 +1044,50 @@ If the character before and after CH is space or tab, CH is NOT slash"
 			       (holiday-lunar 7 7 "七夕节" 0)
 			       (holiday-lunar 8 15 "中秋节" 0)
 			       (holiday-lunar 9 9 "重阳节" 0)
-			       )) 
+			       ))
 (setq calendar-holidays
       (append cal-china-x-important-holidays
               cal-china-x-general-holidays))
 ;; 设置Calendar的显示
 (setq calendar-remove-frame-by-deleting t)
-;; (setq mark-diary-entries-in-calendar t)       ; 标记有记录的日子  
-(setq calendar-mark-holidays-flag t)          ; 标记节假日  
+;; (setq mark-diary-entries-in-calendar t)       ; 标记有记录的日子
+(setq calendar-mark-holidays-flag t)          ; 标记节假日
 ;; (setq calendar-mark-diary-entries-flag t)     ; 让calendar自动标记出记有待办事项的日期
 (setq calendar-week-start-day 0) ; 设置星期一为每周的第一天，否则星期数有些对不上
 
-;;除去基督徒的节日、希伯来人的节日和伊斯兰教的节日。  
-(setq christian-holidays nil  
-      hebrew-holidays nil  
-      islamic-holidays nil  
-      solar-holidays nil  
+;;除去基督徒的节日、希伯来人的节日和伊斯兰教的节日。
+(setq christian-holidays nil
+      hebrew-holidays nil
+      islamic-holidays nil
+      solar-holidays nil
       bahai-holidays nil)
 ;; 设置颜色
 (set-face-attribute 'calendar-weekend-header nil
                     :foreground "green")
-(set-face-attribute 'calendar-today nil  
-		    :box '(:line-width 1 :color "green")  
-		    :background "DarkGreen"  
+(set-face-attribute 'calendar-today nil
+		    :box '(:line-width 1 :color "green")
+		    :background "DarkGreen"
 		    :foreground "yellow")
-(set-face-attribute 'cal-china-x-general-holiday-face nil  
-		    :background "SkyBlue"  
+(set-face-attribute 'cal-china-x-general-holiday-face nil
+		    :background "SkyBlue"
 		    :foreground "black")
-(set-face-attribute 'diary nil  
-		    :background "yellow"  
+(set-face-attribute 'diary nil
+		    :background "yellow"
 		    :foreground "black")
 
-(add-hook 'calendar-today-visible-hook 'calendar-mark-today)  
+(add-hook 'calendar-today-visible-hook 'calendar-mark-today)
 
-;; 保存日记的文件  
+;; 保存日记的文件
 (setq diary-file "~/diary")
-;; appointment  
-(setq appt-issue-message t)  
+;; appointment
+(setq appt-issue-message t)
 ;; 在mode-line上倒计时
 (setq appt-display-mode-line t)
- 
-;; (setq diary-date-forms '((year "/" month "/" day "[^/0-9]"))  
-;;       calendar-date-display-form '(year "/" month "/" day)  
-;;       calendar-time-display-form  
-;;       '(24-hours ":" minutes (if time-zone " (") time-zone (if time-zone ")")))  
+
+;; (setq diary-date-forms '((year "/" month "/" day "[^/0-9]"))
+;;       calendar-date-display-form '(year "/" month "/" day)
+;;       calendar-time-display-form
+;;       '(24-hours ":" minutes (if time-zone " (") time-zone (if time-zone ")")))
 
 ;; add ISO week number.
 (copy-face font-lock-constant-face 'calendar-iso-week-face)
@@ -1215,10 +1219,9 @@ Defaults to today's date if DATE is not given."
           (cal-china-x-get-futian-string date)
           ))
 
-
 ;;------------------------------------------------------------
 
-(message "chinese calendar loaded.") 
+(message "chinese calendar loaded.")
 ;;}}}
 
 ;;------------------------------------------------------------
@@ -1241,306 +1244,10 @@ Defaults to today's date if DATE is not given."
 ;;}}}
 
 ;;------------------------------------------------------------
-;;{{{ org-mode-setting
-;; Various preferences
-(setq org-log-done 'time
-      org-hide-emphasis-markers t
-      org-catch-invisible-edits 'show
-      ;; 文本内语法高亮
-      org-src-fontify-natively t
-      org-tags-column -80)
+(require 'org-init)
 
-(setq org-agenda-files '("~/../org/task.org"
-                         "~/../org/done.org"
-                         "~/../org/captures.org"
-                         ))
-(setq org-agenda-use-time-grid t)
-(setq org-agenda-include-all-todo nil)
-(setq org-agenda-skip-scheduled-if-done t)
-(setq org-agenda-skip-deadline-if-done t)
-(setq org-agenda-include-diary t)
-(setq org-agenda-columns-add-appointments-to-effort-sum t)
-(setq org-agenda-custom-commands nil)
-(setq org-agenda-default-appointment-duration 60)
-(setq org-agenda-mouse-1-follows-link t)
-(setq org-agenda-skip-unavailable-files t)
-(setq org-agenda-to-appt t)
-
-(setq org-agenda-include-diary t)
-(setq org-agenda-diary-file "~/../org/diary.org")
-(setq diary-file "~/diary")
-
-;;Sunrise and Sunset
-;;日出而作, 日落而息
-(defun diary-sunrise ()
-  (let ((dss (diary-sunrise-sunset)))
-    (with-temp-buffer
-      (insert dss)
-      (goto-char (point-min))
-      (while (re-search-forward " ([^)]*)" nil t)
-        (replace-match "" nil nil))
-      (goto-char (point-min))
-      (search-forward ",")
-      (buffer-substring (point-min) (match-beginning 0)))))
-
-(defun diary-sunset ()
-  (let ((dss (diary-sunrise-sunset))
-        start end)
-    (with-temp-buffer
-      (insert dss)
-      (goto-char (point-min))
-      (while (re-search-forward " ([^)]*)" nil t)
-        (replace-match "" nil nil))
-      (goto-char (point-min))
-      (search-forward ", ")
-      (setq start (match-end 0))
-      (search-forward " at")
-      (setq end (match-beginning 0))
-      (goto-char start)
-      (capitalize-word 1)
-      (buffer-substring start end))))
-
-(setq org-agenda-format-date 'my/org-agenda-format-date-aligned)
-(defun my/org-agenda-format-date-aligned (date)
-  "Format a DATE string for display in the daily/weekly agenda, or timeline.
-      This function makes sure that dates are aligned for easy reading."
-  (require 'cal-iso)
-  (let* ((dayname (aref cal-china-x-days
-                        (calendar-day-of-week date)))
-         (day (cadr date))
-         (month (car date))
-         (year (nth 2 date))
-         (cn-date (calendar-chinese-from-absolute (calendar-absolute-from-gregorian date)))
-         (cn-month (cl-caddr cn-date))
-         (cn-day (cl-cadddr cn-date))
-         (cn-month-string (concat (aref cal-china-x-month-name
-                                        (1- (floor cn-month)))
-                                  (if (integerp cn-month)
-                                      ""
-                                    "(闰月)")))
-         (cn-day-string (aref cal-china-x-day-name
-                              (1- cn-day))))
-    (format "%04d-%02d-%02d 周%s %s%s" year month
-            day dayname cn-month-string cn-day-string)))
-
-(setq org-todo-keywords
-      '((sequence "TODO(t)" "DOING(i!)" "TBD(p!)" "TODAY(n!)" "|" "DONE(d!)" "ABORT(q@/!)")))
-(setq org-todo-keyword-faces
-      '(
-	("ABORT"   .   (:background "grey50" :foreground "red" :weight bold))
-	("TBD"     .   (:foreground "gray" :weight bold))
-	("TODO"    .   (:foreground "#CF9293" :weight bold))
-	("TODAY"   .   (:foreground "pink" :weight bold))
-	("DOING"   .   (:foreground "#FBF0CC" :weight bold))
-	("DONE"    .   (:foreground "light green" :weight bold)) 
-	))
-(setq org-tag-alist '(("work" . ?w) ("home" . ?h) ("personal" . ?p)))
-
-;; 优先级范围和默认任务的优先级
-(setq org-highest-priority ?A)
-(setq org-lowest-priority  ?E)
-(setq org-default-priority ?E)
-;; 优先级醒目外观
-(setq org-priority-faces
-  '((?A . (:background "red" :foreground "white" :weight bold))
-    (?B . (:background "DarkOrange" :foreground "white" :weight bold))
-    (?C . (:background "yellow" :foreground "DarkGreen" :weight bold))
-    (?D . (:background "DodgerBlue" :foreground "yellow" :weight bold))
-    (?E . (:background "SkyBlue" :foreground "black" :weight bold))
-    ))
-(setq org-startup-indented t)
-
-;; 任务完成自动更新上级任务状态
-(defun org-summary-todo (n-done n-not-done)
-  "Switch entry to DONE when all subentries are done, to TODO otherwise."
-  (let (org-log-done org-log-states)   ; turn off logging
-    (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
-(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
-
-(setq org-default-capture-file "~/../org/captures.org")
-
-(setq org-capture-templates
-      '(("n" "Note" entry (file+headline org-default-capture-file "Note")
-         "** TODO %?%i\n   - Added: %T")
-        ("r" "Reminder" entry (file+headline org-default-capture-file "Reminder")
-         "** %T  %?%i\n")
-        ("j" "Journal" entry (file+datetree org-agenda-diary-file "Journal")
-         "** Entered on %U\n + %?%i\n")))
-
-;; refiles
-;; Use the current window for indirect buffer display
-(setq org-indirect-buffer-display 'current-window)
-
-;; Refile settings
-(defun my/org-buffer-files ()
-  "Return list of opened orgmode buffer files"
-  (mapcar (function buffer-file-name)
-	  (org-buffer-list 'files)))
-
-;; Targets include this file and any file contributing to the agenda - up to 9 levels deep
-(setq org-refile-targets (quote ((nil :maxlevel . 1)
-                                 ;; (my/org-buffer-files :maxlevel . 1)
-                                 (org-agenda-files :maxlevel . 1))))
-
-;; Use full outline paths for refile targets - we file directly with IDO
-(setq org-refile-use-outline-path t)
-;; Allow refile to create parent tasks with confirmation
-(setq org-refile-allow-creating-parent-nodes (quote confirm))
-;; Targets complete directly with IDO
-(setq org-outline-path-complete-in-steps nil)
-;; Use IDO for both buffer and file completion and ido-everywhere to t
-(setq org-completion-use-ido t)
-;; Use the current window for indirect buffer display
-(setq org-indirect-buffer-display 'current-window)
-
-;;------------------------------------------------------------
-;;; Org clock
-
-;; Save the running clock and all clock history when exiting Emacs, load it on startup
-(setq org-clock-persist t)
-(setq org-clock-in-resume t)
-
-;; Removes clocked tasks with 0:00 duration
-(setq org-clock-out-remove-zero-time-clocks t)
-
-;; Show clock sums as hours and minutes, not "n days" etc.
-;; (setq org-time-clocksum-format
-;;       '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))
-
-
-;;------------------------------------------------------------
-;; "◉" "○" "▷" "✸"
-;; ♥ ● ◇ ✚ ✜ ☯ ◆ ♠ ♣ ♦ ☢ ❀ ✿ ◆ ◖ ▶
-;; ► • ★ ▸
-;; A nice collection of unicode bullets:
-;; http://nadeausoftware.com/articles/2007/11/latency_friendly_customized_bullets_using_unicode_characters
-(setq org-superstar-headline-bullets-list
-      '(
-        "◉"
-        "●"
-        "○"
-        "•"
-        ))
-(setq org-superstar-item-bullet-alist
-      '(
-        (?- . ?▶)
-        (?+ . ?▷)
-        ;; (?+ . 9671)
-        ))
-(setq org-superstar-special-todo-items nil)
-(setq org-ellipsis " ▼ ")
-
-(add-hook 'org-mode-hook
-          (lambda ()
-            (org-superstar-mode 1)
-            (visual-line-mode -1)
-            ;; (define-key org-mode-map (kbd "C-'") 'nil)
-))
-
-;; 设置org使用独立的字体
-(with-eval-after-load 'org
-  (defun org-buffer-face-mode-variable ()
-    (interactive)
-    (make-face 'width-font-face)
-    (set-face-attribute 'width-font-face nil :font "Cascadia Mono PL 16")   ;; FiraCode NF 16
-    (setq buffer-face-mode-face 'width-font-face)
-    (buffer-face-mode))
-    (add-hook 'org-mode-hook 'org-buffer-face-mode-variable))
-
-(use-package org
-  :init
-  (setq org-src-fontify-natively t)
-  :config
-  (setq
-   ;; Hide html built-in style and script.
-   org-html-htmlize-output-type 'inline-css ;; 保留代码块高亮
-   org-html-doctype "html5"
-   org-html-validation-link nil
-   org-export-with-toc t
-   org-export-headline-levels 3
-   org-html-postamble nil
-   ;; turn off default style
-   ;; org-html-head "<link rel='stylesheet' type='text/css' href='css/org.css'/>"
-   org-html-head-include-default-style nil
-   org-html-head-include-scripts nil)
-
-   ;;------------------------------------------------------------
-   (setq org-html-checkbox-type 'unicode)
-)
-
-;;------------------------------------------------------------
-;; 增加文件头
-(defun my-add-org-meta-info (dir)
-  (interactive "fchoose a directory: ")
-  (let (real-files)
-    (dolist (file (directory-files dir))
-      (unless (or (string= "." (substring file 0 1))
-		          (string= "#" (substring file 0 1))
-		          (string= "~" (substring file -1))))
-	      (push file real-files))
-    (dolist (filename real-files)
-      (let* ((title (file-name-base filename))
-	         (date (format-time-string "%F %T" (current-time)))
-	         (meta-info (format "#+TITLE: %s\n#+DATE: %s\n#+LANGUAGE: zh-CN\n#+OPTIONS: toc:t H:4 html-postamble:nil\n#+STYLE: %s\n\n" title date "<link rel='stylesheet' type='text/css' href='css/org.css'/>"))
-	         (file (concat dir filename)))
-	    (with-temp-buffer
-	      (insert-file-contents file)
-	      (goto-char (point-min))
-	      (insert meta-info)
-	      (write-file file))))))
-
-(defun my-add-org-header-info (arg)
-  (interactive "sTitle: ")
-  (let* ((title (if (not (eq arg "")) arg (buffer-name)))
-         (date (format-time-string "%F %T" (current-time)))
-         (meta-info (format "#+TITLE: %s\n#+DATE: %s\n#+LANGUAGE: zh-CN\n#+OPTIONS: toc:t H:4 html-postamble:nil\n#+STYLE: %s\n\n" title date "<link rel='stylesheet' type='text/css' href='css/org.css'/>"))
-         (buffer (buffer-name)))
-    (insert-buffer buffer)
-    (goto-char (point-min))
-    (insert meta-info)))
-
-(defun org-insert-clipboard (&optional captionp)
-  (interactive "P")
-  (let* ((image-dir
-          (if (not (buffer-file-name))
-              (cond ((string-prefix-p "CAPTURE-[0-9]" (buffer-name))
-                     (let ((buffer-name (replace-regexp-in-string "CAPTURE-[0-9-]*" "" (buffer-name))))
-                       (concat (file-name-directory (buffer-file-name (get-file-buffer buffer-name))) "images")))
-                    (t (yank) (error "")))
-            "images"))
-         (fname (concat (make-temp-name "image-") (format-time-string "%Y%m%d-%H%M%S")))
-         (image-file (concat image-dir "/" fname ".png"))
-         (exit-status
-          (call-process "convert.exe" nil nil nil "clipboard:" image-file))
-          ;; (shell-command (format "convert.exe clipboard: %s" image-file)))
-         )
-    (if (zerop exit-status)
-        (progn
-          (unless (file-exists-p image-dir) (make-directory image-dir))
-          (if captionp
-              (let ((rename (read-string "Filename to rename the temp images: ")))
-                (rename-file image-file (concat image-dir "/" rename ".png") t)
-                (insert (format "#+CAPTION: %s label:fig:%s\n" (read-string "Caption: ") rename))
-                (kill-new (format "Fig. ref:fig:%s " rename)))
-            (insert (format "[[file:%s]]" image-file))
-            (org-display-inline-images)))
-      (when captionp (user-error "No images in clipboard."))
-      (yank))))
-
-(use-package org-download
-  :ensure t 
-  ;;将截屏功能绑定到快捷键：Ctrl + Shift + Y
-  :bind ("C-S-y" . org-insert-clipboard)
-  :config
-  (require 'org-download)
-  ;; Drag and drop to Dired
-  (add-hook 'dired-mode-hook 'org-download-enable)
-  ;; (setq org-download-screenshot-method "convert.exe clipboard: %s")
-  )
-
-(message "org-mode configuration loaded.")
-
-;;}}}
+;; some eshell functions
+(require 'eshell-init)
 
 ;;------------------------------------------------------------
 ;;{{{ ivy and counsel configuration.
@@ -1554,9 +1261,6 @@ Defaults to today's date if DATE is not given."
 
 (ivy-set-actions
  'counsel-find-file '(("d" delete-file "delete")))
-
-(set-face-attribute 'ivy-virtual nil
-                    :foreground "grey50")
 
 (defun counsel-imenu-comments ()
   "Imenu display comments."
@@ -1614,6 +1318,8 @@ Defaults to today's date if DATE is not given."
 ;; (advice-add 'counsel--async-command :before
 ;;             #'counsel-before-counsel--async-command)
 
+(require 'counsel-fd)
+
 ;;}}}
 ;;------------------------------------------------------------
 
@@ -1641,7 +1347,7 @@ Defaults to today's date if DATE is not given."
                       (list (pyim-cregexp-build (car y)))))
                   x)
         (pyim-cregexp-build x))))
-  
+
   (setq ivy-re-builders-alist
         '((t . eh-ivy-cregexp))))
 
@@ -1659,7 +1365,7 @@ Defaults to today's date if DATE is not given."
       ;; w3m-terminal-coding-system 'utf-8
       w3m-cookie-accept-bad-cookies t
       w3m-home-page "www.emacs-china.org"
-      ;; 设定w3m运行的参数，分别为使用cookie和使用框架 
+      ;; 设定w3m运行的参数，分别为使用cookie和使用框架
       w3m-command-arguments       '("-F" "-cookie")
       w3m-mailto-url-function     'compose-mail
       w3m-use-toolbar t
@@ -1671,8 +1377,8 @@ Defaults to today's date if DATE is not given."
 ;;设置显示图片
 (setq w3m-default-display-inline-images t)
 (setq w3m-default-toggle-inline-images t)
-;;显示图标  
-(setq w3m-show-graphic-icons-in-header-line t) 
+;;显示图标
+(setq w3m-show-graphic-icons-in-header-line t)
 (setq w3m-show-graphic-icons-in-mode-line t)
 
 (defun w3m-browse-buffer (&optional buffer)
@@ -1736,7 +1442,7 @@ Defaults to today's date if DATE is not given."
         (kill-new (w3m-anchor))
       (message "No URL at point!"))))
 
-(add-hook 'w3m-mode-hook 
+(add-hook 'w3m-mode-hook
           (lambda ()
             (local-set-key "\C-y" 'w3m-copy-url-at-point)))
 
@@ -1788,13 +1494,18 @@ Defaults to today's date if DATE is not given."
 ;; novel mode. for epub.
 ;;------------------------------------------------------------
 ;;{{{ nov.
-(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-;; can not change font. why???
-;; (defun my-nov-font-setup ()
-;;   (face-remap-add-relative 'variable-pitch :family "楷体 16"
-;;                                            :height 1.0))
-;; (add-hook 'nov-mode-hook 'my-nov-font-setup)
+(require 'nov)
 
+(with-eval-after-load 'nov
+  (defun novel-buffer-face-mode-variable ()
+    (interactive)
+    (make-face 'width-font-face)
+    (set-face-attribute 'width-font-face nil :font "YaHei Consolas Hybrid 16")   ;; FiraCode NF 16
+    (setq buffer-face-mode-face 'width-font-face)
+    (buffer-face-mode))
+    (add-hook 'nov-mode-hook 'novel-buffer-face-mode-variable))
+
+(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 ;; (setq nov-text-width 80)
 ;; set it to t to inhibit text filling
 (setq nov-text-width t)
@@ -1817,7 +1528,6 @@ Defaults to today's date if DATE is not given."
                   (id (car (esxml-node-children (esxml-query selector content)))))
         (intern id)))
     (advice-add #'nov-content-unique-identifier :override #'my-nov-content-unique-identifier))
-
 
 ;;}}}
 
@@ -1933,301 +1643,7 @@ Defaults to today's date if DATE is not given."
 
 ;;------------------------------------------------------------
 ;;{{{ all-the-icons.
-(use-package all-the-icons
-  :config (setq all-the-icons-scale-factor 1.0))
-
-;; (require 'all-the-icons-dired)
-;; (set-face-attribute 'all-the-icons-dired-dir-face nil
-;;                     :foreground "gold")
-;; (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
-
-(use-package all-the-icons-ibuffer
-  :ensure t
-  :init (all-the-icons-ibuffer-mode 1)
-  :config (setq all-the-icons-ibuffer-human-readable-size t))
-
-;; (require 'all-the-icons-ivy)
-;; (set-face-attribute 'all-the-icons-ivy-dir-face nil
-;;                     :foreground "gold")
-;; (all-the-icons-ivy-setup)
-;; (with-eval-after-load 'counsel
-;;   (all-the-icons-ivy-setup))
-
-(use-package all-the-icons-ivy
-  :ensure t
-  :config
-  (set-face-attribute 'all-the-icons-ivy-dir-face nil
-                      :foreground "gold")
-  (setq all-the-icons-ivy-file-commands nil)
-  (all-the-icons-ivy-setup))
-
-(use-package all-the-icons-ivy-rich
-  :ensure t
-  :init
-  (setq all-the-icons-ivy-rich-display-transformers-list
-   '(counsel-switch-buffer
-     (:columns
-      ((all-the-icons-ivy-rich-buffer-icon)
-       (ivy-rich-candidate
-        (:width 30))
-       (ivy-rich-switch-buffer-size
-        (:width 7))
-       (ivy-rich-switch-buffer-indicators
-        (:width 4 :face error :align right))
-       (ivy-rich-switch-buffer-major-mode
-        (:width 12 :face warning))
-       (ivy-rich-switch-buffer-project
-        (:width 15 :face success))
-       (ivy-rich-switch-buffer-path
-        (:width
-         (lambda
-           (x)
-           (ivy-rich-switch-buffer-shorten-path x
-                                                (ivy-rich-minibuffer-width 0.3))))))
-      :predicate
-      (lambda
-        (cand)
-        (get-buffer cand))
-      :delimiter "	")
-     counsel-switch-buffer-other-window
-     (:columns
-      ((all-the-icons-ivy-rich-buffer-icon)
-       (ivy-rich-candidate
-        (:width 30))
-       (ivy-rich-switch-buffer-size
-        (:width 7))
-       (ivy-rich-switch-buffer-indicators
-        (:width 4 :face error :align right))
-       (ivy-rich-switch-buffer-major-mode
-        (:width 12 :face warning))
-       (ivy-rich-switch-buffer-project
-        (:width 15 :face success))
-       (ivy-rich-switch-buffer-path
-        (:width
-         (lambda
-           (x)
-           (ivy-rich-switch-buffer-shorten-path x
-                                                (ivy-rich-minibuffer-width 0.3))))))
-      :predicate
-      (lambda
-        (cand)
-        (get-buffer cand))
-      :delimiter "	")
-     persp-switch-to-buffer
-     (:columns
-      ((all-the-icons-ivy-rich-buffer-icon)
-       (ivy-rich-candidate
-        (:width 30))
-       (ivy-rich-switch-buffer-size
-        (:width 7))
-       (ivy-rich-switch-buffer-indicators
-        (:width 4 :face error :align right))
-       (ivy-rich-switch-buffer-major-mode
-        (:width 12 :face warning))
-       (ivy-rich-switch-buffer-project
-        (:width 15 :face success))
-       (ivy-rich-switch-buffer-path
-        (:width
-         (lambda
-           (x)
-           (ivy-rich-switch-buffer-shorten-path x
-                                                (ivy-rich-minibuffer-width 0.3))))))
-      :predicate
-      (lambda
-        (cand)
-        (get-buffer cand))
-      :delimiter "	")
-     counsel-M-x
-     (:columns
-      ((all-the-icons-ivy-rich-function-icon)
-       (counsel-M-x-transformer
-        (:width 50))
-       (ivy-rich-counsel-function-docstring
-        (:face font-lock-doc-face))))
-     counsel-describe-function
-     (:columns
-      ((all-the-icons-ivy-rich-function-icon)
-       (counsel-describe-function-transformer
-        (:width 50))
-       (ivy-rich-counsel-function-docstring
-        (:face font-lock-doc-face))))
-     counsel-describe-variable
-     (:columns
-      ((all-the-icons-ivy-rich-variable-icon)
-       (counsel-describe-variable-transformer
-        (:width 50))
-       (ivy-rich-counsel-variable-docstring
-        (:face font-lock-doc-face))))
-     counsel-set-variable
-     (:columns
-      ((all-the-icons-ivy-rich-variable-icon)
-       (counsel-describe-variable-transformer
-        (:width 50))
-       (ivy-rich-counsel-variable-docstring
-        (:face font-lock-doc-face))))
-     counsel-apropos
-     (:columns
-      ((all-the-icons-ivy-rich-symbol-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-info-lookup-symbol
-     (:columns
-      ((all-the-icons-ivy-rich-symbol-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-descbinds
-     (:columns
-      ((all-the-icons-ivy-rich-keybinding-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-find-file
-     (:columns
-      ((all-the-icons-ivy-rich-file-icon)
-       (ivy-read-file-transformer))
-      :delimiter "	")
-     counsel-file-jump
-     (:columns
-      ((all-the-icons-ivy-rich-file-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-dired
-     (:columns
-      ((all-the-icons-ivy-rich-file-icon)
-       (ivy-read-file-transformer))
-      :delimiter "	")
-     counsel-dired-jump
-     (:columns
-      ((all-the-icons-ivy-rich-file-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-el
-     (:columns
-      ((all-the-icons-ivy-rich-symbol-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-fzf
-     (:columns
-      ((all-the-icons-ivy-rich-file-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-git
-     (:columns
-      ((all-the-icons-ivy-rich-file-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-recentf
-     (:columns
-      ((all-the-icons-ivy-rich-file-icon)
-       (ivy-rich-candidate
-        (:width 0.8))
-       (ivy-rich-file-last-modified-time
-        (:face font-lock-comment-face)))
-      :delimiter "	")
-     counsel-buffer-or-recentf
-     (:columns
-      ((all-the-icons-ivy-rich-file-icon)
-       (counsel-buffer-or-recentf-transformer
-        (:width 0.8))
-       (ivy-rich-file-last-modified-time
-        (:face font-lock-comment-face)))
-      :delimiter "	")
-     counsel-bookmark
-     (:columns
-      ((ivy-rich-bookmark-type)
-       (all-the-icons-ivy-rich-bookmark-name
-        (:width 40))
-       (ivy-rich-bookmark-info))
-      :delimiter "	")
-     counsel-bookmarked-directory
-     (:columns
-      ((all-the-icons-ivy-rich-file-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-package
-     (:columns
-      ((all-the-icons-ivy-rich-package-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-fonts
-     (:columns
-      ((all-the-icons-ivy-rich-font-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-major
-     (:columns
-      ((all-the-icons-ivy-rich-function-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-find-library
-     (:columns
-      ((all-the-icons-ivy-rich-library-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-load-library
-     (:columns
-      ((all-the-icons-ivy-rich-library-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-load-theme
-     (:columns
-      ((all-the-icons-ivy-rich-theme-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-world-clock
-     (:columns
-      ((all-the-icons-ivy-rich-world-clock-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-tramp
-     (:columns
-      ((all-the-icons-ivy-rich-tramp-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-git-checkout
-     (:columns
-      ((all-the-icons-ivy-rich-git-branch-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-list-processes
-     (:columns
-      ((all-the-icons-ivy-rich-process-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-projectile-switch-project
-     (:columns
-      ((all-the-icons-ivy-rich-file-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-projectile-find-file
-     (:columns
-      ((all-the-icons-ivy-rich-file-icon)
-       (counsel-projectile-find-file-transformer))
-      :delimiter "	")
-     counsel-projectile-find-dir
-     (:columns
-      ((all-the-icons-ivy-rich-project-icon)
-       (counsel-projectile-find-dir-transformer))
-      :delimiter "	")
-     counsel-minor
-     (:columns
-      ((all-the-icons-ivy-rich-mode-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     counsel-imenu
-     (:columns
-      ((all-the-icons-ivy-rich-imenu-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")
-     treemacs-projectile
-     (:columns
-      ((all-the-icons-ivy-rich-file-icon)
-       (ivy-rich-candidate))
-      :delimiter "	")))
-  (all-the-icons-ivy-rich-mode 1))
-
-(use-package ivy-rich
-  :ensure t
-  :init (ivy-rich-mode 1))
+(require 'all-the-icons-init)
 
 ;;}}}
 
@@ -2271,21 +1687,23 @@ Defaults to today's date if DATE is not given."
         ("Contents" "^\\([A-Z]?[0-9\\.]+[ ]+[^\\.\n]+\\)$" 1)
         ("Table" "^\\(Table of Contents\\)$" 1)
         ))
-(add-hook 'irfc-mode-hook 
+(add-hook 'irfc-mode-hook
         (lambda ()
            (setq imenu-generic-expression irfc-imenu-generic-expression)))
 
 ;;------------------------------------------------------------
 ;; sdcv
 (require 'sdcv-mode)
-;; 不生效啊。。。
-(defun my-sdcv-mode-face()
-   (interactive)
-   (set-buffer-file-coding-system 'utf-8)
-   ;; (setq buffer-face-mode-face '(:family "Consolas 16" ))
-   ;; (buffer-face-mode)
-   )
-(add-hook 'sdcv-mode-hook 'my-sdcv-mode-face)
+
+(with-eval-after-load 'sdcv-mode
+  (defun sdcv-buffer-face-mode-variable ()
+    (interactive)
+    (set-buffer-file-coding-system 'utf-8)
+    (make-face 'width-font-face)
+    (set-face-attribute 'width-font-face nil :font "Sarasa Mono SC 16")   ;; FiraCode NF 16
+    (setq buffer-face-mode-face 'width-font-face)
+    (buffer-face-mode))
+    (add-hook 'sdcv-mode-hook 'sdcv-buffer-face-mode-variable))
 
 (setq sdcv-dictionary-data-dir "d:/unix/dic/")   ;; set local sdcv dict to search word
 
@@ -2323,10 +1741,6 @@ Defaults to today's date if DATE is not given."
 ;; https://github.com/manateelazycat/color-rg
 (require 'color-rg)
 
-;; https://github.com/manateelazycat/grep-dired
-;; https://github.com/yqrashawn/fd-dired
-(require 'fd-dired)
-
 ;; https://github.com/manateelazycat/thing-edit
 (require 'thing-edit)
 
@@ -2339,26 +1753,6 @@ Defaults to today's date if DATE is not given."
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
 ;;------------------------------------------------------------
-(dolist (hook (list
-               'c-mode-hook
-               'c++-mode-hook
-               ))
-  (add-hook hook '(lambda ()
-                    (c-set-style "stroustrup")
-                    )))
-
-;; C20 syntax support.
-(add-hook 'c++-mode-hook #'modern-c++-font-lock-mode)
-
-(dolist (hook (list
-               'python-mode-hook
-               'make-mode-hook
-               ))
-  (add-hook hook '(lambda ()
-                    (setq-local indent-tabs-mode t)
-                    (setq-local tab-width 4)
-                    )))
-
 ;; flymake disabled.
 (setq lsp-diagnostic-package :none)
 ;; yasnappet disabled.
@@ -2370,9 +1764,12 @@ Defaults to today's date if DATE is not given."
                'c++-mode-hook
                ))
   (add-hook hook '(lambda ()
+                    (c-set-style "stroustrup")
                     (lsp)
                     ;; (push '(company-capf :with company-tabnine :separate) company-backends)
                     )))
+;; C20 syntax support.
+(add-hook 'c++-mode-hook #'modern-c++-font-lock-mode)
 
 (use-package lsp-pyright
   :ensure t
@@ -2380,71 +1777,39 @@ Defaults to today's date if DATE is not given."
                           (require 'lsp-pyright)
                           (lsp))))  ; or lsp-deferred
 
-;;-----------------------------------------------------------------
-(setq dracula-alternate-mode-line-and-minibuffer t)
-(load-theme 'dracula t)
-;; (load-theme 'wombat t)
-;; (load-theme 'spacemacs-dark t)
-;; (load-theme 'monokai-pro t)
+(dolist (hook (list
+               'python-mode-hook
+               'make-mode-hook
+               ))
+  (add-hook hook '(lambda ()
+                    (setq-local indent-tabs-mode t)
+                    (setq-local tab-width 4)
+                    )))
 
 ;;----------------------------------------------------------------
 ;;{{{ face reconfigure
-(set-face-attribute 'font-lock-comment-face nil
-                    :foreground "grey50")   ;; #292e34
+;; (set-face-attribute 'font-lock-comment-face nil
+;;                     :foreground "grey50")   ;; #292e34
 (set-face-attribute 'show-paren-match nil
                     :foreground "green"
-                    :background "default"
                     :bold t
                     :underline t)
 (set-face-attribute 'show-paren-mismatch nil
                     :foreground "red"
-                    :background "default"
                     :bold t
                     :underline t)
 (set-face-attribute 'evil-ex-lazy-highlight nil
-                    :background "light yellow"
-                    :foreground "grey50")
-(eval-after-load 'org
-  '(progn
-     (set-face-attribute 'org-level-1 nil
-                         :foreground "#ff79c6"
-                         :height 1.1)
-     (set-face-attribute 'org-level-2 nil
-                         :foreground "#8be9fd"
-                         :bold nil
-                         :height 1.0)
-     (set-face-attribute 'org-level-3 nil
-                         :foreground "#f1fa8c"
-                         :height 1.0)
-     (set-face-attribute 'org-level-4 nil
-                         :foreground "#bd93f9"
-                         :height 1.0)
-     (set-face-attribute 'org-level-5 nil
-                         :foreground "#50fa7b"
-                         :height 1.0)
-     (set-face-attribute 'org-level-6 nil
-                         :foreground "#ffb86c"
-                         :height 1.0)
-     (set-face-attribute 'org-level-7 nil
-                         :foreground "#0189cc"
-                         :height 1.0)
-     (set-face-attribute 'org-level-8 nil
-                         :foreground "#f8f8f2"
-                         :height 1.0)
-     (set-face-attribute 'org-agenda-current-time nil
-                         :foreground "green")
-     (set-face-attribute 'org-agenda-date-today nil
-                         :foreground "green")
-     (set-face-attribute 'org-agenda-date-weekend nil
-                         :foreground "light blue")
-     
-     ))
+                    :background "grey50")
+;; virtual files color for ivy-switch-buffer.
+;; (set-face-attribute 'ivy-virtual nil
+;;                     :foreground "grey50")
+
 ;;}}}
 ;;----------------------------------------------------------------
 ;;设置标题栏为buffer的内容
 (setq frame-title-format
       '(
-        (:eval (if (buffer-modified-p) 
+        (:eval (if (buffer-modified-p)
                    " ! "))
         (:eval (if (buffer-file-name)
                    (abbreviate-file-name (buffer-file-name))
@@ -2514,7 +1879,7 @@ Defaults to today's date if DATE is not given."
 				      'help-echo "Buffer is read-only"))))
    "] "
    "["
-   '(:eval (propertize 
+   '(:eval (propertize
 	   (concat (pcase (coding-system-eol-type buffer-file-coding-system)
 		     (0 "LF ")
 		     (1 "CRLF ")
@@ -2624,7 +1989,7 @@ Defaults to today's date if DATE is not given."
 ;; 		      (message "killed line")))))
 
 (defun kill-back-to-indentation ()
-  "Kill from point back to the first non-whitespace character on the line." 
+  "Kill from point back to the first non-whitespace character on the line."
   (interactive)
   (let ((prev-pos (point)))
     (back-to-indentation)
@@ -2671,7 +2036,8 @@ Defaults to today's date if DATE is not given."
   (if (eq t (compare-strings "" 0 (length "") arg 0 (length arg))) (search-backward "\"")
     (search-backward arg))
   (set-mark (point))
-  (forward-sexp))
+  (forward-sexp)
+  (backward-char))
 
 (defun dos2unix ()
   "Convert a DOS formatted text buffer to UNIX format"
@@ -2684,7 +2050,7 @@ Defaults to today's date if DATE is not given."
   (set-buffer-file-coding-system 'undecided-dos nil))
 
 ;;set transparent effect
-(global-set-key [(f4)] 'loop-alpha)
+(global-set-key [(f5)] 'loop-alpha)
 (setq alpha-list '((100 100) (95 65) (85 55) (75 45) (65 35)))
  (defun loop-alpha ()
    (interactive)
@@ -2772,9 +2138,6 @@ Defaults to today's date if DATE is not given."
       (delete-overlay gud-overlay)))
 (add-hook 'kill-buffer-hook 'gud-kill-buffer)
 
-;; some eshell functions
-(require 'eshell-utils)
-
 ;; move line up down
 (defun move-text-internal (arg)
   (cond
@@ -2822,12 +2185,44 @@ Defaults to today's date if DATE is not given."
 ;; (define-advice show-paren-function (:around (fn) fix-show-paren-function)
 ;;   "Highlight enclosing parens."
 ;;   (cond ((looking-at-p "\\s(") (funcall fn)
-
 ;;         (t (save-excursion
 ;;              (ignore-errors (backward-up-list))
 ;;              (funcall fn)))))
 
 ;;}}}
+
+
+(defcustom my-tmp-register 8
+  "Register used to store the cursor position."
+  :type 'integer)
+
+(defcustom my-original-register 9
+  "Register used to store the cursor position."
+  :type 'integer)
+
+(defun my-tmp-mark ()
+  "Store cursor position fast in a register.
+
+Use `my-tmp-back` to jump back to the stored position."
+  (interactive)
+  (point-to-register my-tmp-register)
+  (point-to-register my-original-register)
+  (message "tmp marked in %s." (point-marker)))
+
+(defun my-tmp-back-original ()
+  "Jumps between current and stored cursor position."
+  (interactive)
+  (set-register my-tmp-register (point-marker))
+  (jump-to-register my-original-register)
+  (message "tmp marked in %s" (point-marker)))
+
+(defun my-tmp-back ()
+  "Jumps between current and stored cursor position."
+  (interactive)
+  (let ((tmp (point-marker)))
+    (jump-to-register my-tmp-register)
+    (set-register my-tmp-register tmp)
+    (message "tmp marked in %s" tmp)))
 
 ;;----------------------------------------------------------------
 ;; emacs buildin mode.
@@ -2872,41 +2267,6 @@ Defaults to today's date if DATE is not given."
 
 
 ;;------------------------------------------------------------
-;;{{{ desktop.
-
-;;如果你想保存上次打开的文件记录，那么可以使用 desktop。这是 Emacs 自带的。你只需要加入以上设置，然
-;;后 M-x desktop-save。以后 Emacs 启动时就会打开你上次离开时的所有 buffer.
-;;M-x desktop-clear 
-;; Restore the "desktop" - do this as late as possible!!
-(if first-time
-    (progn
-      (load "desktop")
-      ;; save a bunch of variables to the desktop file
-      ;; for lists specify the len of the maximal saved data also
-      (setq desktop-globals-to-save
-	    (append '((extended-command-history . 10)
-		      (file-name-history        . 30)
-		      (ido-last-directory-list  . 10)
-                      (ido-work-directory-list  . 10)
-                      (ido-work-file-list       . 10)
-                      (grep-history             . 3)
-                      (compile-history          . 3)
-                      (minibuffer-history       . 5)
-                      (query-replace-history    . 5)
-                      (read-expression-history  . 5)
-                      (regexp-history           . 5)
-                      (regexp-search-ring       . 3)
-                      (search-ring              . 3)
-                      (comint-input-ring        . 5)
-                      (shell-command-history    . 5)
-                      desktop-missing-file-warning
-                      tags-file-name
-                      register-alist)))
-      (desktop-save-mode)
-      (message "reading desktop done.")))
-
-;;}}}
-
 ;; make PC keyboard's Win key or other to type Super or Hyper, for emacs running on Windows.
 ;; Use H for Hyper, s for Super.
 ;; (setq w32-pass-rwindow-to-system nil)
@@ -2914,7 +2274,7 @@ Defaults to today's date if DATE is not given."
 
 ;; (setq w32-pass-apps-to-system nil)
 ;; (setq w32-apps-modifier 'hyper) ; Menu/App key
-;; (setq w32-pass-lwindow-to-system nil) 
+;; (setq w32-pass-lwindow-to-system nil)
 ;; (setq w32-lwindow-modifier 'super)
 ;; (w32-register-hot-key [s-])
 
@@ -2922,24 +2282,22 @@ Defaults to today's date if DATE is not given."
 ;;{{{ hydra configuration.
 (defhydra hydra-jump (:color blue :hint nil)
   "
-_a_ce    _,_mark     _._back    wo_m_an     _h_elpful   _i_nsert_translation    
-s_d_cv   _s_wiper    _f_grep    _e_nglish   r_g_        _n_treemacs      i_m_enu
-_l_fd    _y_oudao    org-cap_t_ure
+_a_ce    wo_m_an     _h_elpful   _t_ranslation   i_m_enu
+s_d_cv   _s_wiper    _f_grep    _e_nglish   r_g_ _n_treemacs
+_l_fd    _y_oudao    _c_apture
   "
   ("a" ace-pinyin-dwim)
-  ("," detour-mark)
-  ("." detour-back)
   ("d" sdcv-search)
   ("y" youdao-dictionary-search-at-point)
   ("s" swiper-thing-at-point)
   ("f" counsel-grep-or-swiper)
   ("e" toggle-company-english-helper)
-  ("i" insert-translated-name-insert-original-translation)
+  ("t" insert-translated-name-insert-original-translation)
   ("g" color-rg-search-input)
   ("l" fd-dired)
   ("n" treemacs)
   ("m" counsel-imenu)
-  ("t" org-capture)
+  ("c" org-capture)
   ("w" woman-helpful)
   ("h" helpful-at-point)
   )
@@ -2995,7 +2353,7 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
 
 ;; Recommended binding:
 (defhydra hydra-all (global-map "C-c" :color blue :hint nil)
-  "" 
+  ""
   ("SPC" hydra-jump/body)
   ("tt" hydra-toggle/body)
   ("ff" hydra-fold/body)
@@ -3015,10 +2373,10 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
     :states '(normal visual))
 
   (my-comma-leader-def
-    ",,"  'detour-mark
-    ".."  'detour-back
+    ",,"  'my-tmp-mark
+    ".."  'my-tmp-back
+    ",."  'my-tmp-back-original
     "ac"  'ace-pinyin-dwim
-    "ad"  'delete-window
     "al"  'ace-jump-line-mode
     "ao"  'ace-window
     "aw"  'ace-jump-word-mode
@@ -3029,7 +2387,7 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
     "ct"  'evilnc-comment-or-uncomment-html-tag
     "dw"  'thing-cut-word
     "dW"  'thing-cut-sexp
-    "ds"  'thing-cut-symbol 
+    "ds"  'thing-cut-symbol
     "dl"  'thing-cut-line
     "df"  'thing-cut-filename
     "du"  'thing-cut-url
@@ -3037,13 +2395,13 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
     "dS"  'thing-cut-sentence
     "dp"  'thing-cut-parentheses
     "dj"  'dired-jump
-    "fb"  'beginning-of-defun
-    "fe"  'end-of-defun
-    "qq"  'kill-buffer-and-window
-    "sf"  'counsel-rg
+    "bf"  'beginning-of-defun
+    "ef"  'end-of-defun
     "ss"  'swiper-thing-at-point
-    "sg"  'color-rg-search-input
-    "sd"  'fd-dired
+    "rg"  'color-rg-search-input
+    "fd"  'counsel-fd-file-jump
+    "fl"  'counsel-locate
+    "ul"  'browse-url
     "yw"  'thing-copy-word
     "yW"  'thing-copy-sexp
     "ys"  'thing-copy-symbol
@@ -3055,10 +2413,10 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
     "yp"  'thing-copy-parentheses
     "yP"  'thing-copy-paragraph
     "yt"  'select-total-part
-    
+    ;; hydra binding
     "<SPC>" 'hydra-jump/body
     "tt" 'hydra-toggle/body
-    "ff" 'hydra-fold/body
+    "fo" 'hydra-fold/body
    )
 
   (general-create-definer my-leader-def
@@ -3066,10 +2424,10 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
 
   ;; ** Global Keybindings
   (my-leader-def
-    ",,"  'detour-mark
-    ".."  'detour-back
+    ",,"  'my-tmp-mark
+    ".."  'my-tmp-back
+    ",."  'my-tmp-back-original
     "ac"  'ace-pinyin-dwim
-    "ad"  'delete-window
     "al"  'ace-jump-line-mode
     "ao"  'ace-window
     "aw"  'ace-jump-word-mode
@@ -3080,7 +2438,7 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
     "ct"  'evilnc-comment-or-uncomment-html-tag
     "dw"  'thing-cut-word
     "dW"  'thing-cut-sexp
-    "ds"  'thing-cut-symbol 
+    "ds"  'thing-cut-symbol
     "dl"  'thing-cut-line
     "df"  'thing-cut-filename
     "du"  'thing-cut-url
@@ -3088,10 +2446,13 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
     "dS"  'thing-cut-sentence
     "dp"  'thing-cut-parentheses
     "dj"  'dired-jump
-    "sf"  'counsel-rg
-    "ss"  'counsel-grep-or-swiper
-    "sg"  'color-rg-search-input
-    "sd"  'fd-dired
+    "bf"  'beginning-of-defun
+    "ef"  'end-of-defun
+    "ss"  'swiper-thing-at-point
+    "rg"  'color-rg-search-input
+    "fd"  'counsel-fd-file-jump
+    "fl"  'counsel-locate
+    "ul"  'browse-url
     "yw"  'thing-copy-word
     "yW"  'thing-copy-sexp
     "ys"  'thing-copy-symbol
@@ -3102,6 +2463,11 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
     "yS"  'thing-copy-sentence
     "yp"  'thing-copy-parentheses
     "yP"  'thing-copy-paragraph
+    "yt"  'select-total-part
+    ;; hydra binding
+    "<SPC>" 'hydra-jump/body
+    "tt" 'hydra-toggle/body
+    "fo" 'hydra-fold/body
    )
   )
 
@@ -3111,7 +2477,47 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
 ;; key bindings
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 ;; (require 'gnu-elpa-keyring-update)
+
+(global-set-key [(f3)] 'color-rg-search-input)
+(global-set-key [(f4)] 'my-tmp-back)
+(global-set-key [(C-f4)] 'my-tmp-mark)
+(global-set-key [(M-f4)] 'my-tmp-back-original)
+
 ;;------------------------------------------------------------
+;;{{{ desktop.
+
+;;如果你想保存上次打开的文件记录，那么可以使用 desktop。这是 Emacs 自带的。你只需要加入以上设置，然
+;;后 M-x desktop-save。以后 Emacs 启动时就会打开你上次离开时的所有 buffer.
+;;M-x desktop-clear
+;; Restore the "desktop" - do this as late as possible!!
+(if first-time
+    (progn
+      (load "desktop")
+      ;; save a bunch of variables to the desktop file
+      ;; for lists specify the len of the maximal saved data also
+      (setq desktop-globals-to-save
+	    (append '((extended-command-history . 10)
+		      (file-name-history        . 30)
+		      (ido-last-directory-list  . 10)
+                      (ido-work-directory-list  . 10)
+                      (ido-work-file-list       . 10)
+                      (grep-history             . 3)
+                      (compile-history          . 3)
+                      (minibuffer-history       . 5)
+                      (query-replace-history    . 5)
+                      (read-expression-history  . 5)
+                      (regexp-history           . 5)
+                      (regexp-search-ring       . 3)
+                      (search-ring              . 3)
+                      (comint-input-ring        . 5)
+                      (shell-command-history    . 5)
+                      desktop-missing-file-warning
+                      tags-file-name
+                      register-alist)))
+      (desktop-save-mode)
+      (message "reading desktop done.")))
+
+;;}}}
 
 ;; Indicate that this file has been read at least once
 (setq first-time nil)
@@ -3123,6 +2529,8 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-term-color-vector
+   [unspecified "#2d2a2e" "#ff6188" "#a9dc76" "#ffd866" "#78dce8" "#ab9df2" "#a1efe4" "#fcfcfa"])
  '(calendar-mode-line-format
    '(#("<" 0 1
        (keymap
@@ -3147,11 +2555,28 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
                     (mouse-1 . calendar-scroll-left)))
         mouse-face mode-line-highlight help-echo "mouse-1: next month"))))
  '(column-number-mode t)
+ '(hl-todo-keyword-faces
+   '(("TODO" . "#dc752f")
+     ("NEXT" . "#dc752f")
+     ("THEM" . "#2d9574")
+     ("PROG" . "#3a81c3")
+     ("OKAY" . "#3a81c3")
+     ("DONT" . "#f2241f")
+     ("FAIL" . "#f2241f")
+     ("DONE" . "#42ae2c")
+     ("NOTE" . "#b1951d")
+     ("KLUDGE" . "#b1951d")
+     ("HACK" . "#b1951d")
+     ("TEMP" . "#b1951d")
+     ("FIXME" . "#dc752f")
+     ("XXX+" . "#dc752f")
+     ("\\?\\?\\?+" . "#dc752f")))
  '(inhibit-startup-screen t)
  '(initial-major-mode 'org-mode)
  '(org-support-shift-select t)
  '(package-selected-packages
-   '(lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline all-the-icons-dired treemacs-icons-dired treemacs-projectile treemacs-evil treemacs dracula-theme org-download centered-cursor-mode general evil-anzu youdao-dictionary monokai-pro-theme evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy counsel-projectile all-the-icons-ivy-rich srcery-theme org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode detour evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim projectile counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
+   '(counsel-fd fd-dired lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline all-the-icons-dired treemacs-icons-dired treemacs-projectile treemacs-evil treemacs dracula-theme org-download centered-cursor-mode general evil-anzu youdao-dictionary monokai-pro-theme evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy counsel-projectile all-the-icons-ivy-rich srcery-theme org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim projectile counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
+ '(pdf-view-midnight-colors '("#655370" . "#fbf8ef"))
  '(recentf-mode t)
  '(save-place-mode t)
  '(show-paren-mode t)

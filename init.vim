@@ -36,7 +36,7 @@ Plug 'kana/vim-textobj-indent'
 " color
 Plug 'tomasr/molokai'
 Plug 'liuchengxu/space-vim-dark'
-
+Plug 'dracula/vim', {'as':'dracula'}
 " Any valid git URL is allowed
 "   Plug 'https://github.com/junegunn/vim-github-dashboard.git'
 
@@ -84,7 +84,8 @@ set gfn=Cascadia\ Mono\ PL:h16:cANSI
 
 set background=dark
 "colo torte
-colo space-vim-dark
+"colo space-vim-dark
+colo dracula
 
 " 启动的时候不显示那个援助索马里儿童的提示
 set shortmess=atI
@@ -321,7 +322,7 @@ inoremap } <c-r>=ClosePair('}')<CR>
 inoremap [ <c-r>=AutoPair('[', ']')<CR>
 inoremap ] <c-r>=ClosePair(']')<CR>
 "inoremap " <c-r>=SamePair('"')<CR>
-"inoremap ' <c-r>=SamePair("'")<CR>
+inoremap ' <c-r>=SamePair("'")<CR>
 "inoremap ` <c-r>=SamePair('`')<CR>
 inoremap <C-f> <c-r>=SkipPair()<CR>
 

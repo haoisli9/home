@@ -689,7 +689,6 @@ Arguments:
           evil-replace-state-cursor replace-outer-background
           evil-visual-state-cursor  visual-outer-background))
 )
-
 (airline-themes-set-modeline)
 
 (provide-theme 'airline-${theme-name})

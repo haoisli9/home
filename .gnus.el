@@ -6,35 +6,35 @@
 
 ;;设置获取邮件的服务器地址
 
-;; set email reader 
+;; set email reader
 ;; (setq gnus-select-method '(nnimap "xamail.datangmobile.cn"))
 ;; (setq gnus-select-method '(nnimap "imap.139.com"))
 
 (setq gnus-select-method '(nnml ""))
-;; set pop server 
-(setq mail-sources 
+;; set pop server
+(setq mail-sources
       '((pop :server "xamail.datangmobile.cn"   ;; 在这里设置 pop3 服务器
              :leave 14                         ;; leave the article on server.
              :port "pop3"
              )))
-;; set smtp 
-;; (setq smtpmail-auth-credentials 
+;; set smtp
+;; (setq smtpmail-auth-credentials
 ;;    '(("xamail.datangmobile.cn"                ;; SMTP 服务器
 ;;       25                                   ;; 端口号
 ;;       "lihao@datangmobile.cn"                 ;; 用户名
 ;;       "")))                    ;; 密码
- 
+
 ;; (add-to-list 'gnus-secondary-select-methods '(nnimap "imap.139.com"))
 (add-to-list 'gnus-secondary-select-methods '(nnimap "139"
                                                      (nnimap-address "imap.139.com")
                                                      (nnimap-server-port 993)
                                                      (nnimap-stream ssl)
-                                                     ;; (nnimap-authinfo-file "~/.authinfo")
+                                                     (nnimap-authinfo-file "~/.authinfo")
                                                      ))
 
 ;;设置发送邮件的服务器地址
-(setq smtpmail-default-smtp-server "xamail.datangmobile.cn") 
-(setq smtpmail-smtp-server "xamail.datangmobile.cn") 
+(setq smtpmail-default-smtp-server "xamail.datangmobile.cn")
+(setq smtpmail-smtp-server "xamail.datangmobile.cn")
 (setq send-mail-function 'smtpmail-send-it
       message-send-mail-function 'smtpmail-send-it)
 ;;       smtpmail-smtp-service 25
@@ -62,7 +62,7 @@
 (setq gnus-newsgroup-ignored-charsets
       '(unknown-8bit x-unknown gb18030))
 ;;设定要显示的头信息
-(setq gnus-visible-headers 
+(setq gnus-visible-headers
       '("^From:\\|^Newsgroups:\\|^Subject:\\|^Date:"))
 ;; (setq gnus-boring-article-headers
 ;;       '(empty many-to followup-to reply-to))
@@ -118,16 +118,15 @@
 (cond (window-system
        (setq custom-background-mode 'light)
        (defface my-group-face-1
-         '((t (:foreground "Red" :bold t))) "First group face")
+         '((t (:foreground "red1" :bold t))) "First group face")
        (defface my-group-face-2
-         '((t (:foreground "DarkSeaGreen4" :bold t)))
-         "Second group face")
+         '((t (:foreground "DarkSeaGreen4" :bold t))) "Second group face")
        (defface my-group-face-3
-         '((t (:foreground "Green4" :bold t))) "Third group face")
+         '((t (:foreground "DarkGreen" :bold t))) "Third group face")
        (defface my-group-face-4
          '((t (:foreground "SteelBlue" :bold t))) "Fourth group face")
        (defface my-group-face-5
-         '((t (:foreground "Yellow" :bold t))) "Fifth group face")))
+         '((t (:foreground "blue" :bold t))) "Fifth group face")))
 
 (setq gnus-group-highlight
       '(((> unread 10) . my-group-face-1)
@@ -170,7 +169,7 @@
 (setq gnus-confirm-mail-reply-to-news t
       message-kill-buffer-on-exit t
       message-elide-ellipsis "[...]\n"
-) 
+)
 
 ;; * 键，帖子被拷贝到本地的 cache 中保存起来，再次 Meta-* 取消
 (setq gnus-use-cache 'passive)
@@ -184,3 +183,24 @@
 ;; 	 (signature "sent from Emacs+Gnus\n")
 ;; 	 ))
 ;; )
+
+;; (add-hook 'org-agenda-mode-hook
+;;           (lambda ()
+;;             (hl-line-mode)
+;;             (face-remap-add-relative 'hl-line :box '(:color "deep pink" :line-width 2))
+;;             (face-remap-add-relative 'variable-pitch '(:foreground "blue" :background "white"))))
+
+(with-eval-after-load 'gnus
+  (defun gnus-buffer-face-mode-variable ()
+    (interactive)
+    (hl-line-mode)
+    (face-remap-add-relative 'hl-line '(:background "light grey"))
+    (face-remap-add-relative 'default '(:foreground "black" :background "white"))
+    (face-remap-add-relative 'bold '(:foreground "DarkSeaGreen4"))
+    (face-remap-add-relative 'gnus-header-from '(:foreground "DarkGreen"))
+    (face-remap-add-relative 'variable-pitch '(:foreground "black" :background "white"))
+    (make-face 'width-font-face)
+    (set-face-attribute 'width-font-face nil :font "YaHei Consolas Hybrid 16")   ;; FiraCode NF 16
+    (setq buffer-face-mode-face 'width-font-face)
+    (buffer-face-mode))
+    (add-hook 'gnus-mode-hook 'gnus-buffer-face-mode-variable))

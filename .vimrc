@@ -9,7 +9,7 @@ Plug 'majutsushi/tagbar'
 Plug 'itchyny/lightline.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'preservim/nerdcommenter'
-Plug 'ludovicchabant/vim-gutentags'
+"Plug 'ludovicchabant/vim-gutentags'
 Plug 'skywind3000/gutentags_plus'
 Plug 'skywind3000/vim-preview'
 Plug 'luochen1990/rainbow'
@@ -46,8 +46,8 @@ Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 "
 " Plugin outside ~/.vim/plugged with post-update hook
 "   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }
-Plug 'Yggdroot/LeaderF-marks'
+"Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }
+"Plug 'Yggdroot/LeaderF-marks'
 
 "   Unmanaged plugin (manually installed and updated)
 Plug '~/.vim/plugin/WhereFrom.vim'
