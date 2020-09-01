@@ -73,7 +73,8 @@ ZSH_DISABLE_COMPFIX="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 #plugins=(git)
-plugins=(git z colored-man-pages zsh-syntax-highlighting zsh-autosuggestions)
+#plugins=(git z colored-man-pages zsh-syntax-highlighting zsh-autosuggestions)
+plugins=(git z colored-man-pages zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
