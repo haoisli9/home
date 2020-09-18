@@ -335,6 +335,12 @@
     (buffer-face-mode))
     (add-hook 'org-mode-hook 'org-buffer-face-mode-variable))
 
+;; (add-hook 'org-agenda-mode-hook
+;;           (lambda ()
+;;             (hl-line-mode)
+;;             (face-remap-add-relative 'hl-line :box '(:color "deep pink" :line-width 2))
+;;             (face-remap-add-relative 'variable-pitch '(:foreground "blue" :background "white"))))
+
 (message "org-mode configuration loaded.")
 
 (provide 'org-init)

@@ -1,22 +1,20 @@
 (require 'gnus)
 
 ;; 设置自己的默认email地址，和用户名
-(setq user-mail-address	"lihao@datangmobile.cn"
+;; (setq user-mail-address	"lihao@datangmobile.cn"
+;;       user-full-name	"LIHAO")
+(setq user-mail-address	"13991819104@139.com"
       user-full-name	"LIHAO")
 
 ;;设置获取邮件的服务器地址
 
-;; set email reader
-;; (setq gnus-select-method '(nnimap "xamail.datangmobile.cn"))
-;; (setq gnus-select-method '(nnimap "imap.139.com"))
-
-(setq gnus-select-method '(nnml ""))
+;; (setq gnus-select-method '(nnml ""))
 ;; set pop server
-(setq mail-sources
-      '((pop :server "xamail.datangmobile.cn"   ;; 在这里设置 pop3 服务器
-             :leave 14                         ;; leave the article on server.
-             :port "pop3"
-             )))
+;; (setq mail-sources
+;;       '((pop :server "xamail.datangmobile.cn"   ;; 在这里设置 pop3 服务器
+;;              :leave 14                         ;; leave the article on server.
+;;              :port "pop3"
+;;              )))
 ;; set smtp
 ;; (setq smtpmail-auth-credentials
 ;;    '(("xamail.datangmobile.cn"                ;; SMTP 服务器
@@ -24,21 +22,30 @@
 ;;       "lihao@datangmobile.cn"                 ;; 用户名
 ;;       "")))                    ;; 密码
 
+;; (setq gnus-select-method '(nnimap "imap.139.com"))
+(setq gnus-select-method '(nnimap "139"
+                                  (nnimap-address "imap.139.com")
+                                  (nnimap-server-port 993)
+                                  (nnimap-stream ssl)
+                                  (nnimap-authinfo-file "~/.authinfo")
+                                  ))
+
 ;; (add-to-list 'gnus-secondary-select-methods '(nnimap "imap.139.com"))
-(add-to-list 'gnus-secondary-select-methods '(nnimap "139"
-                                                     (nnimap-address "imap.139.com")
-                                                     (nnimap-server-port 993)
-                                                     (nnimap-stream ssl)
-                                                     (nnimap-authinfo-file "~/.authinfo")
-                                                     ))
+;; (add-to-list 'gnus-secondary-select-methods '(nnimap "139"
+;;                                                      (nnimap-address "imap.139.com")
+;;                                                      (nnimap-server-port 993)
+;;                                                      (nnimap-stream ssl)
+;;                                                      (nnimap-authinfo-file "~/.authinfo")
+;;                                                      ))
 
 ;;设置发送邮件的服务器地址
-(setq smtpmail-default-smtp-server "xamail.datangmobile.cn")
-(setq smtpmail-smtp-server "xamail.datangmobile.cn")
-(setq send-mail-function 'smtpmail-send-it
-      message-send-mail-function 'smtpmail-send-it)
-;;       smtpmail-smtp-service 25
-;; smtpmail-auth-credentials "~/.authinfo")
+;; (setq smtpmail-default-smtp-server "xamail.datangmobile.cn")
+(setq smtpmail-default-smtp-server "smtp.139.com"
+      ;; smtpmail-smtp-server "smtp.139.com"
+      send-mail-function 'smtpmail-send-it
+      message-send-mail-function 'smtpmail-send-it
+      ;; smtpmail-smtp-service 25
+      smtpmail-auth-credentials "~/.authinfo")
 
 ;;语言环境设定
 ;; (set-language-environment 'Chinese-GB)
@@ -82,22 +89,24 @@
      (setq gnus-message-archive-group '((format-time-string "sent.%Y")))
      (setq gnus-topic-topology '(("Gnus" visible)
                                  (("misc" visible))
-                                 (("datangmobile" visible nil nil))
+                                 ;; (("datangmobile" visible nil nil))
                                  (("139" visible nil nil))))
 
-     ;; key of topic is specified in my sample ".gnus.el"
-     (setq gnus-topic-alist '(("datangmobile" ; the key of topic
-                               "mail.misc")
+     ;; ;; ;; key of topic is specified in my sample ".gnus.el"
+     (setq gnus-topic-alist '(
+                              ;; ("datangmobile" ; the key of topic
+                              ;;  "mail.misc")
                               ("139" ; the key of topic
-                               "nnimap+139:INBOX")
+                               "INBOX"
+                               "nnfolder+archive:sent.2020")
                               ("misc" ; the key of topic
-                               "nnfolder+archive:sent.2020"
+                               "dummy.group"
                                "nndraft:drafts")
                               ("Gnus")))
-     ;; see latest 200 mails in topic "gmail" when press Enter on any group inside topic
+     ;; ;; see latest 200 mails in topic "gmail" when press Enter on any group inside topic
      (gnus-topic-set-parameters "Gnus" '((display . 200)))
      (gnus-topic-set-parameters "misc" '((display . 200)))
-     (gnus-topic-set-parameters "datangmobile" '((display . 200) (total-expire . t) (expiry-wait . 7) (visible . t)))
+     ;; ;; (gnus-topic-set-parameters "datangmobile" '((display . 200) (total-expire . t) (expiry-wait . 7) (visible . nil)))
      (gnus-topic-set-parameters "139" '((display . 200) (auto-expire . t) (expiry-wait . 7) (visible . t)))
      ))
 
@@ -137,8 +146,8 @@
 
 ;; 设定屏幕的分割比例
 ;; 两屏设置
-(gnus-add-configuration '(article (vertical 1.0
-                                            (summary .35 point) (article 1.0))))
+;; (gnus-add-configuration '(article (vertical 1.0
+;;                                             (summary .25 point) (article 1.0))))
 ;; 三屏设置
 ;; (gnus-add-configuration
 ;;  '(article
@@ -163,8 +172,10 @@
 
 ;;自动显示图片
 (auto-image-file-mode)
-(setq mm-inline-large-images t)
 (add-to-list 'mm-attachment-override-types "image/*")
+;; gnus 默认不显示html邮件中的图片，只好手工hook一下；
+(add-hook 'gnus-article-prepare-hook 'gnus-article-show-images)
+
 ;;杂 项
 (setq gnus-confirm-mail-reply-to-news t
       message-kill-buffer-on-exit t
@@ -184,23 +195,18 @@
 ;; 	 ))
 ;; )
 
-;; (add-hook 'org-agenda-mode-hook
-;;           (lambda ()
-;;             (hl-line-mode)
-;;             (face-remap-add-relative 'hl-line :box '(:color "deep pink" :line-width 2))
-;;             (face-remap-add-relative 'variable-pitch '(:foreground "blue" :background "white"))))
-
 (with-eval-after-load 'gnus
   (defun gnus-buffer-face-mode-variable ()
     (interactive)
     (hl-line-mode)
     (face-remap-add-relative 'hl-line '(:background "light grey"))
-    (face-remap-add-relative 'default '(:foreground "black" :background "white"))
+    (face-remap-add-relative 'default '(:background "white"))
+    (face-remap-add-relative 'variable-pitch '(:background "white"))
     (face-remap-add-relative 'bold '(:foreground "DarkSeaGreen4"))
-    (face-remap-add-relative 'gnus-header-from '(:foreground "DarkGreen"))
-    (face-remap-add-relative 'variable-pitch '(:foreground "black" :background "white"))
+    (face-remap-add-relative 'gnus-header-from '(:foreground "Green"))
     (make-face 'width-font-face)
-    (set-face-attribute 'width-font-face nil :font "YaHei Consolas Hybrid 16")   ;; FiraCode NF 16
+    (set-face-attribute 'width-font-face nil :font "YaHei Consolas Hybrid 15")   ;; FiraCode NF 16
+    ;; (set-face-attribute 'width-font-face nil :font "Sarasa Mono SC 16")   ;; FiraCode NF 16
     (setq buffer-face-mode-face 'width-font-face)
     (buffer-face-mode))
     (add-hook 'gnus-mode-hook 'gnus-buffer-face-mode-variable))

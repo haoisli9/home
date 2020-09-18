@@ -58,6 +58,8 @@
 ;; enverioment configuration.
 ;; (setenv "GTAGSCONF" "~/.globalrc")
 
+(setq byte-compile-warnings '(cl-functions))
+
 ;;关闭出错时的提示声
 (setq visible-bell t)
 
@@ -168,6 +170,12 @@
 
 ;; unique buffer name.
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets) ; Show path if names are same
+
+;; something in windows. cmdproxy will show chinese error, but command like fd can handle.
+(set-default 'process-coding-system-alist
+             '(("[cC][mM][dD][pP][rR][oO][xX][yY]" utf-8 . gbk)
+               ("[rR][gG]" utf-8 . gbk)
+               ("[fF][dD]" utf-8 . gbk)))
 
 ;;------------------------------------------
 ;; backup policies
@@ -285,6 +293,8 @@
 
 ;;------------------------------------------------------------
 ;;{{{ shell
+;; (setq shell-file-name (executable-find "zsh.exe"))
+
 ;; set maximum-buffer size for shell-mode
 (setq comint-buffer-maximum-size 1024)
 
@@ -344,7 +354,7 @@
 
 ;;------------------------------------------------------------
 ;;woman Setting
-(setq woman-manpath (list "d:/Unix/man/" "d:/Unix/share/man/" "c:/cygwin64/usr/man/" "c:/cygwin64/usr/share/man/"))
+(setq woman-manpath (list "d:/Unix/man/" "d:/Unix/share/man/"))
 (defun woman-helpful ()
   (interactive)
   (let ((woman-use-topic-at-point t))
@@ -398,7 +408,7 @@
 
 ;;{{{ recentf-mode
 (setq recentf-keep '(file-remote-p file-readable-p))
-(setq recentf-max-saved-items 100
+(setq recentf-max-saved-items 50
       recentf-exclude '("/tmp/"
 			"/ssh:"
 			"/sudo:"
@@ -423,6 +433,7 @@
 			"\\.srt$"
 			"\\.ass$"
 			;; ~/.emacs.d/**/*.el included
+                        "\\.elc$"
 			;; "/home/[a-z]\+/\\.[a-df-z]" ; configuration file should not be excluded
 			))
 ;;}}}
@@ -634,6 +645,8 @@
              (ivy-occur-mode . normal)
              (ivy-occur-grep-mode . normal)
              (color-rg-mode . emacs)
+             (elfeed-search-mode . emacs)
+             (elfeed-show-mode . emacs)
              (messages-buffer-mode . normal)))
   (evil-set-initial-state (car p) (cdr p)))
 
@@ -1009,222 +1022,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;;}}}
 
 ;;------------------------------------------------------------
-;;{{{ chinese calendar.
-(require 'cal-china-x)
-(setq calendar-latitude +34.16)
-(setq calendar-longitude +108.54)
-(setq calendar-location-name "西安")
-
-(setq cal-china-x-important-holidays '(
-				       (holiday-fixed 3 13 "生日")
-				       (holiday-fixed 7 27 "老婆生日")
-				       ))
-(setq cal-china-x-general-holidays '(
-			       ;;公历节日
-			       (holiday-fixed 1 1 "元旦")
-			       (holiday-fixed 2 14 "情人节")
-			       (holiday-fixed 3 8 "妇女节")
-			       (holiday-fixed 4 1 "愚人节")
-			       (holiday-fixed 5 1 "劳动节")
-			       (holiday-fixed 5 4 "青年节")
-			       (holiday-float 5 0 2 "母亲节")
-			       (holiday-fixed 6 1 "儿童节")
-			       (holiday-float 6 0 3 "父亲节")
-			       (holiday-fixed 7 1 "建党节")
-			       (holiday-fixed 8 1 "建军节")
-			       (holiday-fixed 9 10 "教师节")
-			       (holiday-fixed 10 1 "国庆节")
-			       (holiday-fixed 12 25 "圣诞节")
-			       ;; 农历节日
-			       (holiday-lunar 12 30 "除夕" 0)
-			       (holiday-lunar 1 1 "春节" 0)
-			       (holiday-lunar 1 15 "元宵节" 0)
-			       (holiday-solar-term "清明" "清明节")
-			       (holiday-lunar 5 5 "端午节" 0)
-			       (holiday-lunar 7 7 "七夕节" 0)
-			       (holiday-lunar 8 15 "中秋节" 0)
-			       (holiday-lunar 9 9 "重阳节" 0)
-			       ))
-(setq calendar-holidays
-      (append cal-china-x-important-holidays
-              cal-china-x-general-holidays))
-;; 设置Calendar的显示
-(setq calendar-remove-frame-by-deleting t)
-;; (setq mark-diary-entries-in-calendar t)       ; 标记有记录的日子
-(setq calendar-mark-holidays-flag t)          ; 标记节假日
-;; (setq calendar-mark-diary-entries-flag t)     ; 让calendar自动标记出记有待办事项的日期
-(setq calendar-week-start-day 0) ; 设置星期一为每周的第一天，否则星期数有些对不上
-
-;;除去基督徒的节日、希伯来人的节日和伊斯兰教的节日。
-(setq christian-holidays nil
-      hebrew-holidays nil
-      islamic-holidays nil
-      solar-holidays nil
-      bahai-holidays nil)
-;; 设置颜色
-(set-face-attribute 'calendar-weekend-header nil
-                    :foreground "green")
-(set-face-attribute 'calendar-today nil
-		    :box '(:line-width 1 :color "green")
-		    :background "DarkGreen"
-		    :foreground "yellow")
-(set-face-attribute 'cal-china-x-general-holiday-face nil
-		    :background "SkyBlue"
-		    :foreground "black")
-(set-face-attribute 'diary nil
-		    :background "yellow"
-		    :foreground "black")
-
-(add-hook 'calendar-today-visible-hook 'calendar-mark-today)
-
-;; 保存日记的文件
-(setq diary-file "~/diary")
-;; appointment
-(setq appt-issue-message t)
-;; 在mode-line上倒计时
-(setq appt-display-mode-line t)
-
-;; (setq diary-date-forms '((year "/" month "/" day "[^/0-9]"))
-;;       calendar-date-display-form '(year "/" month "/" day)
-;;       calendar-time-display-form
-;;       '(24-hours ":" minutes (if time-zone " (") time-zone (if time-zone ")")))
-
-;; add ISO week number.
-(copy-face font-lock-constant-face 'calendar-iso-week-face)
-(set-face-attribute 'calendar-iso-week-face nil
-                    :height 0.7)
-(setq calendar-intermonth-text
-      '(propertize
-        (format "%2d"
-                (car
-                 (calendar-iso-from-absolute
-                  (if (eq 1 calendar-week-start-day) (calendar-absolute-from-gregorian (list month day year))
-                    (calendar-absolute-from-gregorian (list month (+ 1 day) year)))
-                  )))
-        'font-lock-face 'calendar-iso-week-face))
-(copy-face 'font-lock-keyword-face 'calendar-iso-week-header-face)
-(set-face-attribute 'calendar-iso-week-header-face nil
-		    :foreground "yellow" :height 1.0)
-(setq calendar-intermonth-header
-      (propertize "Wk"
-                  'font-lock-face 'calendar-iso-week-header-face))
-(set-face-attribute 'calendar-iso-week-face nil
-		    :height 1.0 :foreground "salmon")
-
-;;------------------------------------------------------------
-;; 计算伏天和数九
-;;------------------------------------------------------------
-(defconst cal-china-x-nine-characters  ; 数九天 array
-  ["一九" "二九" "三九" "四九" "五九" "六九" "七九" "八九" "九九"])
-
-(defun cal-china-x-winter-solstice-date (date)  ; 计算冬至日期(1-11月为去年，12月为今年)
-  "Return winter solstice(冬至) date in Gregorian form.
-
-If MONTH = 12, return current year's date
-Else return last year's date"
-  (let* ((cyear (if (= (calendar-extract-month date) 12)
-                    (calendar-extract-year date)
-                  (1- (calendar-extract-year date)))))
-    (car (rassoc '"冬至" (cal-china-x-solar-term-alist-new cyear)))))
-
-(defun winter-solstice-day-diff (date)  ; 计算与指定冬至的天数差
-  (cal-china-x-days-diff date (cal-china-x-winter-solstice-date date)))
-
-(defun cal-china-x-get-several-nines-string (date)  ; 生成数九天的 string
-  (let ((daygap (winter-solstice-day-diff date)))
-    (if (or (< daygap 0) (> daygap 80))
-        ""
-      (concat (aref cal-china-x-nine-characters (/ daygap 9))
-              "("
-              (number-to-string (1+ (% daygap 9)))
-              ")"
-              ))))
-
-(defun cal-china-x-solar-term-date (date solar-term)
-  "Return solar-term date in Gregorian form."
-  (let* ((cyear (calendar-extract-year date)))
-    (car (rassoc solar-term (cal-china-x-solar-term-alist-new cyear)))))
-
-(defun cal-china-x-chinese-day-celestial-stem-number (date)
-  "String of Chinese date of Gregorian DATE.
-Defaults to today's date if DATE is not given."
-  (let* ((a-date (calendar-absolute-from-gregorian date)))
-    (% (+ a-date 15) 10)))
-
-(defun cal-china-x-solar-term-celestical-stem (date solar-term)
-  (cal-china-x-chinese-day-celestial-stem-number
-   (cal-china-x-solar-term-date date solar-term)))
-
-(defun cal-china-x-day-diff-from-solar-term (date solar-term) ; 庚日
-  (let ((ss-stem (- 7 (cal-china-x-solar-term-celestical-stem date solar-term))))
-    (if (< ss-stem 0) (+ ss-stem 10)
-      ss-stem)))
-
-(defun cal-china-x-chufu-date (date)
-  (let* ((ss-date (cal-china-x-solar-term-date date "夏至"))
-         (ss-year (calendar-extract-year ss-date))
-         (ss-day (calendar-extract-day ss-date))
-         (day-diff (+ 20 (cal-china-x-day-diff-from-solar-term date "夏至")))
-         (chufu-day (- day-diff (- 30 ss-day))))
-    (list 7 chufu-day ss-year)))
-
-(defun cal-china-x-zhongfu-date (date)
-  (list 7 (+ (calendar-extract-day (cal-china-x-chufu-date date)) 10)
-        (calendar-extract-year date)))
-
-(defun cal-china-x-mofu-date (date)
-  (let* ((ss-date (cal-china-x-solar-term-date date "立秋"))
-         (ss-year (calendar-extract-year ss-date))
-         (ss-day (calendar-extract-day ss-date))
-         (day-diff (cal-china-x-day-diff-from-solar-term date "立秋"))
-         (mofu-day (+ day-diff ss-day)))
-    (list 8 mofu-day ss-year)))
-
-(defun cal-china-x-get-futian-string (date)
-  (let* ((chufu (cal-china-x-chufu-date date))
-         (zhongfu (cal-china-x-zhongfu-date date))
-         (mofu (cal-china-x-mofu-date date))
-         (chufu-gap (cal-china-x-days-diff date chufu))
-         (zhongfu-gap (cal-china-x-days-diff date zhongfu))
-         (mofu-gap (cal-china-x-days-diff date mofu))
-         )
-    (if (or (< chufu-gap 0) (> mofu-gap 9))
-        ""
-      (if (and (>= chufu-gap 0) (< zhongfu-gap 0))
-          (concat "初伏("
-                  (number-to-string (1+ chufu-gap))
-                  ")")
-        (if (and (>= zhongfu-gap 0) (< mofu-gap 0))
-            (concat "中伏("
-                    (number-to-string (1+ zhongfu-gap))
-                    ")")
-          (concat "末伏("
-                  (number-to-string (1+ mofu-gap))
-                  ")"))))))
-
-(defun calendar-fu-jiu-date ()
-  "Day of Futian and JiuTian for date under cursor."
-  (interactive)
-  (let ((date (calendar-cursor-to-date)))
-    (message "%s: %s%s"
-             (calendar-date-string date t t)
-             (cal-china-x-get-several-nines-string date)
-             (cal-china-x-get-futian-string date)
-             )))
-
-(defun calendar-get-fu-jiu-string (date)
-  "Day of Futian and JiuTian for date under cursor."
-  (format "%s%s"
-          (cal-china-x-get-several-nines-string date)
-          (cal-china-x-get-futian-string date)
-          ))
-
-;;------------------------------------------------------------
-
-(message "chinese calendar loaded.")
-;;}}}
-
-;;------------------------------------------------------------
 ;;{{{ outline-mode configuration.
 ;; change the ellipsis.
 (set-display-table-slot
@@ -1244,6 +1041,8 @@ Defaults to today's date if DATE is not given."
 ;;}}}
 
 ;;------------------------------------------------------------
+(require 'calendar-init)
+
 (require 'org-init)
 
 ;; some eshell functions
@@ -1260,7 +1059,11 @@ Defaults to today's date if DATE is not given."
 (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 
 (ivy-set-actions
- 'counsel-find-file '(("d" delete-file "delete")))
+ 'counsel-find-file '(
+                      ("j" find-file-other-frame "other frame")
+                      ("b" counsel-find-file-cd-bookmark-action "cd bookmark")
+                      ("x" counsel-find-file-extern "open externally")
+                      ("d" delete-file "delete")))
 
 (defun counsel-imenu-comments ()
   "Imenu display comments."
@@ -1298,6 +1101,13 @@ Defaults to today's date if DATE is not given."
      (push "TAGS" counsel-etags-ignore-filenames)
      (push "*.json" counsel-etags-ignore-filenames)))
 
+(unless (featurep 'pinyinlib) (require 'pinyinlib))
+(setq counsel-etags-convert-grep-keyword
+  (lambda (keyword)
+    (if (and keyword (> (length keyword) 0))
+        (pinyinlib-build-regexp-string keyword t)
+      keyword)))
+
 ;; ‘counsel-yank-pop’ in visual mode does not replace the region, instead it just inserts the text. advise ‘counsel-yank-pop’ with a function that kills the region.
 (defun moon-override-yank-pop (&optional arg)
   "Delete the region before inserting poped string."
@@ -1318,7 +1128,13 @@ Defaults to today's date if DATE is not given."
 ;; (advice-add 'counsel--async-command :before
 ;;             #'counsel-before-counsel--async-command)
 
-(require 'counsel-fd)
+;; find-file-in-project
+(use-package find-file-in-project
+  :ensure t
+  :config
+  (defalias 'ffip 'find-file-in-project-by-selected)
+  (setq ffip-use-rust-fd t)
+  )
 
 ;;}}}
 ;;------------------------------------------------------------
@@ -1621,10 +1437,6 @@ Defaults to today's date if DATE is not given."
   :after treemacs evil
   :ensure t)
 
-(use-package treemacs-projectile
-  :after treemacs projectile
-  :ensure t)
-
 (use-package treemacs-icons-dired
   :after dired
   :ensure t
@@ -1737,6 +1549,22 @@ Defaults to today's date if DATE is not given."
 (setq insert-translated-name-translate-engine "google")
 
 ;;------------------------------------------------------------
+;; elfeed configuration
+(require 'elfeed)
+(setq elfeed-feeds
+      '(
+        "http://www.chinanews.com/rss/importnews.xml"
+        "http://rss.zol.com.cn/news.xml"
+        "http://www.geekpark.net/rss"
+        "https://sspai.com/feed"
+        ))
+(add-hook 'elfeed-new-entry-hook 
+          (elfeed-make-tagger :before "2 weeks ago"
+                              :remove 'unread))
+(defun elfeed-search-format-date (date)
+  (format-time-string "%Y-%m-%d %H:%M" (seconds-to-time date)))
+
+;;------------------------------------------------------------
 ;; color-rg
 ;; https://github.com/manateelazycat/color-rg
 (require 'color-rg)
@@ -1744,7 +1572,11 @@ Defaults to today's date if DATE is not given."
 ;; https://github.com/manateelazycat/thing-edit
 (require 'thing-edit)
 
-;; https://github.com/junegunn/fzf-bin/releases
+;; https://github.com/lyjdwh/avy-thing-edit/blob/master/avy-thing-edit.el
+(require 'avy-thing-edit)
+
+;; https://github.com/manateelazycat/awesome-tab
+;; https://github.com/manateelazycat/snails
 
 ;;}}}
 
@@ -2002,8 +1834,6 @@ Defaults to today's date if DATE is not given."
   (interactive)
   (end-of-line)
   (newline-and-indent))
-
-(global-set-key [(meta return)] 'my-add-new-line)
 
 ;; C-M-, 在另一窗口处查看光标处的 tag
 (global-set-key (kbd "C-M-,") '(lambda () (interactive) (lev/find-tag t)))
@@ -2351,12 +2181,27 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
   ("y" evil-pinyin-mode nil)
   ("q" nil "quit"))
 
+(defhydra hydra-avy-copy (:color blue :hint nil)
+  "
+_w_ord    _s_ymbol     _f_ile   _l_ine   _u_rl    e_m_ail
+  "
+  ("w"  avy-thing-copy-word)
+  ("s"  avy-thing-copy-symbol)
+  ("f"  avy-thing-copy-filename)
+  ("l"  avy-thing-copy-line)
+  ("u"  avy-thing-copy-url)
+  ("m"  avy-thing-copy-email)
+  )
+
 ;; Recommended binding:
 (defhydra hydra-all (global-map "C-c" :color blue :hint nil)
-  ""
-  ("SPC" hydra-jump/body)
-  ("tt" hydra-toggle/body)
-  ("ff" hydra-fold/body)
+  "
+_j_ump    _t_oggle    f_o_ld     a_v_y-copy
+  "
+  ("j" hydra-jump/body)
+  ("t" hydra-toggle/body)
+  ("o" hydra-fold/body)
+  ("v" hydra-avy-copy/body)
 )
 
 (message "hydra key binding.")
@@ -2376,47 +2221,29 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
     ",,"  'my-tmp-mark
     ".."  'my-tmp-back
     ",."  'my-tmp-back-original
-    "ac"  'ace-pinyin-dwim
     "al"  'ace-jump-line-mode
-    "ao"  'ace-window
     "aw"  'ace-jump-word-mode
-    "as"  'ace-swap-window
     "bb"  '((lambda () (interactive) (switch-to-buffer nil)) :which-key "prev-buffer")
     "cc"  'evilnc-comment-or-uncomment-lines
     "cp"  'evilnc-comment-or-uncomment-paragraph
     "ct"  'evilnc-comment-or-uncomment-html-tag
-    "dw"  'thing-cut-word
-    "dW"  'thing-cut-sexp
-    "ds"  'thing-cut-symbol
-    "dl"  'thing-cut-line
-    "df"  'thing-cut-filename
-    "du"  'thing-cut-url
-    "dm"  'thing-cut-email
-    "dS"  'thing-cut-sentence
-    "dp"  'thing-cut-parentheses
     "dj"  'dired-jump
     "bf"  'beginning-of-defun
     "ef"  'end-of-defun
     "ss"  'swiper-thing-at-point
     "rg"  'color-rg-search-input
-    "fd"  'counsel-fd-file-jump
+    "ff"  'counsel-find-file
     "fl"  'counsel-locate
+    "hh"  'helpful-at-point
     "ul"  'browse-url
     "yw"  'thing-copy-word
-    "yW"  'thing-copy-sexp
     "ys"  'thing-copy-symbol
-    "yl"  'thing-copy-line
     "yf"  'thing-copy-filename
     "yu"  'thing-copy-url
     "ym"  'thing-copy-email
-    "yS"  'thing-copy-sentence
-    "yp"  'thing-copy-parentheses
-    "yP"  'thing-copy-paragraph
     "yt"  'select-total-part
     ;; hydra binding
-    "<SPC>" 'hydra-jump/body
-    "tt" 'hydra-toggle/body
-    "fo" 'hydra-fold/body
+    "<SPC>" 'hydra-all/body
    )
 
   (general-create-definer my-leader-def
@@ -2427,48 +2254,28 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
     ",,"  'my-tmp-mark
     ".."  'my-tmp-back
     ",."  'my-tmp-back-original
-    "ac"  'ace-pinyin-dwim
     "al"  'ace-jump-line-mode
-    "ao"  'ace-window
     "aw"  'ace-jump-word-mode
-    "as"  'ace-swap-window
-    "bb"  '((lambda () (interactive) (switch-to-buffer nil)) :which-key "prev-buffer")
     "cc"  'evilnc-comment-or-uncomment-lines
     "cp"  'evilnc-comment-or-uncomment-paragraph
     "ct"  'evilnc-comment-or-uncomment-html-tag
-    "dw"  'thing-cut-word
-    "dW"  'thing-cut-sexp
-    "ds"  'thing-cut-symbol
-    "dl"  'thing-cut-line
-    "df"  'thing-cut-filename
-    "du"  'thing-cut-url
-    "dm"  'thing-cut-email
-    "dS"  'thing-cut-sentence
-    "dp"  'thing-cut-parentheses
     "dj"  'dired-jump
     "bf"  'beginning-of-defun
     "ef"  'end-of-defun
     "ss"  'swiper-thing-at-point
     "rg"  'color-rg-search-input
-    "fd"  'counsel-fd-file-jump
+    "ff"  'counsel-find-file
     "fl"  'counsel-locate
     "ul"  'browse-url
     "yw"  'thing-copy-word
-    "yW"  'thing-copy-sexp
     "ys"  'thing-copy-symbol
-    "yl"  'thing-copy-line
     "yf"  'thing-copy-filename
     "yu"  'thing-copy-url
     "ym"  'thing-copy-email
-    "yS"  'thing-copy-sentence
-    "yp"  'thing-copy-parentheses
-    "yP"  'thing-copy-paragraph
     "yt"  'select-total-part
     ;; hydra binding
-    "<SPC>" 'hydra-jump/body
-    "tt" 'hydra-toggle/body
-    "fo" 'hydra-fold/body
-   )
+    "<SPC>" 'hydra-all/body
+    )
   )
 
 (message "general key binding end.")
@@ -2482,6 +2289,8 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
 (global-set-key [(f4)] 'my-tmp-back)
 (global-set-key [(C-f4)] 'my-tmp-mark)
 (global-set-key [(M-f4)] 'my-tmp-back-original)
+
+(global-set-key [(C-tab)] '(lambda () (interactive) (switch-to-buffer nil)))
 
 ;;------------------------------------------------------------
 ;;{{{ desktop.
@@ -2529,53 +2338,11 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ansi-term-color-vector
-   [unspecified "#2d2a2e" "#ff6188" "#a9dc76" "#ffd866" "#78dce8" "#ab9df2" "#a1efe4" "#fcfcfa"])
- '(calendar-mode-line-format
-   '(#("<" 0 1
-       (keymap
-        (keymap
-         (mode-line keymap
-                    (mouse-1 . calendar-scroll-right)))
-        mouse-face mode-line-highlight help-echo "mouse-1: previous month"))
-     "Calendar"
-     (cal-china-x-get-holiday date)
-     (concat " "
-             (calendar-date-string date t)
-             (format " 第%d周"
-                     (funcall
-                      (if cal-china-x-custom-week-start-date 'cal-china-x-custom-week-of-date 'cal-china-x-week-of-date)
-                      date)))
-     (cal-china-x-chinese-date-string date)
-     (calendar-get-fu-jiu-string date)
-     #(">" 0 1
-       (keymap
-        (keymap
-         (mode-line keymap
-                    (mouse-1 . calendar-scroll-left)))
-        mouse-face mode-line-highlight help-echo "mouse-1: next month"))))
  '(column-number-mode t)
- '(hl-todo-keyword-faces
-   '(("TODO" . "#dc752f")
-     ("NEXT" . "#dc752f")
-     ("THEM" . "#2d9574")
-     ("PROG" . "#3a81c3")
-     ("OKAY" . "#3a81c3")
-     ("DONT" . "#f2241f")
-     ("FAIL" . "#f2241f")
-     ("DONE" . "#42ae2c")
-     ("NOTE" . "#b1951d")
-     ("KLUDGE" . "#b1951d")
-     ("HACK" . "#b1951d")
-     ("TEMP" . "#b1951d")
-     ("FIXME" . "#dc752f")
-     ("XXX+" . "#dc752f")
-     ("\\?\\?\\?+" . "#dc752f")))
  '(inhibit-startup-screen t)
- '(initial-major-mode 'org-mode)
  '(org-support-shift-select t)
  '(package-selected-packages
-   '(counsel-fd fd-dired lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline treemacs-icons-dired treemacs-projectile treemacs-evil treemacs dracula-theme org-download centered-cursor-mode general evil-anzu youdao-dictionary monokai-pro-theme evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy counsel-projectile all-the-icons-ivy-rich srcery-theme org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim projectile counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
+   '(0blayout elfeed counsel-fd find-file-in-project fd-dired lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline treemacs-icons-dired treemacs-evil treemacs dracula-theme org-download centered-cursor-mode general evil-anzu youdao-dictionary monokai-pro-theme evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy all-the-icons-ivy-rich org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
  '(pdf-view-midnight-colors '("#655370" . "#fbf8ef"))
  '(recentf-mode t)
  '(save-place-mode t)
