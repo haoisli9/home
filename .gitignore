@@ -6,6 +6,7 @@
 .TabNine/
 .w3m/
 .tmux/
+.elfeed/
 Mail/
 misc/
 News/
@@ -22,6 +23,7 @@ fonts/
 *cache
 .pop3*
 .authinfo
+.gnupg
 .zcompdump*
 # ------------------------------------emacs----------------------------------------
 *~
