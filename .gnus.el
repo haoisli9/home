@@ -107,7 +107,7 @@
      (gnus-topic-set-parameters "Gnus" '((display . 200)))
      (gnus-topic-set-parameters "misc" '((display . 200)))
      ;; ;; (gnus-topic-set-parameters "datangmobile" '((display . 200) (total-expire . t) (expiry-wait . 7) (visible . nil)))
-     (gnus-topic-set-parameters "139" '((display . 200) (auto-expire . t) (expiry-wait . 7) (visible . t)))
+     (gnus-topic-set-parameters "139" '((display . 200) (auto-expire . t) (expiry-wait . 15) (visible . t)))
      ))
 
 (setq gnus-group-line-format "%P%M%S[%5t]%5y : %B%(%g%)\n")
@@ -174,7 +174,7 @@
 (auto-image-file-mode)
 (add-to-list 'mm-attachment-override-types "image/*")
 ;; gnus 默认不显示html邮件中的图片，只好手工hook一下；
-(add-hook 'gnus-article-prepare-hook 'gnus-article-show-images)
+;; (add-hook 'gnus-article-prepare-hook 'gnus-article-show-images)
 
 ;;杂 项
 (setq gnus-confirm-mail-reply-to-news t
@@ -185,7 +185,7 @@
 ;; * 键，帖子被拷贝到本地的 cache 中保存起来，再次 Meta-* 取消
 (setq gnus-use-cache 'passive)
 ;; 可以保留同主体中已读邮件，把 'some 改为t可以下载所有文章
-;; (setq gnus-fetch-old-headers 'some)
+(setq gnus-fetch-old-headers 'some)
 
 ;; (setq gnus-posting-styles
 ;;       '((".*"
@@ -199,11 +199,12 @@
   (defun gnus-buffer-face-mode-variable ()
     (interactive)
     (hl-line-mode)
-    (face-remap-add-relative 'hl-line '(:background "light grey"))
-    (face-remap-add-relative 'default '(:background "white"))
+    (face-remap-add-relative 'hl-line '(:background "#6272a4" :foreground "white"))
+    (face-remap-add-relative 'default '(:foreground "black" :background "white"))
     (face-remap-add-relative 'variable-pitch '(:background "white"))
     (face-remap-add-relative 'bold '(:foreground "DarkSeaGreen4"))
     (face-remap-add-relative 'gnus-header-from '(:foreground "Green"))
+    (face-remap-add-relative 'gnus-summary-selected '(:background "#6272a4" :foreground "yellow"))
     (make-face 'width-font-face)
     (set-face-attribute 'width-font-face nil :font "YaHei Consolas Hybrid 15")   ;; FiraCode NF 16
     ;; (set-face-attribute 'width-font-face nil :font "Sarasa Mono SC 16")   ;; FiraCode NF 16

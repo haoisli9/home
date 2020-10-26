@@ -961,9 +961,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; Number the candidates (use M-1, M-2 etc to select completions).
 (setq company-show-numbers t)
 
-;; (use-package company-box
-;;   :hook (company-mode . company-box-mode)
-;;   :config (setq company-box-doc-enable nil))
+(setq company-frontends '(company-pseudo-tooltip-frontend
+                          company-echo-metadata-frontend))
 
 ;; Use the tab-and-go frontend.
 ;; Allows TAB to select and complete at the same time.
@@ -981,7 +980,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; company-tabnine
 (require 'company-tabnine)
 ;; `:separate`  使得不同 backend 分开排序
-(add-to-list 'company-backends #'company-tabnine)
+;; (add-to-list 'company-backends #'company-tabnine)
+(push '(company-capf :with company-tabnine :separate) company-backends)
 
 (defun company//sort-by-tabnine (candidates)
   (if (or (functionp company-backend)
@@ -1558,9 +1558,10 @@ If the character before and after CH is space or tab, CH is NOT slash"
         "http://www.geekpark.net/rss"
         "https://sspai.com/feed"
         ))
-(add-hook 'elfeed-new-entry-hook 
-          (elfeed-make-tagger :before "2 weeks ago"
-                              :remove 'unread))
+(setq-default elfeed-search-filter "@1-months-ago +unread ")
+;; (add-hook 'elfeed-new-entry-hook
+;;           (elfeed-make-tagger :before "2 weeks ago"
+;;                               :remove 'unread))
 (defun elfeed-search-format-date (date)
   (format-time-string "%Y-%m-%d %H:%M" (seconds-to-time date)))
 
@@ -1598,7 +1599,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
   (add-hook hook '(lambda ()
                     (c-set-style "stroustrup")
                     (lsp)
-                    ;; (push '(company-capf :with company-tabnine :separate) company-backends)
                     )))
 ;; C20 syntax support.
 (add-hook 'c++-mode-hook #'modern-c++-font-lock-mode)
