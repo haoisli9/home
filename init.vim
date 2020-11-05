@@ -1,6 +1,5 @@
 set nocp
 
-" let $VIMFILES='~/.vim'
 let g:python3_host_prog='D:\msys64\mingw64\bin\python.exe'
 let g:loaded_python_provider = 0
 

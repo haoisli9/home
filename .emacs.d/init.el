@@ -12,9 +12,7 @@
 
 ;;{{{ basic configuration.
 ;; start server mode
-;; (require 'server)
-;; (if (not (server-running-p)) (server-start))
-(if (display-graphic-p) (server-start))
+(if (display-graphic-p)  (server-start))
 
 ;; 在注册表中建如下键值：
 ;; HKEY_CLASSES_ROOT\*\shell\Edit with Emacs\command
@@ -41,8 +39,8 @@
   ;;                       (garbage-collect))))
   ;;   (add-hook 'focus-out-hook 'garbage-collect))
   )
-(add-hook 'before-init-hook #'my|pre-init)
-(add-hook 'emacs-startup-hook #'my|post-init)
+;;(add-hook 'before-init-hook #'my|pre-init)
+;;(add-hook 'emacs-startup-hook #'my|post-init)
 
 (defvar my-init-time 'nil)
 (defun my-display-benchmark()
@@ -56,7 +54,6 @@
 ;; Emacs配置文件内容写到下面.
 ;;------------------------------------------------------------
 ;; enverioment configuration.
-;; (setenv "GTAGSCONF" "~/.globalrc")
 
 (setq byte-compile-warnings '(cl-functions))
 
