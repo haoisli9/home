@@ -44,11 +44,13 @@
 
 (defvar my-init-time 'nil)
 (defun my-display-benchmark()
-  (message "Loaded %s packages in %.03fs"
+  (message "Loaded %s packages in %.03fs, init time %s up time %s"
            (length package-activated-list)
            (or my-init-time
                (setq my-init-time (float-time (time-subtract (current-time) before-init-time)))
-               )))
+               )
+           (emacs-init-time)
+           (emacs-uptime)))
 (add-hook 'emacs-startup-hook #'my-display-benchmark)
 
 ;; Emacs配置文件内容写到下面.
@@ -76,7 +78,7 @@
 ;; font set
 ;; lihao: 发现现在的emacs对中文支持非常好，配置如下内容反而会导致问题，默认配置没问题;
 ;; (set-default-coding-systems 'utf-8)
-;; (set-terminal-coding-system 'utf-8)
+;; (set-terminal-coding-system 'cp936)
 ;; (set-keyboard-coding-system 'utf-8)
 ;; (setq-default pathname-coding-system 'utf-8)
 ;; (setq default-process-coding-system '(utf-8 . utf-8))
@@ -89,7 +91,7 @@
 ;; (set-face-attribute 'default nil :font "Fira Code 16")
 ;; (set-face-attribute 'default nil :font "Fira Mono 16")
 ;; Yahei Consolas 字体自带中文，所以可以不用设定中文
-(set-face-attribute 'default nil :font "Sarasa Mono SC 18")
+(set-face-attribute 'default nil :font "Sarasa Mono SC 16")
 ;; (set-face-attribute 'default nil :font "YaHei Consolas Hybrid 18")
 ;; (set-face-attribute 'default nil :font "Courier New 16")
 
@@ -170,9 +172,12 @@
 
 ;; something in windows. cmdproxy will show chinese error, but command like fd can handle.
 (set-default 'process-coding-system-alist
-             '(("[cC][mM][dD][pP][rR][oO][xX][yY]" utf-8 . gbk)
+             '(
+               ;; 不能设置cmdproxy，对导致很多乱码；
+               ;; ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos)
                ("[rR][gG]" utf-8 . gbk)
-               ("[fF][dD]" utf-8 . gbk)))
+               ("[fF][dD]" utf-8 . gbk)
+               ))
 
 ;;------------------------------------------
 ;; backup policies
@@ -313,6 +318,8 @@
 
 ;; 退出term的时候关闭term对应的buffer
 (add-hook 'shell-mode-hook 'kill-buffer-when-shell-command-exit)
+
+;; 为了让shell正确显示中文，可以在执行 M-x : shell 之前可以先执行 C-x RET c chinese-gbk-dos
 
 ;;}}}
 
@@ -1118,8 +1125,9 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;;     (setq cmd (string-join cmd " ")))
 ;;   (lv-message "Command: (@%s) %s"
 ;;               (propertize default-directory 'face font-lock-constant-face)
-;;               (propertize cmd 'face font-lock-doc-face)))
 ;; 有乱码，改编码没有用。。。
+;;               (propertize (encode-coding-string cmd locale-coding-system) 'face font-lock-doc-face)))
+              ;; (propertize cmd 'face font-lock-doc-face)))
 ;; (propertize (encode-coding-string cmd locale-coding-system) 'face font-lock-doc-face)))
 
 ;; (advice-add 'counsel--async-command :before
@@ -1555,7 +1563,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
         "http://www.geekpark.net/rss"
         "https://sspai.com/feed"
         ))
-(setq-default elfeed-search-filter "@1-months-ago +unread ")
+(setq-default elfeed-search-filter "@1-months-ago ")
+;; (setq-default elfeed-search-filter "@1-months-ago +unread ")
 ;; (add-hook 'elfeed-new-entry-hook
 ;;           (elfeed-make-tagger :before "2 weeks ago"
 ;;                               :remove 'unread))
@@ -1581,6 +1590,9 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;;------------------------------------------------------------
 
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+
+(autoload 'go-mode "go-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
 
 ;;------------------------------------------------------------
 ;; flymake disabled.
@@ -1614,6 +1626,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
                     (setq-local indent-tabs-mode t)
                     (setq-local tab-width 4)
                     )))
+
+(add-hook 'go-mode-hook 'lsp-deferred)
 
 ;;----------------------------------------------------------------
 ;;{{{ face reconfigure
@@ -2339,7 +2353,7 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy
  '(inhibit-startup-screen t)
  '(org-support-shift-select t)
  '(package-selected-packages
-   '(0blayout elfeed counsel-fd find-file-in-project fd-dired lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline treemacs-icons-dired treemacs-evil treemacs dracula-theme org-download centered-cursor-mode general evil-anzu youdao-dictionary monokai-pro-theme evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy all-the-icons-ivy-rich org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
+   '(go-mode 0blayout elfeed counsel-fd find-file-in-project fd-dired lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline treemacs-icons-dired treemacs-evil treemacs dracula-theme org-download centered-cursor-mode general evil-anzu youdao-dictionary monokai-pro-theme evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy all-the-icons-ivy-rich org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
  '(pdf-view-midnight-colors '("#655370" . "#fbf8ef"))
  '(recentf-mode t)
  '(save-place-mode t)

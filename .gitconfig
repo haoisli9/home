@@ -5,3 +5,8 @@
     email = haoisli9@hotmail.com
 [gui]
 	recentrepo = D:/Users/lihao/home
+[core]
+	preloadindex = true
+	fscache = true
+[gc]
+	auto = 256
