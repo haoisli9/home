@@ -20,25 +20,25 @@
 ;; "path\to\emacsclientw.exe" --no-wait --alternate-editor="path\to\runemacs.exe" "%1"
 
 ;; 将内存回收阈值增大，加快启动速度；启动完成后更新为初始值
-(defvar default-file-name-handler-alist file-name-handler-alist)
-(defun my|pre-init()
-  (setq gc-cons-threshold most-positive-fixnum
-        gc-cons-percentage 1.0
-        file-name-handler-alist nil
-        ))
-(defun my|post-init ()
-  (setq gc-cons-threshold 20000000
-        gc-cons-percentage 0.1
-        file-name-handler-alist default-file-name-handler-alist)
-  ;; GC automatically while unfocusing the frame
-  ;; `focus-out-hook' is obsolete since 27.1
-  ;; (if (boundp 'after-focus-change-function)
-  ;;     (add-function :after after-focus-change-function
-  ;;                   (lambda ()
-  ;;                     (unless (frame-focus-state)
-  ;;                       (garbage-collect))))
-  ;;   (add-hook 'focus-out-hook 'garbage-collect))
-  )
+;; (defvar default-file-name-handler-alist file-name-handler-alist)
+;; (defun my|pre-init()
+;;   (setq gc-cons-threshold most-positive-fixnum
+;;         gc-cons-percentage 1.0
+;;         file-name-handler-alist nil
+;;         ))
+;; (defun my|post-init ()
+;;   (setq gc-cons-threshold 20000000
+;;         gc-cons-percentage 0.1
+;;         file-name-handler-alist default-file-name-handler-alist)
+;;   ;; GC automatically while unfocusing the frame
+;;   ;; `focus-out-hook' is obsolete since 27.1
+;;   ;; (if (boundp 'after-focus-change-function)
+;;   ;;     (add-function :after after-focus-change-function
+;;   ;;                   (lambda ()
+;;   ;;                     (unless (frame-focus-state)
+;;   ;;                       (garbage-collect))))
+;;   ;;   (add-hook 'focus-out-hook 'garbage-collect))
+;;   )
 ;;(add-hook 'before-init-hook #'my|pre-init)
 ;;(add-hook 'emacs-startup-hook #'my|post-init)
 
@@ -57,7 +57,37 @@
 ;;------------------------------------------------------------
 ;; enverioment configuration.
 
+;;----------------------------------------------------------------
+(require 'package)
+;; (setq package-archives '(("melpa" . "http://elpa.emacs-china.org/melpa/")))
+;; (add-to-list 'package-archives '("melpa_stable" . "http://stable.melpa.org/packages/"))
+;; (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
+(setq package-archives '(("melpa" . "http://elpa.emacs-china.org/melpa/")))
+                         ;; ("gnu"   . "http://elpa.emacs-china.org/gnu/")))
+(package-initialize)
+(message "package initialize.")
+
+;; add load path
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+;; install all the sub-directories in the beginnging of load-path.
+(defun add-subdirs-to-load-path (&rest _)
+  "Add subdirectories to `load-path'."
+  (let ((default-directory
+          (expand-file-name "~/.emacs.d/lisp" user-emacs-directory)))
+    (normal-top-level-add-subdirs-to-load-path)))
+(add-subdirs-to-load-path)
+
+;;------------------------------------------------------------------
+;; ignore cl warnings.
 (setq byte-compile-warnings '(cl-functions))
+
+;; show emacs gc message
+(when (eq system-type 'windows-nt)
+  (setq gc-cons-threshold (* 512 1024 1024))
+  (setq gc-cons-percentage 0.1)
+  (run-with-idle-timer 60 t #'garbage-collect)
+  ;; 显示垃圾回收信息，这个可以作为调试用 ;;
+  (setq garbage-collection-messages t))
 
 ;;关闭出错时的提示声
 (setq visible-bell t)
@@ -75,6 +105,16 @@
 ;; 支持字体缓存
 (setq inhibit-compacting-font-caches t)
 
+;;-----------------------------------------------------------------
+;; theme set
+;; (require 'nano-theme-light)
+;; (setq dracula-alternate-mode-line-and-minibuffer t)
+;; (load-theme 'dracula t)
+;; (load-theme 'wombat t)
+;; (load-theme 'spacemacs-light t)
+;; (load-theme 'monokai-pro t)
+
+;;-----------------------------------------------------------------
 ;; font set
 ;; lihao: 发现现在的emacs对中文支持非常好，配置如下内容反而会导致问题，默认配置没问题;
 ;; (set-default-coding-systems 'utf-8)
@@ -88,25 +128,16 @@
 ;; (prefer-coding-system 'utf-8)
 
 ;; Setting English Font
-;; (set-face-attribute 'default nil :font "Fira Code 16")
-;; (set-face-attribute 'default nil :font "Fira Mono 16")
-;; Yahei Consolas 字体自带中文，所以可以不用设定中文
+;; (set-face-attribute 'default nil :font "FiraCode NF 14")
 (set-face-attribute 'default nil :font "Sarasa Mono SC 16")
-;; (set-face-attribute 'default nil :font "YaHei Consolas Hybrid 18")
-;; (set-face-attribute 'default nil :font "Courier New 16")
+;; (set-face-attribute 'default nil :font "Roboto Mono Light 14")
 
 ;; Chinese Font
-;; (dolist (charset '(kana han symbol cjk-misc bopomofo))
-;;   (set-fontset-font (frame-parameter nil 'font)
-;;                     charset
-;;                     (font-spec :family "微软雅黑" :size 26)))  ;; 微软雅黑，24
-
-;;-----------------------------------------------------------------
-(setq dracula-alternate-mode-line-and-minibuffer t)
-(load-theme 'dracula t)
-;; (load-theme 'wombat t)
-;; (load-theme 'spacemacs-dark t)
-;; (load-theme 'monokai-pro t)
+;; 当有字体已支持中文时，不用再次设置
+(dolist (charset '(kana han symbol cjk-misc bopomofo))
+  (set-fontset-font (frame-parameter nil 'font)
+                    charset
+                    (font-spec :family "微软雅黑" :size 28)))  ;; 微软雅黑，24
 
 ;;-----------------------------------------------------------------
 (setq show-paren-style 'parenthesis)
@@ -157,6 +188,9 @@
 (setq enable-recursive-minibuffers t)
 
 (auto-image-file-mode t)
+;; original is "auto"
+(setq image-scaling-factor 1.0)
+(blink-cursor-mode 0)
 
 (setq read-file-name-completion-ignore-case t)
 (setq read-buffer-completion-ignore-case t)
@@ -171,13 +205,14 @@
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets) ; Show path if names are same
 
 ;; something in windows. cmdproxy will show chinese error, but command like fd can handle.
-(set-default 'process-coding-system-alist
-             '(
+;; not required.
+;; (set-default 'process-coding-system-alist
+;;              '(
                ;; 不能设置cmdproxy，对导致很多乱码；
                ;; ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos)
-               ("[rR][gG]" utf-8 . gbk)
-               ("[fF][dD]" utf-8 . gbk)
-               ))
+               ;; ("[rR][gG]" utf-8 . gbk)
+               ;; ("[fF][dD]" utf-8 . gbk)
+               ;; ))
 
 ;;------------------------------------------
 ;; backup policies
@@ -496,24 +531,6 @@
 
 (message "ipython shell configuration loaded.")
 
-;;----------------------------------------------------------------
-(require 'package)
-;; (setq package-archives '(("melpa" . "http://elpa.emacs-china.org/melpa/")))
-;; (add-to-list 'package-archives '("melpa_stable" . "http://stable.melpa.org/packages/"))
-;; (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
-(setq package-archives '(("melpa" . "http://elpa.emacs-china.org/melpa/")))
-                         ;; ("gnu"   . "http://elpa.emacs-china.org/gnu/")))
-(package-initialize)
-(message "package initialize.")
-
-(add-to-list 'load-path "~/.emacs.d/lisp/")
-;; install all the sub-directories in the beginnging of load-path.
-(defun add-subdirs-to-load-path (&rest _)
-  "Add subdirectories to `load-path'."
-  (let ((default-directory
-          (expand-file-name "~/.emacs.d/lisp" user-emacs-directory)))
-    (normal-top-level-add-subdirs-to-load-path)))
-(add-subdirs-to-load-path)
 
 ;;------------------------------------------------------------
 (global-anzu-mode)
@@ -715,10 +732,6 @@
   (evil-select-search-module 'evil-search-module 'evil-search)
   (setq evil-ex-search-persistent-highlight nil)
   (global-evil-pinyin-mode))
-
-(setq evil-normal-state-cursor '("#E02C6D" box))
-(setq evil-insert-state-cursor '("gold" bar))
-(setq evil-emacs-state-cursor '("white" box))
 
 (with-eval-after-load 'evil
   (require 'evil-anzu))
@@ -1293,9 +1306,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (setq compilation-scroll-output t)
 
 ;;------------------------------------------------------------
-(window-numbering-mode)
-
-;;------------------------------------------------------------
 ;; helpful
 ;; Note that the built-in `describe-function' includes both functions
 ;; and macros. `helpful-function' is functions only, so we provide
@@ -1562,14 +1572,26 @@ If the character before and after CH is space or tab, CH is NOT slash"
         "http://rss.zol.com.cn/news.xml"
         "http://www.geekpark.net/rss"
         "https://sspai.com/feed"
+        "https://www.huxiu.com/rss/0.xml"
+        "https://www.zhihu.com/rss"
         ))
-(setq-default elfeed-search-filter "@1-months-ago ")
+(setq-default elfeed-search-filter "@1-months-ago +unread")
 ;; (setq-default elfeed-search-filter "@1-months-ago +unread ")
 ;; (add-hook 'elfeed-new-entry-hook
 ;;           (elfeed-make-tagger :before "2 weeks ago"
 ;;                               :remove 'unread))
 (defun elfeed-search-format-date (date)
   (format-time-string "%Y-%m-%d %H:%M" (seconds-to-time date)))
+
+;; 设置elfeed使用独立的字体
+;; (with-eval-after-load 'elfeed
+;;   (defun elfeed-buffer-face-mode-variable ()
+;;     (interactive)
+;;     (make-face 'width-font-face)
+;;     (set-face-attribute 'width-font-face nil :font "FiraCode NF 16")   ;; FiraCode NF 16
+;;     (setq buffer-face-mode-face 'width-font-face)
+;;     (buffer-face-mode))
+;;     (add-hook 'elfeed-show-mode-hook 'elfeed-buffer-face-mode-variable))
 
 ;;------------------------------------------------------------
 ;; color-rg
@@ -1630,25 +1652,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (add-hook 'go-mode-hook 'lsp-deferred)
 
 ;;----------------------------------------------------------------
-;;{{{ face reconfigure
-;; (set-face-attribute 'font-lock-comment-face nil
-;;                     :foreground "grey50")   ;; #292e34
-(set-face-attribute 'show-paren-match nil
-                    :foreground "green"
-                    :bold t
-                    :underline t)
-(set-face-attribute 'show-paren-mismatch nil
-                    :foreground "red"
-                    :bold t
-                    :underline t)
-(set-face-attribute 'evil-ex-lazy-highlight nil
-                    :background "grey50")
-;; virtual files color for ivy-switch-buffer.
-;; (set-face-attribute 'ivy-virtual nil
-;;                     :foreground "grey50")
-
-;;}}}
-;;----------------------------------------------------------------
 ;;设置标题栏为buffer的内容
 (setq frame-title-format
       '(
@@ -1663,147 +1666,38 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;;------------------------------------------------------------
 ;; mode-line configuration.
 ;;------------------------------------------------------------
-;;{{{ mode-line-format.
-(setq-default
- mode-line-format
- (list
-   " ["
-   '(:eval (when (window-numbering-get-number)
-             (propertize (int-to-string (window-numbering-get-number)) 'face 'font-lock-keyword-face
-		       'help-echo "window number")))
-   "]"
-   ;; evil state
-   '(:eval
-     (propertize (evil-generate-mode-line-tag evil-state) 'face
-		 (cond ((evil-normal-state-p) 'font-lock-function-name-face)
-		       ((evil-insert-state-p) 'font-lock-keyword-face)
-		       ((evil-visual-state-p) '(:foreground "orange" :weight bold))
-                       ((evil-motion-state-p) '(:foreground "yellow" :weight bold))
-		       ((evil-emacs-state-p) '(:foreground "green" :weight bold))
-		       (t 'font-lock-constant-face))))
-   mode-line-front-space
-   mode-line-mule-info mode-line-client mode-line-modified mode-line-remote
-   mode-line-frame-identification mode-line-buffer-identification
-   ;; '(:eval (when (projectile-project-p)
-   ;;          (propertize (format " P[%s] " (projectile-project-name))
-   ;;                      'face 'font-lock-variable-name-face)))
-   " "
-   mode-line-position
-   "("
-   '(:eval (concat (format "%s" (int-to-string (count-lines (point-min) (point-max))))))
-   ") "
-   ;; the current major mode for the buffer.
-   "["
-   '(:eval (propertize (format "%s" major-mode)  ;; "%m"
-		       'face nil
-		       'help-echo (format "Coding: %s" buffer-file-coding-system)))
-   ;; list of minor modes
-   ;; minor-mode-alist
-   "] "
-   ;; mode-line-modes
-   ;; mode-line-misc-info
-   '(:eval (when vc-mode (concat "[" (propertize (format "%s" vc-mode) 'face 'font-lock-variable-name-face) "] " ))) ; vc-mode vc-mode
-   ;; global-mode-string, org-timer-set-timer in org-mode need this
-   '(:eval (propertize "%M " 'face nil))
-   "[" ;; insert vs overwrite mode, input-method in a tooltip
-   '(:eval (propertize (if overwrite-mode "Ovr" "Ins")
-		       'face 'font-lock-preprocessor-face
-		       'help-echo (concat "Buffer is in "
-					  (if overwrite-mode "overwrite" "insert") " mode")))
-   ;; was this buffer modified since the last save?
-   '(:eval (when (buffer-modified-p)
-	     (concat "/"  (propertize "MD"
-				      'face '((:foreground "red" :weight bold))
-				      'help-echo "Buffer has been modified"))))
-   ;; is this buffer read-only?
-   '(:eval (when buffer-read-only
-	     (concat "/"  (propertize "RO"
-				      'face 'font-lock-type-face
-				      'help-echo "Buffer is read-only"))))
-   "] "
-   "["
-   '(:eval (propertize
-	   (concat (pcase (coding-system-eol-type buffer-file-coding-system)
-		     (0 "LF ")
-		     (1 "CRLF ")
-		     (2 "CR "))
-		   (let ((sys (coding-system-plist buffer-file-coding-system)))
-		     (if (memq (plist-get sys :category) '(coding-category-undecided coding-category-utf-8))
-			 "UTF-8"
-		       (upcase (symbol-name (plist-get sys :name)))))
-		   )))
-   "] "
-   ;;"%-" ;; fill with '-'
-   mode-line-end-spaces))
+(require 'modeline-init)
 
-;; change mode-line color by evil state
-;; (lexical-let ((default-color (cons (face-background 'mode-line)
-;;                                    (face-foreground 'mode-line))))
-;;   (add-hook 'post-command-hook
-;;             (lambda ()
-;;               (let* ((color (cond ((minibufferp) default-color)
-;;                                    ;; ((evil-insert-state-p) '("yellow" . "#ffffff"))
-;;                                   ((evil-emacs-state-p)  '("#444488" . "#ffffff"))
-;;                                   ;; ((buffer-modified-p)   '("#006fa0" . "#ffffff"))
-;;                                   (t default-color))))
-;;                 (set-face-background 'mode-line (car color))
-;;                 (set-face-foreground 'mode-line (cdr color))))))
+;;----------------------------------------------------------------
+;;{{{ self face reconfigure
+;; (set-face-attribute 'font-lock-comment-face nil
+;;                     :foreground "grey50")   ;; #292e34
+(set-face-attribute 'show-paren-match nil
+                    :foreground "green"
+                    :bold t
+                    :underline t)
+(set-face-attribute 'show-paren-mismatch nil
+                    :foreground "red"
+                    :bold t
+                    :underline t)
+;; (set-face-attribute 'evil-ex-lazy-highlight nil
+;;                     :background "grey50")
+;; virtual files color for ivy-switch-buffer.
+;; (set-face-attribute 'ivy-virtual nil
+;;                     :foreground "grey50")
 
-(set-face-attribute 'mode-line-inactive nil
-                    :background "#34475a"    ;; #44475a
-                    :box '(:color "#5d4d7a" :line-width 1))   ;; #5d4d7a
+;; (setq evil-normal-state-cursor '("#E02C6D" box))
+(setq evil-insert-state-cursor '("red" bar))
+;; (setq evil-insert-state-cursor '("gold" bar))
+;; (setq evil-emacs-state-cursor '("white" box))
+
+;; Fall back font for glyph missing in Roboto
+(set-display-table-slot standard-display-table 'truncation
+                        (make-glyph-code ?… 'font-lock-comment-face))
+(set-display-table-slot standard-display-table 'wrap
+                         (make-glyph-code ?↩ 'font-lock-comment-face))
 
 ;;}}}
-(require 'airline-themes)
-;; (load-theme 'airline-powerlineish t)
-(load-theme 'airline-fork-railscasts t)
-
-;; Hide Evil and buffer state on inactive buffers.
-;; Valid Values: t (hidden), nil (shown)
-(setq airline-hide-state-on-inactive-buffers t)
-
-;; "Hide eyebrowse indicator on inactive buffers.
-;; Valid Values: t (hidden), nil (shown)"
-(setq airline-hide-eyebrowse-on-inactive-buffers t)
-
-;; Hide vc branch on inactive buffers:
-;; Valid Values: t (hidden), nil (shown)
-(setq airline-hide-vc-branch-on-inactive-buffers nil)
-
-;; Set eshell prompt colors to match the airline theme.
-;; Valid Values: t (enabled), nil (disabled)
-(setq airline-eshell-colors t)
-
-;; Set helm colors to match the airline theme.
-;; Valid Values: t (enabled), nil (disabled)
-(setq airline-helm-colors t)
-
-;; Set the cursor color based on the current evil state.
-;; Valid Values: t (enabled), nil (disabled)
-(setq airline-cursor-colors t)
-
-;; Display the currend directory along with the filename.
-;; Valid Values: 'airline-directory-full
-;;               'airline-directory-shortened
-;;               nil (disabled)
-(setq airline-display-directory nil)
-
-;; Max directory length to display when using 'airline-directory-shortened
-(setq airline-shortened-directory-length 30)
-
-;; Unicode character choices
-(setq airline-utf-glyph-separator-left #xe0b0
-      airline-utf-glyph-separator-right #xe0b2
-      airline-utf-glyph-subseparator-left #xe0b1
-      airline-utf-glyph-subseparator-right #xe0b3
-      airline-utf-glyph-branch #xe0a0
-      airline-utf-glyph-readonly #xe0a2
-      airline-utf-glyph-linenumber #x2630)
-
-;; You may also wish to force powerline to use utf8 character separators
-(setq powerline-default-separator 'utf-8)
-(setq powerline-utf-8-separator-left  #xe0b0
-      powerline-utf-8-separator-right #xe0b2)
 
 ;;------------------------------------------------------------
 ;;{{{ self-defin function
@@ -2102,7 +1996,7 @@ Use `my-tmp-back` to jump back to the stored position."
 
 (use-package whitespace
   :ensure nil
-  :hook ((prog-mode markdown-mode conf-mode) . whitespace-mode)
+  ;; :hook ((prog-mode markdown-mode conf-mode) . whitespace-mode)
   :config
   (setq whitespace-style '(face trailing)))
 
@@ -2354,7 +2248,6 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy
  '(org-support-shift-select t)
  '(package-selected-packages
    '(go-mode 0blayout elfeed counsel-fd find-file-in-project fd-dired lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline treemacs-icons-dired treemacs-evil treemacs dracula-theme org-download centered-cursor-mode general evil-anzu youdao-dictionary monokai-pro-theme evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy all-the-icons-ivy-rich org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
- '(pdf-view-midnight-colors '("#655370" . "#fbf8ef"))
  '(recentf-mode t)
  '(save-place-mode t)
  '(show-paren-mode t)

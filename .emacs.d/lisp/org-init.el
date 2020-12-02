@@ -180,7 +180,8 @@
         "◉"
         "●"
         "○"
-        "•"
+        "◉"
+        ;; "•"
         ))
 (setq org-superstar-item-bullet-alist
       '(
@@ -289,40 +290,42 @@
   ;; (setq org-download-screenshot-method "convert.exe clipboard: %s")
   )
 
-
+;; self defined color
 (eval-after-load 'org
   '(progn
      (set-face-attribute 'org-level-1 nil
-                         :foreground "#ff79c6"
-                         :height 1.1)
+                         :bold t
+                         :foreground "#37474F"
+                         :height 1.0)
      (set-face-attribute 'org-level-2 nil
-                         :foreground "#8be9fd"
-                         :height 1.0)
-     (set-face-attribute 'org-level-3 nil
-                         :foreground "#bd93f9"
-                         :height 1.0)
-     (set-face-attribute 'org-level-4 nil
-                         :foreground "#f1fa8c"
-                         :height 1.0)
-     (set-face-attribute 'org-level-5 nil
-                         :foreground "#50fa7b"
-                         :height 1.0)
-     (set-face-attribute 'org-level-6 nil
-                         :foreground "#ffb86c"
-                         :height 1.0)
-     (set-face-attribute 'org-level-7 nil
                          :foreground "#0189cc"
                          :height 1.0)
-     (set-face-attribute 'org-level-8 nil
-                         :foreground "#f8f8f2"
+     (set-face-attribute 'org-level-3 nil
+                         :foreground "#673AB7"  ;; "#bd93f9"
                          :height 1.0)
+     (set-face-attribute 'org-level-4 nil
+                         :foreground "#bd93f9"  ;; "f1fa8c"
+                         :height 1.0)
+;;      (set-face-attribute 'org-level-5 nil
+;;                          :foreground "#50fa7b"
+;;                          :height 1.0)
+;;      (set-face-attribute 'org-level-6 nil
+;;                          :foreground "#ffb86c"
+;;                          :height 1.0)
+;;      (set-face-attribute 'org-level-7 nil
+;;                          :foreground "#0189cc"
+;;                          :height 1.0)
+;;      (set-face-attribute 'org-level-8 nil
+;;                          :foreground "#f8f8f2"
+;;                          :height 1.0)
+     (set-face-attribute 'org-ellipsis nil
+                         :foreground "#B0BEC5")
      (set-face-attribute 'org-agenda-current-time nil
-                         :foreground "green")
+                         :foreground "DarkGreen")
      (set-face-attribute 'org-agenda-date-today nil
-                         :foreground "green")
+                         :foreground "DarkGreen")
      (set-face-attribute 'org-agenda-date-weekend nil
                          :foreground "light blue")
-
      ))
 
 ;; 设置org使用独立的字体
@@ -330,10 +333,10 @@
   (defun org-buffer-face-mode-variable ()
     (interactive)
     (make-face 'width-font-face)
-    (set-face-attribute 'width-font-face nil :font "FiraCode NF 16")   ;; FiraCode NF 16
+    (set-face-attribute 'width-font-face nil :font "Roboto Mono 14")   ;; FiraCode NF 16
     (setq buffer-face-mode-face 'width-font-face)
     (buffer-face-mode))
-    (add-hook 'org-mode-hook 'org-buffer-face-mode-variable))
+  (add-hook 'org-mode-hook 'org-buffer-face-mode-variable))
 
 ;; (add-hook 'org-agenda-mode-hook
 ;;           (lambda ()

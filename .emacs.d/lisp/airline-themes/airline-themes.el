@@ -235,6 +235,37 @@ Valid Values: airline-directory-full, airline-directory-shortened, nil (disabled
 
            (propertize " $ " 'face `())))))
 
+;; lihao copy from nano theme. 
+;; ---------------------------------------------------------------------
+(defun nano-modeline-status ()
+  "Return buffer status: read-only (RO), modified (**) or read-write (RW)"
+  
+  (let ((read-only   buffer-read-only)
+        (modified    (and buffer-file-name (buffer-modified-p))))
+    (cond (modified  "MO") (read-only "RO") (t "RW"))))
+
+(defun nano-modeline-compose (status)
+  "Compose a string with provided information"
+  (let* ((status-face-rw `(:foreground "#2E3440" :background "#616e87"))
+         (status-face-ro `(:foreground "#2E3440" :background "#D08770"))
+         (status-face-** `(:foreground "#2E3440" :background "#EBcb8b"))
+         (space-up       +0.15)
+         (space-down     -0.20)
+         (left (concat
+                (cond ((string= status "RO")
+                       (propertize " RO " 'face status-face-ro))
+                      ((string= status "MO")
+                       (propertize " MO " 'face status-face-**))
+                      ((string= status "RW")
+                       (propertize " RW " 'face status-face-rw))
+                      (t (propertize status 'face status-face-ro))
+                      )
+                (propertize " " 'display `(raise ,space-up))))
+;;         (available-width (- (window-total-width nil 'floor) (length left) 1)))
+;;  (available-width (- (window-body-width) (length left) pad))
+         )
+    (format "%s" left)))
+
 (defun airline-themes-mode-line-format ()
   '(let* ((current-window-width (window-width))
           (active (powerline-selected-window-active))
@@ -324,8 +355,7 @@ Valid Values: airline-directory-full, airline-directory-shortened, nil (disabled
           (lhs-rest (list
                      ;; ;; Separator >
                      ;; (powerline-raw (char-to-string #x2b81) inner-face 'l)
-                     (when (window-numbering-get-number)
-                       (powerline-raw (format "<%s>" (int-to-string (window-numbering-get-number))) inner-face 'l)) 
+                     (powerline-raw (nano-modeline-compose (nano-modeline-status)) inner-face 'l)
                      ;; Eyebrowse current tab/window config
                      (if (and (or (not airline-hide-eyebrowse-on-inactive-buffers)
                                   (and airline-hide-eyebrowse-on-inactive-buffers active))
@@ -341,6 +371,10 @@ Valid Values: airline-directory-full, airline-directory-shortened, nil (disabled
                      ;; Separator >
                      (powerline-raw " " inner-face)
                      (funcall separator-left inner-face center-face)
+
+                     ;; windows number
+                     (when (window-numbering-get-number)
+                       (powerline-raw (format "[%s]" (int-to-string (window-numbering-get-number))) center-face 'l)) 
 
                      ;; Directory
                      (cond

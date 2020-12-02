@@ -146,8 +146,8 @@
 
 ;; 设定屏幕的分割比例
 ;; 两屏设置
-;; (gnus-add-configuration '(article (vertical 1.0
-;;                                             (summary .25 point) (article 1.0))))
+(gnus-add-configuration '(article (vertical 1.0
+                                            (summary .25 point) (article 1.0))))
 ;; 三屏设置
 ;; (gnus-add-configuration
 ;;  '(article
@@ -174,7 +174,7 @@
 (auto-image-file-mode)
 (add-to-list 'mm-attachment-override-types "image/*")
 ;; gnus 默认不显示html邮件中的图片，只好手工hook一下；
-;; (add-hook 'gnus-article-prepare-hook 'gnus-article-show-images)
+(add-hook 'gnus-article-prepare-hook 'gnus-article-show-images)
 
 ;;杂 项
 (setq gnus-confirm-mail-reply-to-news t
@@ -195,19 +195,18 @@
 ;; 	 ))
 ;; )
 
-(with-eval-after-load 'gnus
-  (defun gnus-buffer-face-mode-variable ()
-    (interactive)
-    (hl-line-mode)
-    (face-remap-add-relative 'hl-line '(:background "#6272a4" :foreground "white"))
-    (face-remap-add-relative 'default '(:foreground "black" :background "white"))
-    (face-remap-add-relative 'variable-pitch '(:background "white"))
-    (face-remap-add-relative 'bold '(:foreground "DarkSeaGreen4"))
-    (face-remap-add-relative 'gnus-header-from '(:foreground "Green"))
-    (face-remap-add-relative 'gnus-summary-selected '(:background "#6272a4" :foreground "yellow"))
-    (make-face 'width-font-face)
-    (set-face-attribute 'width-font-face nil :font "YaHei Consolas Hybrid 15")   ;; FiraCode NF 16
-    ;; (set-face-attribute 'width-font-face nil :font "Sarasa Mono SC 16")   ;; FiraCode NF 16
-    (setq buffer-face-mode-face 'width-font-face)
-    (buffer-face-mode))
-    (add-hook 'gnus-mode-hook 'gnus-buffer-face-mode-variable))
+;; (with-eval-after-load 'gnus
+;;   (defun gnus-buffer-face-mode-variable ()
+;;     (interactive)
+;;     ;; (hl-line-mode)
+;;     ;; (face-remap-add-relative 'hl-line '(:background "#6272a4" :foreground "white"))
+;;     ;; (face-remap-add-relative 'default '(:background "black"))
+;;     ;; (face-remap-add-relative 'variable-pitch '(:background unspecified))
+;;     (face-remap-add-relative 'bold '(:foreground "DarkSeaGreen4"))
+;;     (face-remap-add-relative 'gnus-header-from '(:foreground "Green"))
+;;     (face-remap-add-relative 'gnus-summary-selected '(:background "#6272a4" :foreground "yellow"))
+;;     (make-face 'width-font-face)
+;;     (set-face-attribute 'width-font-face nil :font "Sarasa Mono SC 16")   ;; FiraCode NF 16
+;;     (setq buffer-face-mode-face 'width-font-face)
+;;     (buffer-face-mode))
+;;     (add-hook 'gnus-mode-hook 'gnus-buffer-face-mode-variable))
