@@ -97,7 +97,7 @@
         'font-lock-face 'calendar-iso-week-face))
 (copy-face 'font-lock-keyword-face 'calendar-iso-week-header-face)
 (set-face-attribute 'calendar-iso-week-header-face nil
-		    :foreground "yellow" :height 1.0)
+		    :foreground "DarkGoldenrod" :height 1.0)
 (setq calendar-intermonth-header
       (propertize "Wk"
                   'font-lock-face 'calendar-iso-week-header-face))

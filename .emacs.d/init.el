@@ -92,27 +92,36 @@
 ;;关闭出错时的提示声
 (setq visible-bell t)
 
-;; (if (display-graphic-p)
-;;     (progn
-;;       ;;设置窗口位置为屏库左上角(0,0)
-;;       (set-frame-position (selected-frame) 20 10)
-;;       ;;设置宽和高
-;;       (set-frame-width (selected-frame) 60)
-;;       (set-frame-height (selected-frame) 15)
-;;       ;; 最大化窗口
-;;       ;; (setq initial-frame-alist (quote ((fullscreen . maximized))))
-;;       ))
+(if (display-graphic-p)
+    (progn
+      ;;设置窗口位置为屏库左上角(0,0)
+      (set-frame-position (selected-frame) 10 10)
+      ;;设置宽和高
+      (set-frame-width (selected-frame) 110)
+      (set-frame-height (selected-frame) 24)
+      ;; 最大化窗口
+      ;; (setq initial-frame-alist (quote ((fullscreen . maximized))))
+      ))
 ;; 支持字体缓存
 (setq inhibit-compacting-font-caches t)
 
 ;;-----------------------------------------------------------------
 ;; theme set
-;; (require 'nano-theme-light)
-;; (setq dracula-alternate-mode-line-and-minibuffer t)
-;; (load-theme 'dracula t)
-;; (load-theme 'wombat t)
 ;; (load-theme 'spacemacs-light t)
-;; (load-theme 'monokai-pro t)
+
+;; Global settings (defaults)
+(setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+      doom-themes-enable-italic t) ; if nil, italics is universally disabled
+
+;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each
+;; theme may have their own settings.
+(load-theme 'doom-one t)
+
+;; Enable flashing mode-line on errors
+(doom-themes-visual-bell-config)
+
+;; Enable custom neotree theme
+(doom-themes-neotree-config)  ; all-the-icons fonts must be installed!
 
 ;;-----------------------------------------------------------------
 ;; font set
@@ -216,11 +225,11 @@
 
 ;;------------------------------------------
 ;; backup policies
+;; (setq auto-save-default nil)
+;; (setq create-lockfiles nil)
+
 (setq make-backup-files t)
 (setq version-control t)
-(setq kept-old-versions 3)
-(setq kept-new-versions 10)
-(setq dired-kept-versions 2)
 (setq delete-old-versions t)
 (setq backup-directory-alist '((".*" . "~/auto-save-list/")))
 (setq auto-save-list-file-prefix "~/auto-save-list/.saves-")
@@ -475,6 +484,8 @@
                         "\\.elc$"
 			;; "/home/[a-z]\+/\\.[a-df-z]" ; configuration file should not be excluded
 			))
+;; recentf展示时，可以把HOME目录替换成~
+;; (add-to-list 'recentf-filename-handlers 'abbreviate-file-name)
 ;;}}}
 
 ;;{{{ ediff mode config.
@@ -898,7 +909,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;;------------------------------------------------------------
 ;;{{{ helm mode configuration.
-;; (require 'helm-config)
 (use-package helm-config
   :config
   ;; (global-set-key (kbd "C-x C-f") 'helm-find-files)
@@ -930,7 +940,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
        (setq markdown-command "pandoc -f markdown"))))
 
 ;;------------------------------------------------------------
-(require 'fold-dwim)
+(use-package fold-dwim
+  :defer t)
 
 ;;------------------------------------------------------------
 ;;{{{ multi-cursors.
@@ -989,17 +1000,17 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (define-key company-active-map (kbd "C-p") 'company-select-previous)
 (define-key company-active-map (kbd "M-n") 'company-other-backend)
 
-(setq company-clang-arguments '(
-                                "--target=i686-w64-mingw32"
-                                ;; "-IC:/mingw-w64/i686-8.1.0/mingw32/i686-w64-mingw32/include/"
-				))
+;; (setq company-clang-arguments '(
+;;                                 "--target=i686-w64-mingw64"
+;;                                 ;; "-IC:/mingw-w64/i686-8.1.0/mingw32/i686-w64-mingw32/include/"
+;; 				))
 
 ;; company-tabnine
-(require 'company-tabnine)
+(use-package company-tabnine
+  :ensure t)
 ;; `:separate`  使得不同 backend 分开排序
-;; (add-to-list 'company-backends #'company-tabnine)
-(push '(company-capf :with company-tabnine :separate) company-backends)
-
+(add-to-list 'company-backends #'company-tabnine)
+;; (push '(company-capf :with company-tabnine :separate) company-backends)
 (defun company//sort-by-tabnine (candidates)
   (if (or (functionp company-backend)
           (not (and (listp company-backend) (memq 'company-tabnine company-backend))))
@@ -1031,6 +1042,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
       (unless (string-match "The free version of TabNine only indexes up to" (funcall company-message-func))
 	ad-do-it))))
 
+;; company-ctags
 (eval-after-load 'company
   '(progn
      (company-ctags-auto-setup)
@@ -1326,6 +1338,12 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;;------------------------------------------------------------
 ;;{{{ nov.
 (require 'nov)
+(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+;; (setq nov-text-width 80)
+;; set it to t to inhibit text filling
+(setq nov-text-width t)
+(setq visual-fill-column-center-text t)
+(add-hook 'nov-mode-hook 'visual-line-mode)
 
 (with-eval-after-load 'nov
   (defun novel-buffer-face-mode-variable ()
@@ -1335,13 +1353,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
     (setq buffer-face-mode-face 'width-font-face)
     (buffer-face-mode))
     (add-hook 'nov-mode-hook 'novel-buffer-face-mode-variable))
-
-(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-;; (setq nov-text-width 80)
-;; set it to t to inhibit text filling
-(setq nov-text-width t)
-(setq visual-fill-column-center-text t)
-(add-hook 'nov-mode-hook 'visual-line-mode)
 
 (with-eval-after-load "nov"
   (when (string-equal system-type "windows-nt")
@@ -1476,9 +1487,9 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;;------------------------------------------------------------
 ;; neotree
-;; (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
-;; (setq neo-window-width 25)
-;; (setq neo-autorefresh t)
+(setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+(setq neo-window-width 50)
+(setq neo-autorefresh t)
 
 ;;------------------------------------------------------------
 ;; youdao-dictionary
@@ -1520,8 +1531,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;;------------------------------------------------------------
 ;; sdcv
-(require 'sdcv-mode)
-
+(use-package sdcv-mode
+  :defer t)
 (with-eval-after-load 'sdcv-mode
   (defun sdcv-buffer-face-mode-variable ()
     (interactive)
@@ -1537,16 +1548,18 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;;------------------------------------------------------------
 (require 'keep-buffers)
 
-;; (require 'swbuff)
-;; (setq swbuff-exclude-buffer-regexps '("^ .*" "^\\*.*\\*" "TAGS$"))
-;; (setq swbuff-separator "|")
-;; (setq swbuff-clear-delay 1)
-;; ;; (global-set-key (kbd "<C-tab>") 'swbuff-switch-to-next-buffer)
-;; ;; (global-set-key (kbd "<C-S-tab>") 'swbuff-switch-to-previous-buffer)
+(require 'swbuff-x)
+(setq swbuff-exclude-buffer-regexps '("^ .*" "^\\*.*\\*" "TAGS$"))
+(setq swbuff-exclude-mode-regexp "dired-mode")
+(setq swbuff-separator "|")
+(setq swbuff-clear-delay 1)
+(global-set-key (kbd "<C-tab>") 'swbuff-switch-to-next-buffer)
+(global-set-key (kbd "<C-S-kp-tab>") 'swbuff-switch-to-previous-buffer)
 ;; (global-set-key (kbd "<C-right>") 'swbuff-switch-to-next-buffer)
 ;; (global-set-key (kbd "<C-left>") 'swbuff-switch-to-previous-buffer)
 
-(require 'hexview-mode)
+(use-package hexview-mode
+  :defer t)
 
 (require 'scroll-all+)
 (add-hook 'ediff-startup-hook 'scroll-all-mode)
@@ -1557,11 +1570,14 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;;------------------------------------------------------------
 ;; company-english-helper
 ;; https://github.com/manateelazycat/company-english-helper
-(require 'company-english-helper)
+(use-package company-english-helper
+  :defer t)
 ;; insert-translated-name-insert
 ;; https://github.com/manateelazycat/insert-translated-name
-(require 'insert-translated-name)
-(setq insert-translated-name-translate-engine "google")
+(use-package insert-translated-name
+  :defer t
+  :config
+  (setq insert-translated-name-translate-engine "google"))
 
 ;;------------------------------------------------------------
 ;; elfeed configuration
@@ -1650,6 +1666,17 @@ If the character before and after CH is space or tab, CH is NOT slash"
                     )))
 
 (add-hook 'go-mode-hook 'lsp-deferred)
+
+;; use company-capf to auto-complete
+(dolist (hook (list
+               'c-mode-hook
+               'c++-mode-hook
+               'python-mode-hook
+               'go-mode-hook
+               ))
+  (add-hook hook '(lambda ()
+                    (push '(company-capf :with company-tabnine :separate) company-backends)
+                    )))
 
 ;;----------------------------------------------------------------
 ;;设置标题栏为buffer的内容
@@ -2017,24 +2044,15 @@ Use `my-tmp-back` to jump back to the stored position."
 ;;{{{ hydra configuration.
 (defhydra hydra-jump (:color blue :hint nil)
   "
-_a_ce    wo_m_an     _h_elpful   _t_ranslation   i_m_enu
-s_d_cv   _s_wiper    _f_grep    _e_nglish   r_g_ _n_treemacs
-_l_fd    _y_oudao    _c_apture
+wo_m_an  _t_ranslation  _y_oudao  _e_nglish
+_c_apture  _o_rg-open
   "
-  ("a" ace-pinyin-dwim)
-  ("d" sdcv-search)
   ("y" youdao-dictionary-search-at-point)
-  ("s" swiper-thing-at-point)
-  ("f" counsel-grep-or-swiper)
   ("e" toggle-company-english-helper)
   ("t" insert-translated-name-insert-original-translation)
-  ("g" color-rg-search-input)
-  ("l" fd-dired)
-  ("n" treemacs)
-  ("m" counsel-imenu)
+  ("o" open-org-note-file)
   ("c" org-capture)
-  ("w" woman-helpful)
-  ("h" helpful-at-point)
+  ("m" woman-helpful)
   )
 
 (defhydra hydra-fold (:color blue :hint nil)
@@ -2050,7 +2068,6 @@ hide-_l_ines-matching   hide-lines-_n_ot-matching   hide-lines-show-_a_ll
   ("s" fold-dwim-show-all))
 
 (require 'linum-relative)
-;; (require 'evil-pinyin)
 (defhydra hydra-toggle (:color pink)
   "
 _a_ abbrev-mode:       %`abbrev-mode
@@ -2098,14 +2115,27 @@ _w_ord    _s_ymbol     _f_ile   _l_ine   _u_rl    e_m_ail
   ("m"  avy-thing-copy-email)
   )
 
-;; Recommended binding:
-(defhydra hydra-all (global-map "C-c" :color blue :hint nil)
+(defhydra hydra-copy (:color blue :hint nil)
   "
-_j_ump    _t_oggle    f_o_ld     a_v_y-copy
+_w_ord    _s_ymbol   _f_ile   _l_ine   _u_rl    e_m_ail
+  "
+  ("w"  thing-copy-word)
+  ("s"  thing-copy-symbol)
+  ("f"  thing-copy-filename)
+  ("l"  thing-copy-line)
+  ("u"  thing-copy-url)
+  ("m"  thing-copy-email)
+  )
+
+;; Recommended binding:
+(defhydra hydra-all (global-map "C-c h" :color blue :hint nil)
+  "
+_j_ump    _t_oggle    f_o_ld     a_v_y-copy  cop_y_
   "
   ("j" hydra-jump/body)
   ("t" hydra-toggle/body)
   ("o" hydra-fold/body)
+  ("y" hydra-copy/body)
   ("v" hydra-avy-copy/body)
 )
 
@@ -2126,28 +2156,27 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy
     ",,"  'my-tmp-mark
     ".."  'my-tmp-back
     ",."  'my-tmp-back-original
+    "aa"  'ace-pinyin-dwim
     "al"  'ace-jump-line-mode
     "aw"  'ace-jump-word-mode
-    "bb"  '((lambda () (interactive) (switch-to-buffer nil)) :which-key "prev-buffer")
+    ;; "bb"  '((lambda () (interactive) (switch-to-buffer nil)) :which-key "prev-buffer")
     "cc"  'evilnc-comment-or-uncomment-lines
     "cp"  'evilnc-comment-or-uncomment-paragraph
     "ct"  'evilnc-comment-or-uncomment-html-tag
     "dj"  'dired-jump
-    "bf"  'beginning-of-defun
-    "ef"  'end-of-defun
+    "nt"  'neotree-toggle
     "ss"  'swiper-thing-at-point
     "rg"  'color-rg-search-input
     "ff"  'counsel-find-file
+    "fg"  'counsel-grep-or-swiper
     "fl"  'counsel-locate
+    "fm"  'counsel-imenu
     "hh"  'helpful-at-point
     "ul"  'browse-url
-    "yw"  'thing-copy-word
-    "ys"  'thing-copy-symbol
-    "yf"  'thing-copy-filename
-    "yu"  'thing-copy-url
-    "ym"  'thing-copy-email
     "yt"  'select-total-part
     ;; hydra binding
+    "jj"  'hydra-jump/body
+    "yy"  'hydra-copy/body  
     "<SPC>" 'hydra-all/body
    )
 
@@ -2159,26 +2188,27 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy
     ",,"  'my-tmp-mark
     ".."  'my-tmp-back
     ",."  'my-tmp-back-original
+    "aa"  'ace-pinyin-dwim
     "al"  'ace-jump-line-mode
     "aw"  'ace-jump-word-mode
+    ;; "bb"  '((lambda () (interactive) (switch-to-buffer nil)) :which-key "prev-buffer")
     "cc"  'evilnc-comment-or-uncomment-lines
     "cp"  'evilnc-comment-or-uncomment-paragraph
     "ct"  'evilnc-comment-or-uncomment-html-tag
     "dj"  'dired-jump
-    "bf"  'beginning-of-defun
-    "ef"  'end-of-defun
+    "nt"  'neotree-toggle
     "ss"  'swiper-thing-at-point
     "rg"  'color-rg-search-input
     "ff"  'counsel-find-file
+    "fg"  'counsel-grep-or-swiper
     "fl"  'counsel-locate
+    "fm"  'counsel-imenu
+    "hh"  'helpful-at-point
     "ul"  'browse-url
-    "yw"  'thing-copy-word
-    "ys"  'thing-copy-symbol
-    "yf"  'thing-copy-filename
-    "yu"  'thing-copy-url
-    "ym"  'thing-copy-email
     "yt"  'select-total-part
     ;; hydra binding
+    "jj"  'hydra-jump/body
+    "yy"  'hydra-copy/body  
     "<SPC>" 'hydra-all/body
     )
   )
@@ -2188,14 +2218,12 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy
 ;;------------------------------------------------------------
 ;; key bindings
 (global-set-key (kbd "C-x C-b") 'ibuffer)
-;; (require 'gnu-elpa-keyring-update)
-
 (global-set-key [(f3)] 'color-rg-search-input)
 (global-set-key [(f4)] 'my-tmp-back)
 (global-set-key [(C-f4)] 'my-tmp-mark)
 (global-set-key [(M-f4)] 'my-tmp-back-original)
-
-(global-set-key [(C-tab)] '(lambda () (interactive) (switch-to-buffer nil)))
+;; switch between current buffer and previous one.
+(global-set-key [(f6)] '(lambda () (interactive) (switch-to-buffer nil)))
 
 ;;------------------------------------------------------------
 ;;{{{ desktop.
@@ -2204,32 +2232,32 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy
 ;;后 M-x desktop-save。以后 Emacs 启动时就会打开你上次离开时的所有 buffer.
 ;;M-x desktop-clear
 ;; Restore the "desktop" - do this as late as possible!!
-(if first-time
-    (progn
-      (load "desktop")
-      ;; save a bunch of variables to the desktop file
-      ;; for lists specify the len of the maximal saved data also
-      (setq desktop-globals-to-save
-	    (append '((extended-command-history . 10)
-		      (file-name-history        . 30)
-		      (ido-last-directory-list  . 10)
-                      (ido-work-directory-list  . 10)
-                      (ido-work-file-list       . 10)
-                      (grep-history             . 3)
-                      (compile-history          . 3)
-                      (minibuffer-history       . 5)
-                      (query-replace-history    . 5)
-                      (read-expression-history  . 5)
-                      (regexp-history           . 5)
-                      (regexp-search-ring       . 3)
-                      (search-ring              . 3)
-                      (comint-input-ring        . 5)
-                      (shell-command-history    . 5)
-                      desktop-missing-file-warning
-                      tags-file-name
-                      register-alist)))
-      (desktop-save-mode)
-      (message "reading desktop done.")))
+;; (if first-time
+;;     (progn
+;;       (load "desktop")
+;;       ;; save a bunch of variables to the desktop file
+;;       ;; for lists specify the len of the maximal saved data also
+;;       (setq desktop-globals-to-save
+;; 	    (append '((extended-command-history . 10)
+;; 		      (file-name-history        . 30)
+;; 		      (ido-last-directory-list  . 10)
+;;                       (ido-work-directory-list  . 10)
+;;                       (ido-work-file-list       . 10)
+;;                       (grep-history             . 3)
+;;                       (compile-history          . 3)
+;;                       (minibuffer-history       . 5)
+;;                       (query-replace-history    . 5)
+;;                       (read-expression-history  . 5)
+;;                       (regexp-history           . 5)
+;;                       (regexp-search-ring       . 3)
+;;                       (search-ring              . 3)
+;;                       (comint-input-ring        . 5)
+;;                       (shell-command-history    . 5)
+;;                       desktop-missing-file-warning
+;;                       tags-file-name
+;;                       register-alist)))
+;;       (desktop-save-mode)
+;;       (message "reading desktop done.")))
 
 ;;}}}
 
@@ -2247,7 +2275,7 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy
  '(inhibit-startup-screen t)
  '(org-support-shift-select t)
  '(package-selected-packages
-   '(go-mode 0blayout elfeed counsel-fd find-file-in-project fd-dired lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline treemacs-icons-dired treemacs-evil treemacs dracula-theme org-download centered-cursor-mode general evil-anzu youdao-dictionary monokai-pro-theme evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy all-the-icons-ivy-rich org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
+   '(doom-themes neotree go-mode 0blayout elfeed counsel-fd find-file-in-project fd-dired lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline treemacs-icons-dired treemacs-evil treemacs org-download centered-cursor-mode general evil-anzu youdao-dictionary evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy all-the-icons-ivy-rich org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
  '(recentf-mode t)
  '(save-place-mode t)
  '(show-paren-mode t)

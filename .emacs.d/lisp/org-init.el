@@ -251,6 +251,21 @@
     (goto-char (point-min))
     (insert meta-info)))
 
+(defvar open-org-note-directory "d:/Users/lihao/note/")
+(defun open-org-note-file (arg)
+  (interactive "sTitle: ")
+  (let* ((file (format "%s%s.org" open-org-note-directory (format-time-string "%F" (current-time))))
+         (title (if (string= arg "") "" arg))
+         (date (format-time-string "%F %T" (current-time)))
+         (meta-info (format "#+TITLE: %s\n#+CREATED: %s\n#+LANGUAGE: zh-CN\n#+OPTIONS: toc:t H:4 html-postamble:nil\n#+HTML_HEAD: %s\n\n" title date "<link rel='stylesheet' type='text/css' href='css/org.css'/>")))
+    (if (file-readable-p file)
+        (find-file file)
+      (progn 
+        (find-file file)
+        (goto-char (point-min))
+        (insert meta-info)))
+    ))
+
 (defun org-insert-clipboard (&optional captionp)
   (interactive "P")
   (let* ((image-dir
@@ -293,19 +308,19 @@
 ;; self defined color
 (eval-after-load 'org
   '(progn
-     (set-face-attribute 'org-level-1 nil
-                         :bold t
-                         :foreground "#37474F"
-                         :height 1.0)
-     (set-face-attribute 'org-level-2 nil
-                         :foreground "#0189cc"
-                         :height 1.0)
-     (set-face-attribute 'org-level-3 nil
-                         :foreground "#673AB7"  ;; "#bd93f9"
-                         :height 1.0)
-     (set-face-attribute 'org-level-4 nil
-                         :foreground "#bd93f9"  ;; "f1fa8c"
-                         :height 1.0)
+     ;; (set-face-attribute 'org-level-1 nil
+     ;;                     :bold t
+     ;;                     :foreground "#37474F"
+     ;;                     :height 1.0)
+     ;; (set-face-attribute 'org-level-2 nil
+     ;;                     :foreground "#0189cc"
+     ;;                     :height 1.0)
+     ;; (set-face-attribute 'org-level-3 nil
+     ;;                     :foreground "#673AB7"  ;; "#bd93f9"
+     ;;                     :height 1.0)
+     ;; (set-face-attribute 'org-level-4 nil
+     ;;                     :foreground "#bd93f9"  ;; "f1fa8c"
+     ;;                     :height 1.0)
 ;;      (set-face-attribute 'org-level-5 nil
 ;;                          :foreground "#50fa7b"
 ;;                          :height 1.0)
