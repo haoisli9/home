@@ -12,9 +12,10 @@
       org-src-fontify-natively t
       org-tags-column -80)
 
-(setq org-agenda-files '("~/../org/task.org"
-                         "~/../org/done.org"
-                         "~/../org/captures.org"
+(setq org-agenda-files '("~/../lihao/org/task.org"
+                         "~/../lihao/org/done.org"
+                         "~/../lihao/org/captures.org"
+                         "~/../lihao/org/diary.org"
                          ))
 (setq org-agenda-use-time-grid t)
 (setq org-agenda-include-all-todo nil)
@@ -29,7 +30,7 @@
 (setq org-agenda-to-appt t)
 
 (setq org-agenda-include-diary t)
-(setq org-agenda-diary-file "~/../org/diary.org")
+(setq org-agenda-diary-file "~/../lihao/org/diary.org")
 (setq diary-file "~/diary")
 
 ;;Sunrise and Sunset
@@ -119,7 +120,7 @@
     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 
-(setq org-default-capture-file "~/../org/captures.org")
+(setq org-default-capture-file "~/../lihao/org/captures.org")
 
 (setq org-capture-templates
       '(("n" "Note" entry (file+headline org-default-capture-file "Note")
@@ -137,12 +138,14 @@
 (defun my/org-buffer-files ()
   "Return list of opened orgmode buffer files"
   (mapcar (function buffer-file-name)
-	  (org-buffer-list 'files)))
+	  (org-agenda-files 'files)))
 
 ;; Targets include this file and any file contributing to the agenda - up to 9 levels deep
-(setq org-refile-targets (quote ((nil :maxlevel . 1)
-                                 ;; (my/org-buffer-files :maxlevel . 1)
-                                 (org-agenda-files :maxlevel . 1))))
+(setq org-refile-targets '(
+                           ;; (my/org-buffer-files :maxlevel . 1)
+                           (nil :maxlevel . 2)
+                           (org-agenda-files :maxlevel . 1)
+                           ))
 
 ;; Use full outline paths for refile targets - we file directly with IDO
 (setq org-refile-use-outline-path t)
@@ -180,8 +183,8 @@
         "◉"
         "●"
         "○"
-        "◉"
-        ;; "•"
+        ;; "◉"
+        "•"
         ))
 (setq org-superstar-item-bullet-alist
       '(

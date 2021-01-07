@@ -443,7 +443,7 @@ t."
   "Overlay for `irfc-std-number-face'.")
 
 (defface irfc-rfc-link-face
-  '((t (:foreground "Blue" :bold t)))
+  '((t (:foreground "cyan" :bold t)))
   "Face used for RFC link in the header."
   :group 'irfc)
 (defvar irfc-rfc-link-overlay nil

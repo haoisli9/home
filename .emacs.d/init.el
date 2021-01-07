@@ -941,7 +941,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;;------------------------------------------------------------
 (use-package fold-dwim
-  :defer t)
+  :defer 3)
 
 ;;------------------------------------------------------------
 ;;{{{ multi-cursors.
@@ -1532,7 +1532,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;;------------------------------------------------------------
 ;; sdcv
 (use-package sdcv-mode
-  :defer t)
+  :defer 2)
 (with-eval-after-load 'sdcv-mode
   (defun sdcv-buffer-face-mode-variable ()
     (interactive)
@@ -1559,7 +1559,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; (global-set-key (kbd "<C-left>") 'swbuff-switch-to-previous-buffer)
 
 (use-package hexview-mode
-  :defer t)
+  :defer 2)
 
 (require 'scroll-all+)
 (add-hook 'ediff-startup-hook 'scroll-all-mode)
@@ -1571,11 +1571,11 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; company-english-helper
 ;; https://github.com/manateelazycat/company-english-helper
 (use-package company-english-helper
-  :defer t)
+  :defer 3)
 ;; insert-translated-name-insert
 ;; https://github.com/manateelazycat/insert-translated-name
 (use-package insert-translated-name
-  :defer t
+  :defer 3
   :config
   (setq insert-translated-name-translate-engine "google"))
 
@@ -2163,6 +2163,7 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy  cop_y_
     "cc"  'evilnc-comment-or-uncomment-lines
     "cp"  'evilnc-comment-or-uncomment-paragraph
     "ct"  'evilnc-comment-or-uncomment-html-tag
+    "dd"  'sdcv-search-current-word
     "dj"  'dired-jump
     "nt"  'neotree-toggle
     "ss"  'swiper-thing-at-point
@@ -2195,6 +2196,7 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy  cop_y_
     "cc"  'evilnc-comment-or-uncomment-lines
     "cp"  'evilnc-comment-or-uncomment-paragraph
     "ct"  'evilnc-comment-or-uncomment-html-tag
+    "dd"  'sdcv-search-current-word
     "dj"  'dired-jump
     "nt"  'neotree-toggle
     "ss"  'swiper-thing-at-point
@@ -2275,7 +2277,7 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy  cop_y_
  '(inhibit-startup-screen t)
  '(org-support-shift-select t)
  '(package-selected-packages
-   '(doom-themes neotree go-mode 0blayout elfeed counsel-fd find-file-in-project fd-dired lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline treemacs-icons-dired treemacs-evil treemacs org-download centered-cursor-mode general evil-anzu youdao-dictionary evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy all-the-icons-ivy-rich org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
+   '(tree-sitter csharp-mode fsharp-mode doom-themes neotree go-mode 0blayout elfeed counsel-fd find-file-in-project fd-dired lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline treemacs-icons-dired treemacs-evil treemacs org-download centered-cursor-mode general evil-anzu youdao-dictionary evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy all-the-icons-ivy-rich org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
  '(recentf-mode t)
  '(save-place-mode t)
  '(show-paren-mode t)
