@@ -97,8 +97,8 @@
       ;;设置窗口位置为屏库左上角(0,0)
       (set-frame-position (selected-frame) 10 10)
       ;;设置宽和高
-      (set-frame-width (selected-frame) 110)
-      (set-frame-height (selected-frame) 24)
+      (set-frame-width (selected-frame) 115)
+      (set-frame-height (selected-frame) 22)
       ;; 最大化窗口
       ;; (setq initial-frame-alist (quote ((fullscreen . maximized))))
       ))
@@ -147,6 +147,9 @@
   (set-fontset-font (frame-parameter nil 'font)
                     charset
                     (font-spec :family "微软雅黑" :size 28)))  ;; 微软雅黑，24
+;; Emoji
+(set-fontset-font t 'unicode (font-spec :family "Segoe UI Emoji" :size 14))
+(set-fontset-font t '(#x2ff0 . #x9ffc) (font-spec :family "Sarasa Mono Slab SC" :size 16 :weight 'bold))
 
 ;;-----------------------------------------------------------------
 (setq show-paren-style 'parenthesis)
@@ -2277,7 +2280,7 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy  cop_y_
  '(inhibit-startup-screen t)
  '(org-support-shift-select t)
  '(package-selected-packages
-   '(tree-sitter csharp-mode fsharp-mode doom-themes neotree go-mode 0blayout elfeed counsel-fd find-file-in-project fd-dired lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline treemacs-icons-dired treemacs-evil treemacs org-download centered-cursor-mode general evil-anzu youdao-dictionary evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy all-the-icons-ivy-rich org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
+   '(iscroll tree-sitter csharp-mode fsharp-mode doom-themes neotree go-mode 0blayout elfeed counsel-fd find-file-in-project fd-dired lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline treemacs-icons-dired treemacs-evil treemacs org-download centered-cursor-mode general evil-anzu youdao-dictionary evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy all-the-icons-ivy-rich org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
  '(recentf-mode t)
  '(save-place-mode t)
  '(show-paren-mode t)

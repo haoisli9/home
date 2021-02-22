@@ -1,4 +1,4 @@
-;;; color-rg.el --- Search and refacotry code with rg
+﻿;;; color-rg.el --- Search and refacotry code with rg
 
 ;; Filename: color-rg.el
 ;; Description: Search and refacotry code with rg
@@ -67,6 +67,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2020/12/31
+;;      * Add new option `color-rg-search-compressed-file'.
 ;;
 ;; 2020/05/04
 ;;      * Add new command `color-rg-insert-current-line'.
@@ -315,10 +318,17 @@ Default is enable, set this variable to nil if you don't like this feature."
   :type 'boolean
   :group 'color-rg)
 
-(defcustom color-rg-max-column 300
+(defcustom color-rg-max-column 3000
   "When searching for JS library files, the long JS library file will cause color-rg navigation to be very slow.
 By default, there are 300 columns of restrictions to avoid long file problems."
   :type 'integer
+  :group 'color-rg)
+
+(defcustom color-rg-search-compressed-file nil
+  "Search compressed files when read the emacs source code.
+
+Default is disabled, set this variable to true if you found it's useful"
+  :type 'boolean
   :group 'color-rg)
 
 (defface color-rg-font-lock-header-line-text
@@ -715,6 +725,9 @@ CASE-SENSITIVE determinies if search is case-sensitive."
           (when no-ignore
             (list "--no-ignore"))
 
+          (when color-rg-search-compressed-file
+            (list "-z"))
+
           (when (color-rg-is-custom-file-pattern globs)
             (list (concat "--type-add " (shell-quote-argument (concat "custom:" globs)))))
 
@@ -771,6 +784,8 @@ CASE-SENSITIVE determinies if search is case-sensitive."
 
     ;; Run search command.
     (with-current-buffer color-rg-buffer
+      ;; Fix compatibility issues with doom-emacs, because it changed the value of compilation-buffer-name-function.
+      (setq-local compilation-buffer-name-function #'compilation--default-buffer-name)
       ;; Start command.
       (compilation-start command 'color-rg-mode)
 
@@ -815,6 +830,8 @@ user more freedom to use rg with special arguments."
 
     ;; Run search command.
     (with-current-buffer color-rg-buffer
+      ;; Fix compatibility issues with doom-emacs, because it changed the value of compilation-buffer-name-function.
+      (setq-local compilation-buffer-name-function #'compilation--default-buffer-name)
       ;; Start command.
       (compilation-start command 'color-rg-mode)
 

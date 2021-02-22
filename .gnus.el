@@ -131,11 +131,11 @@
        (defface my-group-face-2
          '((t (:foreground "DarkSeaGreen4" :bold t))) "Second group face")
        (defface my-group-face-3
-         '((t (:foreground "DarkGreen" :bold t))) "Third group face")
+         '((t (:foreground "Green" :bold t))) "Third group face")
        (defface my-group-face-4
          '((t (:foreground "SteelBlue" :bold t))) "Fourth group face")
        (defface my-group-face-5
-         '((t (:foreground "blue" :bold t))) "Fifth group face")))
+         '((t (:foreground "Cyan" :bold t))) "Fifth group face")))
 
 (setq gnus-group-highlight
       '(((> unread 10) . my-group-face-1)

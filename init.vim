@@ -531,7 +531,7 @@ endif
 
 " gtags configuration.
 "let $GTAGSLABEL = 'native-pygments'
-let $GTAGSCONF = '~/.globalrc'
+"let $GTAGSCONF = '~/.globalrc'
 
 " 同时开启 ctags 和 gtags 支持：
 let g:gutentags_modules = []
