@@ -620,6 +620,30 @@
      (define-key dired-mode-map "X" 'dired-w32-browser)
      (define-key dired-mode-map "O" 'dired-w32explore)))
 
+;; open app in wsl.
+
+;;;###autoload
+(defmacro wsl--open-with (id &optional app dir)
+  `(defun ,(intern (format "wsl/%s" id)) ()
+     (interactive)
+     (wsl-open-with ,app ,dir)))
+
+(defun wsl-open-with (&optional app-name path)
+  "Send PATH to APP-NAME on WSL."
+  (interactive)
+  (let* ((path (expand-file-name
+                (replace-regexp-in-string
+                 "'" "\\'"
+                 (or path (if (derived-mode-p 'dired-mode)
+                              (dired-get-file-for-visit)
+                            (buffer-file-name)))
+                 nil t)))
+         (command (format "%s `wslpath -w %s`" 
+(shell-quote-argument app-name) path)))
+    (shell-command-to-string command)))
+(wsl--open-with open-in-default-program "explorer.exe" buffer-file-name)
+(wsl--open-with reveal-in-explorer "explorer.exe" default-directory)
+
 (message "dired single loaded.")
 ;;}}}
 
@@ -1696,12 +1720,17 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;;------------------------------------------------------------
 ;; mode-line configuration.
 ;;------------------------------------------------------------
-(require 'modeline-init)
+;; (require 'modeline-init)
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1))
 
 ;;----------------------------------------------------------------
 ;;{{{ self face reconfigure
 ;; (set-face-attribute 'font-lock-comment-face nil
 ;;                     :foreground "grey50")   ;; #292e34
+(set-face-attribute 'fringe nil
+                    :foreground "green")
 (set-face-attribute 'show-paren-match nil
                     :foreground "green"
                     :bold t
@@ -2280,7 +2309,7 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy  cop_y_
  '(inhibit-startup-screen t)
  '(org-support-shift-select t)
  '(package-selected-packages
-   '(iscroll tree-sitter csharp-mode fsharp-mode doom-themes neotree go-mode 0blayout elfeed counsel-fd find-file-in-project fd-dired lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline treemacs-icons-dired treemacs-evil treemacs org-download centered-cursor-mode general evil-anzu youdao-dictionary evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy all-the-icons-ivy-rich org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
+   '(imenu-extra realgud iscroll tree-sitter csharp-mode fsharp-mode doom-themes neotree go-mode 0blayout elfeed counsel-fd find-file-in-project fd-dired lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline treemacs-icons-dired treemacs-evil treemacs org-download centered-cursor-mode general evil-anzu youdao-dictionary evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy all-the-icons-ivy-rich org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
  '(recentf-mode t)
  '(save-place-mode t)
  '(show-paren-mode t)

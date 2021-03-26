@@ -9,7 +9,7 @@
 (setq calendar-location-name "西安")
 
 (setq cal-china-x-important-holidays '(
-				       (holiday-fixed 3 13 "生日")
+				       ;; (holiday-fixed 3 13 "生日")
 				       (holiday-fixed 7 27 "老婆生日")
 				       ))
 (setq cal-china-x-general-holidays '(
@@ -103,6 +103,22 @@
                   'font-lock-face 'calendar-iso-week-header-face))
 (set-face-attribute 'calendar-iso-week-face nil
 		    :height 1.0 :foreground "salmon")
+
+;; diary for chinese birthday
+;; %%(my–diary-chinese-anniversary 9 23 1993) 这是农历 1993 年 9 月 23 日生人的第 %d%s 个生日
+(defun my-diary-chinese-anniversary (lunar-month lunar-day &optional year mark)
+  (if year
+      (let* (
+             ;; (calendar-date-style 'american)
+             (d-date (diary-make-date lunar-month lunar-day year))
+             (a-date (calendar-absolute-from-gregorian d-date))
+             (c-date (calendar-chinese-from-absolute a-date))
+             (date a-date)
+             (cycle (car c-date))
+             (yy (cadr c-date))
+             (y (+ (* 100 cycle) yy)))
+        (diary-chinese-anniversary lunar-month lunar-day y mark))
+    (diary-chinese-anniversary lunar-month lunar-day year mark)))
 
 ;;------------------------------------------------------------
 ;; 计算伏天和数九

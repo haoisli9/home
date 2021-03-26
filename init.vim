@@ -76,9 +76,9 @@ set encoding=utf-8
 
 set fileformats=unix,dos,mac " EOL formats(\r\n or \n or \r) in order
 
-" set gfn=YaHei\ Consolas\ Hybrid:h16:cANSI
-set gfn=Cascadia\ Mono\ PL:h16:cANSI
-"set  gfn=Fira\ Code:h16
+"set gfn=YaHei\ Consolas\ Hybrid:h16:cANSI
+"set gfn=Cascadia\ Mono\ PL:h16:cANSI
+set  gfn=Sarasa\ Mono\ SC:h16
 "set gfw=¿¬Ìå:h20:cGB2312
 
 set background=dark

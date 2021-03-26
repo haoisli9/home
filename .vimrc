@@ -71,11 +71,10 @@ set encoding=utf-8
 
 set fileformats=unix,dos,mac " EOL formats(\r\n or \n or \r) in order
 
-set gfn=Sarasa\ Mono\ SC:h20
-"    set gfn=Fira\ Code:h20:cANSI
-    "set gfw=楷体:h20:cGB2312
+set gfn=Sarasa Mono SC Regular:h20
+"set gfn=Fira\ Code:h20:cANSI
+"set gfw=楷体:h20:cGB2312
 
-set gfn=Sarasa\ Mono\ SC:h20
 set background=dark
 "colo torte
 colo space-vim-dark

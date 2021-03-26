@@ -167,8 +167,10 @@
 
 ;; (add-hook 'gnus-article-prepare-hook
 ;;           (lambda ()
-;;             (setq fill-column 100)
-;;             (gnus-article-fill-long-lines)))
+;;             ;; (setq fill-column 100)
+;;             (setq left-margin 10)
+;;             ;; (gnus-article-fill-long-lines)
+;;             ))
 
 ;;×Ô¶¯ÏÔÊ¾Í¼Æ¬
 (auto-image-file-mode)
