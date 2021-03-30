@@ -104,7 +104,28 @@
 (set-face-attribute 'calendar-iso-week-face nil
 		    :height 1.0 :foreground "salmon")
 
-;; diary for chinese birthday
+;; diary for chinese birthday, modify diary-chinese-anniversary function.
+(defun my-diary-chinese-anniversary-1 (month day &optional year mark)
+  "Like `diary-anniversary' (which see) but accepts Chinese date."
+  (pcase-let* ((ddate (diary-make-date month day year))
+               (`(,dc ,dy ,dm ,dd)      ;diary chinese date
+                (if year
+                    (calendar-chinese-from-absolute
+                     (calendar-chinese-to-absolute-for-diary ddate))
+                  (list nil nil (calendar-extract-month ddate)
+                        (calendar-extract-day ddate))))
+               (`(,cc ,cy ,cm ,cd)      ;current chinese date
+                (calendar-chinese-from-absolute
+                 (calendar-absolute-from-gregorian (calendar-current-date))))
+               (diff (if (and dc dy)
+                         (+ (* 60 (- cc dc)) (- cy dy))
+                       100)))
+    (and (> diff 0)
+         ;; The Chinese month can differ by 0.5 in a leap month.
+         (or (= dm cm) (= (+ 0.5 dm) cm))
+         (= dd cd)
+         (cons mark (format entry diff (diary-ordinal-suffix diff))))))
+
 ;; %%(my–diary-chinese-anniversary 9 23 1993) 这是农历 1993 年 9 月 23 日生人的第 %d%s 个生日
 (defun my-diary-chinese-anniversary (lunar-month lunar-day &optional year mark)
   (if year
@@ -117,8 +138,8 @@
              (cycle (car c-date))
              (yy (cadr c-date))
              (y (+ (* 100 cycle) yy)))
-        (diary-chinese-anniversary lunar-month lunar-day y mark))
-    (diary-chinese-anniversary lunar-month lunar-day year mark)))
+        (my-diary-chinese-anniversary-1 lunar-month lunar-day y mark))
+    (my-diary-chinese-anniversary-1 lunar-month lunar-day year mark)))
 
 ;;------------------------------------------------------------
 ;; 计算伏天和数九

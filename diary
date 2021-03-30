@@ -7,5 +7,5 @@
 ;; 中国农历
 ;;%%(diary-chinese-date)
 ;; 生日
-%%(diary-anniversary 3 13 1975) 我的生日 (%d years old)
-%%(diary-chinese-anniversary 2 15 1975) 农历生日
+%%(diary-anniversary 3 13 1975) 生日 (%d years old)
+%%(my-diary-chinese-anniversary 2 1 1975) 农历生日 (%d岁啦)
