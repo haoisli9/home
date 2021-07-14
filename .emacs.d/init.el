@@ -82,12 +82,13 @@
 (setq byte-compile-warnings '(cl-functions))
 
 ;; show emacs gc message
-(when (eq system-type 'windows-nt)
-  (setq gc-cons-threshold (* 512 1024 1024))
-  (setq gc-cons-percentage 0.1)
-  (run-with-idle-timer 60 t #'garbage-collect)
-  ;; 显示垃圾回收信息，这个可以作为调试用 ;;
-  (setq garbage-collection-messages t))
+;; (when (eq system-type 'windows-nt)
+;;   (setq gc-cons-threshold (* 512 1024 1024))
+;;   (setq gc-cons-percentage 0.1)
+;;   (run-with-idle-timer 60 t #'garbage-collect)
+;;   ;; 显示垃圾回收信息，这个可以作为调试用 ;;
+;;   (setq garbage-collection-messages t))
+(gcmh-mode 1)
 
 ;;关闭出错时的提示声
 (setq visible-bell t)
@@ -1069,13 +1070,50 @@ If the character before and after CH is space or tab, CH is NOT slash"
       (unless (string-match "The free version of TabNine only indexes up to" (funcall company-message-func))
 	ad-do-it))))
 
-;; company-ctags
-(eval-after-load 'company
-  '(progn
-     (company-ctags-auto-setup)
-     (setq company-ctags-support-etag t)))
-
 ;;}}}
+
+(defun citre-jump+ ()
+  (interactive)
+  (condition-case _
+      (citre-jump)
+    (error (call-interactively #'xref-find-definitions))))
+
+(defun my--push-point-to-xref-marker-stack (&rest r)
+  (xref-push-marker-stack (point-marker)))
+(dolist (func '(find-function
+                counsel-imenu
+                helm-imenu
+                projectile-grep
+                helm-grep-ag
+                counsel-rg
+                lsp-ivy-workspace-symbol
+                citre-jump))
+  (advice-add func :before 'my--push-point-to-xref-marker-stack))
+
+(use-package citre
+  :defer t
+  :init
+  ;; This is needed in `:init' block for lazy load to work.
+  (require 'citre-config)
+  ;; Bind your frequently used commands.
+  (global-set-key (kbd "C-x c j") 'citre-jump)
+  (global-set-key (kbd "C-x c t") 'citre-jump-back)
+  (global-set-key (kbd "M-]") 'citre-jump+)
+  (global-set-key (kbd "M-[") 'xref-pop-marker-stack)
+  (global-set-key (kbd "C-x c p") 'citre-ace-peek)
+  :config
+  (setq
+   ;; Set this if you want to always use one location to create a tags file.
+   citre-tags-file-global-cache-dir "~/.cache/tags/"
+   citre-default-create-tags-file-location 'global-cache
+   citre-use-project-root-when-creating-tags t
+   citre-prompt-language-for-ctags-command t
+   ;; Set this if readtags is not in your path.
+   ;; citre-readtags-program "/path/to/readtags"
+   ;; Set this if you use project management plugin like projectile.  It's
+   ;; used for things like displaying paths relatively, see its docstring.
+   ;; citre-project-root-function #'projectile-project-root
+   ))
 
 ;;------------------------------------------------------------
 ;;{{{ outline-mode configuration.
@@ -1138,7 +1176,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 (use-package counsel-etags
   :ensure t
-  :bind (("M-]" . counsel-etags-find-tag-at-point))
+  :bind (("C-x c ]" . counsel-etags-find-tag-at-point))
   :init
   (add-hook 'prog-mode-hook
             (lambda ()
@@ -1558,19 +1596,39 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;;------------------------------------------------------------
 ;; sdcv
-(use-package sdcv-mode
-  :defer 2)
-(with-eval-after-load 'sdcv-mode
-  (defun sdcv-buffer-face-mode-variable ()
-    (interactive)
-    (set-buffer-file-coding-system 'utf-8)
-    (make-face 'width-font-face)
-    (set-face-attribute 'width-font-face nil :font "Sarasa Mono SC 16")   ;; FiraCode NF 16
-    (setq buffer-face-mode-face 'width-font-face)
-    (buffer-face-mode))
-    (add-hook 'sdcv-mode-hook 'sdcv-buffer-face-mode-variable))
+;; (use-package sdcv-mode
+;;   :defer 2)
+;; (with-eval-after-load 'sdcv-mode
+;;   (defun sdcv-buffer-face-mode-variable ()
+;;     (interactive)
+;;     (set-buffer-file-coding-system 'utf-8)
+;;     (make-face 'width-font-face)
+;;     (set-face-attribute 'width-font-face nil :font "Sarasa Mono SC 16")   ;; FiraCode NF 16
+;;     (setq buffer-face-mode-face 'width-font-face)
+;;     (buffer-face-mode))
+;;     (add-hook 'sdcv-mode-hook 'sdcv-buffer-face-mode-variable))
 
-(setq sdcv-dictionary-data-dir "d:/unix/dic/")   ;; set local sdcv dict to search word
+;; (setq sdcv-dictionary-data-dir "/cygdrive/d/unix/dic/")   ;; set local sdcv dict to search word
+
+(require 'sdcv)
+(setq sdcv-say-word-p t)               ;say word after translation
+
+(setq sdcv-dictionary-data-dir "/cygdrive/d/unix/dic/") ;setup directory of stardict dictionary
+(setq sdcv-env-lang "zh_CN.UTF-8")
+(setq sdcv-dictionary-simple-list    ;setup dictionary list for simple search
+      '(
+        "CDICT5英汉辞典"
+        "CEDICT5汉英辞典"
+        ))
+
+(setq sdcv-dictionary-complete-list     ;setup dictionary list for complete search
+      '(
+        "CDICT5英汉辞典"
+        "CEDICT5汉英辞典"
+        "朗道英汉字典5.0"
+        "朗道汉英字典5.0"
+        "WordNet"
+        ))
 
 ;;------------------------------------------------------------
 (require 'keep-buffers)
@@ -1705,6 +1763,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
                     (push '(company-capf :with company-tabnine :separate) company-backends)
                     )))
 
+(window-numbering-mode)
+
 ;;----------------------------------------------------------------
 ;;设置标题栏为buffer的内容
 (setq frame-title-format
@@ -1722,8 +1782,10 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;;------------------------------------------------------------
 ;; (require 'modeline-init)
 (use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1))
+  :custom
+  (doom-modeline-modal-icon nil)
+  (doom-modeline-icon t)
+  :hook (after-init . doom-modeline-mode))
 
 ;;----------------------------------------------------------------
 ;;{{{ self face reconfigure
@@ -1745,10 +1807,9 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; (set-face-attribute 'ivy-virtual nil
 ;;                     :foreground "grey50")
 
-;; (setq evil-normal-state-cursor '("#E02C6D" box))
+(setq evil-normal-state-cursor '("#E02C6D" box))
 (setq evil-insert-state-cursor '("red" bar))
-;; (setq evil-insert-state-cursor '("gold" bar))
-;; (setq evil-emacs-state-cursor '("white" box))
+(setq evil-emacs-state-cursor '("gold" box))
 
 ;; Fall back font for glyph missing in Roboto
 (set-display-table-slot standard-display-table 'truncation
@@ -2195,7 +2256,7 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy  cop_y_
     "cc"  'evilnc-comment-or-uncomment-lines
     "cp"  'evilnc-comment-or-uncomment-paragraph
     "ct"  'evilnc-comment-or-uncomment-html-tag
-    "dd"  'sdcv-search-current-word
+    "dd"  'sdcv-search-input
     "dj"  'dired-jump
     "nt"  'neotree-toggle
     "ss"  'swiper-thing-at-point
@@ -2228,7 +2289,7 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy  cop_y_
     "cc"  'evilnc-comment-or-uncomment-lines
     "cp"  'evilnc-comment-or-uncomment-paragraph
     "ct"  'evilnc-comment-or-uncomment-html-tag
-    "dd"  'sdcv-search-current-word
+    "dd"  'sdcv-search-input
     "dj"  'dired-jump
     "nt"  'neotree-toggle
     "ss"  'swiper-thing-at-point
@@ -2309,7 +2370,7 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy  cop_y_
  '(inhibit-startup-screen t)
  '(org-support-shift-select t)
  '(package-selected-packages
-   '(imenu-extra realgud iscroll tree-sitter csharp-mode fsharp-mode doom-themes neotree go-mode 0blayout elfeed counsel-fd find-file-in-project fd-dired lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline treemacs-icons-dired treemacs-evil treemacs org-download centered-cursor-mode general evil-anzu youdao-dictionary evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy all-the-icons-ivy-rich org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock company-ctags counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
+   '(gcmh projectile citre imenu-extra realgud iscroll tree-sitter csharp-mode fsharp-mode doom-modeline doom-themes neotree go-mode 0blayout elfeed counsel-fd find-file-in-project fd-dired lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline treemacs-icons-dired treemacs-evil treemacs org-download centered-cursor-mode general evil-anzu youdao-dictionary evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy all-the-icons-ivy-rich org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
  '(recentf-mode t)
  '(save-place-mode t)
  '(show-paren-mode t)

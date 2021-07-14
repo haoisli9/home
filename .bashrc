@@ -27,7 +27,7 @@ shopt -s nocaseglob
 
 PS1="[\[\e[32;40m\]\u@\h \[\e[33;40m\]\W\e[m] \$ "
 
-. /d/Unix/bin/z.sh
+. /cygdrive/d/Unix/bin/z.sh
 
 export LANG=zh_CN.UTF-8
 # use zsh
