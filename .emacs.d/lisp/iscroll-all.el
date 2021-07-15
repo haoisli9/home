@@ -1,4 +1,4 @@
-;;; scroll-all+.el --- scroll all buffers together minor mode
+;;; iscroll-all.el --- scroll all buffers together minor mode
 
 ;; Copyright (C) 1997, 2001, 2002, 2003, 2004, 2005,
 ;;   2006, 2007 Free Software Foundation, Inc.
@@ -191,7 +191,7 @@ apply to all visible windows in the same frame."
       (add-hook 'post-command-hook 'scroll-all-check-to-scroll)
     (remove-hook 'post-command-hook 'scroll-all-check-to-scroll)))
 
-(provide 'scroll-all+)
+(provide 'iscroll-all)
 
 ;;; arch-tag: db20089a-b157-45df-b5d4-2430e60acdd8
 ;;; scroll-all.el ends here

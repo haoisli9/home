@@ -219,13 +219,15 @@
 
 ;; something in windows. cmdproxy will show chinese error, but command like fd can handle.
 ;; not required.
-;; (set-default 'process-coding-system-alist
-;;              '(
-               ;; 不能设置cmdproxy，对导致很多乱码；
-               ;; ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos)
-               ;; ("[rR][gG]" utf-8 . gbk)
-               ;; ("[fF][dD]" utf-8 . gbk)
-               ;; ))
+;; (if (eq system-type 'windows-nt)
+;;     (set-default 'process-coding-system-alist
+;;                  '(
+;;                    ;; 不能设置cmdproxy，对导致很多乱码；
+;;                    ;; ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos)
+;;                    ;; ("[rR][gG]" utf-8 . gbk)
+;;                    ;; ("[fF][dD]" utf-8 . gbk)
+                   ;;  ("sdcv" utf-8-dos . chinese-iso-8bit-dos)
+                   ;; )))
 
 ;;------------------------------------------
 ;; backup policies
@@ -1036,9 +1038,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; company-tabnine
 (use-package company-tabnine
   :ensure t)
-;; `:separate`  使得不同 backend 分开排序
-(add-to-list 'company-backends #'company-tabnine)
-;; (push '(company-capf :with company-tabnine :separate) company-backends)
+
 (defun company//sort-by-tabnine (candidates)
   (if (or (functionp company-backend)
           (not (and (listp company-backend) (memq 'company-tabnine company-backend))))
@@ -1070,13 +1070,20 @@ If the character before and after CH is space or tab, CH is NOT slash"
       (unless (string-match "The free version of TabNine only indexes up to" (funcall company-message-func))
 	ad-do-it))))
 
+;; `:separate`  使得不同 backend 分开排序
+(add-to-list 'company-backends #'company-tabnine)
+;; (push '(company-capf :with company-tabnine :separate) company-backends)
+
 ;;}}}
 
+;;----------------------------------------------------------
+;; citre configure.
+;;----------------------------------------------------------
 (defun citre-jump+ ()
   (interactive)
   (condition-case _
       (citre-jump)
-    (error (call-interactively #'xref-find-definitions))))
+    (error (call-interactively #'lsp-find-definition))))
 
 (defun my--push-point-to-xref-marker-stack (&rest r)
   (xref-push-marker-stack (point-marker)))
@@ -1096,11 +1103,11 @@ If the character before and after CH is space or tab, CH is NOT slash"
   ;; This is needed in `:init' block for lazy load to work.
   (require 'citre-config)
   ;; Bind your frequently used commands.
-  (global-set-key (kbd "C-x c j") 'citre-jump)
-  (global-set-key (kbd "C-x c t") 'citre-jump-back)
+  (global-set-key (kbd "C-M-]") 'citre-jump)
+  (global-set-key (kbd "C-M-[") 'citre-jump-back)
   (global-set-key (kbd "M-]") 'citre-jump+)
   (global-set-key (kbd "M-[") 'xref-pop-marker-stack)
-  (global-set-key (kbd "C-x c p") 'citre-ace-peek)
+  (global-set-key (kbd "C-M-p") 'citre-ace-peek)
   :config
   (setq
    ;; Set this if you want to always use one location to create a tags file.
@@ -1114,6 +1121,29 @@ If the character before and after CH is space or tab, CH is NOT slash"
    ;; used for things like displaying paths relatively, see its docstring.
    ;; citre-project-root-function #'projectile-project-root
    ))
+
+(defun company-citre (-command &optional -arg &rest _ignored)
+  "Completion backend of Citre.  Execute COMMAND with ARG and IGNORED."
+  (interactive (list 'interactive))
+  (cl-case -command
+    (interactive (company-begin-backend 'company-citre))
+    (prefix (and (bound-and-true-p citre-mode)
+                 (or (citre-get-symbol) 'stop)))
+    (meta (citre-get-property 'signature -arg))
+    (annotation (citre-capf--get-annotation -arg))
+    (candidates (all-completions -arg (citre-capf--get-collection -arg)))
+    (ignore-case (not citre-completion-case-sensitive))))
+
+;; use company-capf to auto-complete
+(dolist (hook (list
+               'c-mode-hook
+               'c++-mode-hook
+               'python-mode-hook
+               'go-mode-hook
+               ))
+  (add-hook hook '(lambda ()
+                    (push '(company-capf company-citre :with company-tabnine :separate) company-backends)
+                    )))
 
 ;;------------------------------------------------------------
 ;;{{{ outline-mode configuration.
@@ -1608,26 +1638,21 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;;     (buffer-face-mode))
 ;;     (add-hook 'sdcv-mode-hook 'sdcv-buffer-face-mode-variable))
 
-;; (setq sdcv-dictionary-data-dir "/cygdrive/d/unix/dic/")   ;; set local sdcv dict to search word
-
 (require 'sdcv)
-(setq sdcv-say-word-p t)               ;say word after translation
+(setq sdcv-say-word-p nil)               ;say word after translation
 
 (setq sdcv-dictionary-data-dir "/cygdrive/d/unix/dic/") ;setup directory of stardict dictionary
 (setq sdcv-env-lang "zh_CN.UTF-8")
 (setq sdcv-dictionary-simple-list    ;setup dictionary list for simple search
       '(
-        "CDICT5英汉辞典"
-        "CEDICT5汉英辞典"
+        "懒虫简明英汉词典"
         ))
 
 (setq sdcv-dictionary-complete-list     ;setup dictionary list for complete search
       '(
         "CDICT5英汉辞典"
-        "CEDICT5汉英辞典"
+        "牛津英汉双解美化版"
         "朗道英汉字典5.0"
-        "朗道汉英字典5.0"
-        "WordNet"
         ))
 
 ;;------------------------------------------------------------
@@ -1646,7 +1671,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (use-package hexview-mode
   :defer 2)
 
-(require 'scroll-all+)
+(require 'iscroll-all)
 (add-hook 'ediff-startup-hook 'scroll-all-mode)
 (add-hook 'ediff-quit-hook
           '(lambda ()
@@ -1705,9 +1730,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; https://github.com/lyjdwh/avy-thing-edit/blob/master/avy-thing-edit.el
 (require 'avy-thing-edit)
 
-;; https://github.com/manateelazycat/awesome-tab
-;; https://github.com/manateelazycat/snails
-
 ;;}}}
 
 ;;------------------------------------------------------------
@@ -1752,17 +1774,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 (add-hook 'go-mode-hook 'lsp-deferred)
 
-;; use company-capf to auto-complete
-(dolist (hook (list
-               'c-mode-hook
-               'c++-mode-hook
-               'python-mode-hook
-               'go-mode-hook
-               ))
-  (add-hook hook '(lambda ()
-                    (push '(company-capf :with company-tabnine :separate) company-backends)
-                    )))
 
+;;----------------------------------------------------------------
 (window-numbering-mode)
 
 ;;----------------------------------------------------------------
@@ -1905,7 +1918,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
   (set-buffer-file-coding-system 'undecided-dos nil))
 
 ;;set transparent effect
-(global-set-key [(f5)] 'loop-alpha)
 (setq alpha-list '((100 100) (95 65) (85 55) (75 45) (65 35)))
  (defun loop-alpha ()
    (interactive)
@@ -2114,6 +2126,8 @@ Use `my-tmp-back` to jump back to the stored position."
 
 (setq hs-set-up-overlay 'hideshow-folded-overlay-fn)
 
+(global-origami-mode 1)
+
 (use-package whitespace
   :ensure nil
   ;; :hook ((prog-mode markdown-mode conf-mode) . whitespace-mode)
@@ -2152,13 +2166,17 @@ _c_apture  _o_rg-open
   "
 _f_old-toggle  fold-dwim-_h_ide-all  fold-dwim-_s_how-all
 hide-_l_ines-matching   hide-lines-_n_ot-matching   hide-lines-show-_a_ll
+_z_origami-toggle-node  origami-show-only-nod_e_
   "
   ("l" hide-lines-matching)
   ("n" hide-lines-not-matching)
   ("a" hide-lines-show-all)
   ("f" fold-dwim-toggle)
   ("h" fold-dwim-hide-all)
-  ("s" fold-dwim-show-all))
+  ("s" fold-dwim-show-all)
+  ("z" origami-toggle-node)
+  ("e" origami-show-only-node)
+  )
 
 (require 'linum-relative)
 (defhydra hydra-toggle (:color pink)
@@ -2172,9 +2190,8 @@ _l_ display-line-numbers-mode:    %`display-line-numbers-mode
 _r_ linum-relative-mode:    %`linum-relative-mode
 _p_ toggle-word-wrap:   %`word-wrap
 _v_ evil-local-mode:    %`evil-local-mode
-_o_ outline-minor-mode: %`outline-minor-mode
+_o_ origami-mode:       %`origami-mode
 _h_ hs-minor-mode:      %`hs-minor-mode
-_f_ folding-mode:       %`folding-mode
 _j_ visual-line-mode:   %`visual-line-mode
 _c_ cua-mode:           %`cua-mode
 _y_ evil-pinyin-mode:   %`evil-pinyin-mode
@@ -2188,9 +2205,8 @@ _y_ evil-pinyin-mode:   %`evil-pinyin-mode
   ("r" linum-relative-mode nil)
   ("p" toggle-word-wrap nil)
   ("v" evil-local-mode nil)
-  ("o" outline-minor-mode nil)
+  ("o" origami-mode nil)
   ("h" hs-minor-mode nil)
-  ("f" folding-mode nil)
   ("j" visual-line-mode nil)
   ("c" cua-mode nil)
   ("y" evil-pinyin-mode nil)
@@ -2223,11 +2239,11 @@ _w_ord    _s_ymbol   _f_ile   _l_ine   _u_rl    e_m_ail
 ;; Recommended binding:
 (defhydra hydra-all (global-map "C-c h" :color blue :hint nil)
   "
-_j_ump    _t_oggle    f_o_ld     a_v_y-copy  cop_y_
+_j_ump    _t_oggle    _f_old     a_v_y-copy  cop_y_
   "
   ("j" hydra-jump/body)
   ("t" hydra-toggle/body)
-  ("o" hydra-fold/body)
+  ("f" hydra-fold/body)
   ("y" hydra-copy/body)
   ("v" hydra-avy-copy/body)
 )
@@ -2256,12 +2272,12 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy  cop_y_
     "cc"  'evilnc-comment-or-uncomment-lines
     "cp"  'evilnc-comment-or-uncomment-paragraph
     "ct"  'evilnc-comment-or-uncomment-html-tag
-    "dd"  'sdcv-search-input
+    "dd"  'sdcv-search-input+
     "dj"  'dired-jump
     "nt"  'neotree-toggle
     "ss"  'swiper-thing-at-point
     "rg"  'color-rg-search-input
-    "ff"  'counsel-find-file
+    "ff"  'counsel-fd-file-jump
     "fg"  'counsel-grep-or-swiper
     "fl"  'counsel-locate
     "fm"  'counsel-imenu
@@ -2294,7 +2310,7 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy  cop_y_
     "nt"  'neotree-toggle
     "ss"  'swiper-thing-at-point
     "rg"  'color-rg-search-input
-    "ff"  'counsel-find-file
+    "ff"  'counsel-fd-file-jump
     "fg"  'counsel-grep-or-swiper
     "fl"  'counsel-locate
     "fm"  'counsel-imenu
@@ -2314,11 +2330,11 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy  cop_y_
 ;; key bindings
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key [(f3)] 'color-rg-search-input)
-(global-set-key [(f4)] 'my-tmp-back)
-(global-set-key [(C-f4)] 'my-tmp-mark)
-(global-set-key [(M-f4)] 'my-tmp-back-original)
+(global-set-key [(f4)] 'ace-pinyin-dwim)
+(global-set-key [(f5)] 'loop-alpha)
+(global-set-key [(f6)] 'sdcv-search-input+)
 ;; switch between current buffer and previous one.
-(global-set-key [(f6)] '(lambda () (interactive) (switch-to-buffer nil)))
+(global-set-key [(f12)] '(lambda () (interactive) (switch-to-buffer nil)))
 
 ;;------------------------------------------------------------
 ;;{{{ desktop.
@@ -2370,7 +2386,7 @@ _j_ump    _t_oggle    f_o_ld     a_v_y-copy  cop_y_
  '(inhibit-startup-screen t)
  '(org-support-shift-select t)
  '(package-selected-packages
-   '(gcmh projectile citre imenu-extra realgud iscroll tree-sitter csharp-mode fsharp-mode doom-modeline doom-themes neotree go-mode 0blayout elfeed counsel-fd find-file-in-project fd-dired lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline treemacs-icons-dired treemacs-evil treemacs org-download centered-cursor-mode general evil-anzu youdao-dictionary evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy all-the-icons-ivy-rich org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim folding avy evil-matchit window-numbering use-package rainbow-delimiters pyim counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
+   '(origami gcmh projectile citre imenu-extra realgud iscroll tree-sitter csharp-mode fsharp-mode doom-modeline doom-themes neotree go-mode 0blayout elfeed counsel-fd find-file-in-project fd-dired lsp-pyright ivy-xref lsp-ivy lsp-mode spinner powerline treemacs-icons-dired treemacs-evil treemacs org-download centered-cursor-mode general evil-anzu youdao-dictionary evil-pinyin format-all ahk-mode eshell-z eshell-up all-the-icons-ivy all-the-icons-ivy-rich org-superstar all-the-icons-ibuffer all-the-icons imenu-list nov powershell spacemacs-theme smart-compile helpful wgrep modern-cpp-font-lock counsel-etags ace-window quickrun posframe js2-mode evil-textobj-anyblock vimrc-mode dired-single web-mode evil-nerd-commenter hydra evil-surround which-key htmlize hide-lines linum-relative rainbow-mode w32-browser json-mode yaml-mode evil-visualstar anzu ace-pinyin markdown-mode fold-dwim avy evil-matchit window-numbering use-package rainbow-delimiters pyim counsel semi swiper ace-jump-mode smex expand-region cal-china-x bm company-tabnine company w3m helm evil))
  '(recentf-mode t)
  '(save-place-mode t)
  '(show-paren-mode t)
