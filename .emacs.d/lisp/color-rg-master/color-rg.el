@@ -251,7 +251,7 @@
 (require 'cl-lib)
 (require 'subr-x)
 (require 'grep)
-
+(require 'projectile)
 ;;; Code:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; OS Config ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defvar color-rg-mac-load-path-from-shell t
@@ -1194,11 +1194,16 @@ This assumes that `color-rg-in-string-p' has already returned true, i.e.
   (interactive)
   (color-rg-search-input (color-rg-pointer-string) (expand-file-name (buffer-file-name))))
 
+;; (defun color-rg-project-root-dir ()
+;;   (let ((project (project-current)))
+;;     (if project
+;;         (expand-file-name (cdr project))
+;;       default-directory)))
+
 (defun color-rg-project-root-dir ()
-  (let ((project (project-current)))
-    (if project
-        (expand-file-name (cdr project))
-      default-directory)))
+    (if projectile-mode
+        (expand-file-name (projectile-project-root))
+      default-directory))
 
 (defalias 'color-rg-search-input-in-project 'color-rg-search-project)
 

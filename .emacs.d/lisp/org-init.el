@@ -341,7 +341,7 @@
      (set-face-attribute 'org-agenda-current-time nil
                          :foreground "DarkGreen")
      (set-face-attribute 'org-agenda-date-today nil
-                         :foreground "DarkGreen")
+                         :foreground "Green")
      (set-face-attribute 'org-agenda-date-weekend nil
                          :foreground "light blue")
      ))
