@@ -299,6 +299,12 @@ Setting this to nil or 0 will turn off the indicator."
   :type 'number
   :group 'color-rg)
 
+;; lihao add.
+(defcustom color-rg-extra-arguments ""
+  "Default arguments passed to ripgrep."
+  :type 'string
+  :group 'color-rg)
+
 (defcustom color-rg-kill-temp-buffer-p t
   "Default this option is true, it will kill temp buffer when quit color-rg buffer.
 
@@ -722,6 +728,9 @@ CASE-SENSITIVE determinies if search is case-sensitive."
 
           (list "--max-columns" (number-to-string color-rg-max-column))
 
+          ;; lihao add.
+          (list color-rg-extra-arguments)
+          
           (when no-ignore
             (list "--no-ignore"))
 
@@ -1218,6 +1227,11 @@ This assumes that `color-rg-in-string-p' has already returned true, i.e.
 (defun color-rg-search-project-with-type ()
   (interactive)
   (color-rg-search-input (color-rg-read-input) (color-rg-project-root-dir) (color-rg-read-file-type "Filter file by type (default: [ %s ]): ")))
+
+;; lihao add
+(defun color-rg-search-dir-with-type ()
+  (interactive)
+  (color-rg-search-input (color-rg-read-input) (expand-file-name (read-directory-name "Directory: ")) (color-rg-read-file-type "Filter file by type (default: [ %s ]): ")))
 
 (defun color-rg-search-project-rails ()
   (interactive)

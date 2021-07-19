@@ -8,6 +8,7 @@
 .tmux/
 .elfeed/
 .cgdb/
+screenshot/
 Mail/
 misc/
 News/
@@ -26,12 +27,13 @@ fonts/
 .authinfo
 .gnupg
 .zcompdump*
-# ------------------------------------emacs----------------------------------------
+# ---------------------------------emacs----------------------------------------
 *~
 \#*\#
 .emacs.desktop
 .emacs.desktop.lock
 *.elc
+*.eld
 auto-save-list
 tramp
 bookmark[s]
@@ -45,6 +47,7 @@ smex-items
 recentf
 transient/
 url/
+GlobalVim/
 
 # Org-mode
 .org-id-locations
@@ -86,7 +89,7 @@ server/
 # network security
 network-security.data
 
-# -------------------------------------vim-----------------------------------------
+# ----------------------------------vim-----------------------------------------
 # vim directory ignore
 .vim/doc/
 .vim/plugged/
@@ -117,7 +120,7 @@ tags
 # nvim
 AppData/
 
-# -------------------------------------system-----------------------------------------
+# --------------------------------system----------------------------------------
 # windows system ignore
 $RECYCLE.BIN/
 .DS_Store
