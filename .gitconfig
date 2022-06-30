@@ -1,0 +1,35 @@
+# This is Git's per-user configuration file.
+[user]
+# Please adapt and uncomment the following lines:
+name = haoisli9
+email = haoisli9@hotmail.com
+[gui]
+recentrepo = D:/Users/home
+[core]
+preloadindex = true
+fscache = true
+[gc]
+auto = 256
+[difftool "p4merge"]
+path = C:/Program Files/Perforce/p4merge.exe
+cmd = p4merge.exe "$LOCAL" "$REMOTE"
+[difftool]
+prompt = false
+[merge]
+tool = p4merge
+[mergetool "p4merge"]
+path = C:/Program Files/Perforce/p4merge.exe
+cmd = p4merge.exe "$BASE" "$LOCAL" "$REMOTE" "$MERGED"
+trustExitCode = false
+keepTemporaries = false
+keepBackup = false
+[mergetool]
+prompt = false
+[http]
+sslVerify = false
+[credential]
+helper = store
+[safe]
+	directory = E:/hello/ctags-master
+[init]
+	defaultBranch = master

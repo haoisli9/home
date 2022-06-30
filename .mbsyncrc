@@ -1,0 +1,71 @@
+IMAPAccount  139
+Host imap.139.com
+User 13991819104@139.com
+Pass lihao930742
+#PassCmd      "gpg -q --for-your-eyes-only --no-tty --exit-on-status-write-error --batch --passphrase-file ~/.authinfo -d ~/mailpass.gpg"
+SSLType IMAPS
+SSLVersion TLSv1.2
+#CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+IMAPAccount  hotmail
+Host imap-mail.outlook.com
+User haoisli9@hotmail.com
+Pass lihao930742
+#PassCmd      "gpg -q --for-your-eyes-only --no-tty --exit-on-status-write-error --batch --passphrase-file ~/.authinfo -d ~/mailpass.gpg"
+SSLType IMAPS
+SSLVersion TLSv1.2
+
+#IMAPAccount gmail-kamathvasudev
+#Host imap.gmail.com
+#User kamathvasudev@gmail.com
+#PassCmd "gpg -q --for-your-eyes-only --no-tty --exit-on-status-write-error --batch #--passphrase-file ~/path/to/passphrase.txt -d ~/path/to/mailpass.gpg"
+#SSLType IMAPS
+#SSLVersion TLSv1.2
+#CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+IMAPStore 139-remote
+Account 139
+
+IMAPStore hotmail-remote
+Account hotmail
+
+#IMAPStore gmail-kamathvasudev-remote
+#Account gmail-kamathvasudev
+
+MaildirStore 139-local
+Path ~/Maildir/139/
+Inbox ~/Maildir/139/inbox
+
+MaildirStore hotmail-local
+SubFolders Verbatim
+Path ~/Maildir/hotmail/
+Inbox ~/Maildir/hotmail/inbox
+
+#MaildirStore gmail-kamathvasudev-local
+#Path ~/Mail/Gmail-1/
+#Inbox ~/Mail/Gmail-1/INBOX
+
+Channel 139
+Far :139-remote:
+Near :139-local:
+Patterns *
+Create Both
+SyncState *
+Sync All
+
+Channel hotmail
+Far :hotmail-remote:
+Near :hotmail-local:
+Patterns *
+Create Near
+SyncState *
+Sync All
+
+#Channel gmail-kamathvasudev
+#Master :gmail-kamathvasudev-remote:
+#Slave :gmail-kamathvasudev-local:
+# Exclude everything under the internal [Gmail] folder, except the interesting folders
+#Patterns * ![Gmail]*
+#Create Both
+#SyncState *
+#Sync All

@@ -1,0 +1,17 @@
+ThemeFile=dracula
+Font=等距更纱黑体 SC
+FontHeight=16
+Columns=150
+Rows=24
+Term=mintty
+BellType=0
+Language=@
+CursorType=block
+ScrollMod=off
+PgUpDnScroll=yes
+Locale=zh_CN
+Charset=UTF-8
+MiddleClickAction=extend
+Printer=*
+RightClickAction=paste
+CopyOnSelect=no

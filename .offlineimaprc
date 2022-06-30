@@ -1,0 +1,24 @@
+[general]
+accounts = 139
+maxsyncaccounts = 3
+
+[Account 139]
+localrepository = 139-Local
+remoterepository = 139-Remote
+utf8foldernames = True
+
+[Repository 139-Local]
+type = Maildir
+localfolders = ~/Maildir/139
+
+[Repository 139-Remote]
+type = IMAP
+remotehost = imap.139.com
+remoteuser = 13991819104@139.com
+remotepass = lihao930742
+remoteport = 993
+auth_mechanisms = LOGIN
+ssl = true
+sslcacertfile = /etc/pki/tls/certs/ca-certificates.crt
+maxconnections = 4
+realdelete = yes

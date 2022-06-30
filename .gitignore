@@ -1,0 +1,137 @@
+# bash files ignore
+*cache/
+.oh-my-zsh/
+.ssh/
+.stardict/
+.TabNine/
+.w3m/
+.tmux/
+.elfeed/
+.cgdb/
+.ipython/
+screenshot/
+Mail/
+Maildir/
+misc/
+News/
+org/
+fonts/
+ê»*/
+*history
+.z
+.z.*
+*viminfo*
+.wget-hsts
+.lesshst
+.newsrc*
+*cache
+.pop3*
+.authinfo
+.gnupg
+.git-credentials
+.zcompdump*
+
+# ---------------------------------emacs----------------------------------------
+*~
+\#*\#
+.emacs.desktop
+.emacs.desktop.lock
+*.elc
+*.eld
+*.old
+*.bak
+auto-save-list
+tramp
+bookmark[s]
+.\#*
+ido.*
+.lsp-session*
+abbrev_defs
+.youdao
+*places
+smex-items
+recentf
+transient/
+url/
+devdocs-browser/
+lisp/
+
+# Org-mode
+.org-id-locations
+*_archive
+
+# flymake-mode
+*_flymake.*
+
+# eshell files
+.emacs.d/eshell/history
+.emacs.d/eshell/lastdir
+
+# elpa packages
+elpa/
+notused/
+
+# reftex files
+*.rel
+
+# AUCTeX auto folder
+auto/
+
+# cask packages
+.cask/
+dist/
+
+# Flycheck
+flycheck_*.el
+
+# server auth directory
+server/
+
+# projectiles files
+.projectile
+projects
+
+# directory configuration
+.dir-locals.el
+
+# network security
+network-security.data
+
+# ----------------------------------vim-----------------------------------------
+# nvim
+AppData/
+
+# vim directory ignore
+.vim/doc/
+.vim/plugged/
+.vim/autoload/
+
+# Swap
+.vim/[._]*.s[a-v][a-z]
+#!*.svg  # comment out if you don't need vector files
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# Session
+Session.vim
+Sessionx.vim
+
+# Temporary
+.netrwhist
+.netrwbook
+*~
+
+# Auto-generated tag files
+tags
+# Persistent undo
+[._]*.un~
+
+# --------------------------------system----------------------------------------
+# windows system ignore
+$RECYCLE.BIN/
+.DS_Store
+Thumbs.db
+[Dd]esktop.ini
+*.lnk
