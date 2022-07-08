@@ -231,6 +231,8 @@
   (setq consult-locate-args (encode-coding-string "es.exe -i -p -r" 'gbk))
   ;; (add-to-list 'process-coding-system-alist '("es" gbk . gbk)) 
 
+  (add-to-list 'consult-buffer-filter "\\`\\*TAGS\\'")
+
   ;; consult-outline support for eshell prompts
   (add-hook 'eshell-mode-hook (lambda () (setq outline-regexp eshell-prompt-regexp)))
   

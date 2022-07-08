@@ -31,7 +31,7 @@
 ;;------------------------------------------------------------
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")))
-(add-to-list 'package-archives '("org"  . "https://orgmode.org/elpa/"))
+;; (add-to-list 'package-archives '("org"  . "https://orgmode.org/elpa/"))
 (add-to-list 'package-archives '("gnu"  . "https://elpa.gnu.org/packages/"))
 
 (package-initialize)
@@ -110,7 +110,7 @@
 
 ;; 让鼠标滚动更好用
 (setq scroll-margin 1)
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
+(setq mouse-wheel-scroll-amount '(2 ((shift) . 1) ((control) . nil)))
 (setq mouse-wheel-progressive-speed nil)
 
 (modify-frame-parameters nil '((inhibit-double-buffering . t)))
@@ -291,6 +291,8 @@
 ;; shell configuration
 ;; 在环境变量中增加prompt, 值$E[1;32;40m$t $E[1;36;40m$p$E[1;36;40m $g$E[1;37;40m ，可以在prompt中显示时间
 (setq shell-file-name (executable-find "cmdproxy.exe"))
+;; (setq shell-file-name "C:/Git/bin/bash.exe")
+;; (setenv "ESHELL" "bash")
 
 ;; set maximum-buffer size for shell-mode
 (setq comint-buffer-maximum-size 1024)
@@ -560,12 +562,14 @@
 ;;----------------------------------------------------------------
 ;; lsp configuration.
 ;; (require 'init-lsp-bridge)
-;; (require 'init-lsp)
-(require 'init-eglot)
+(require 'init-lsp)
+;; (require 'init-eglot)
 
 ;;----------------------------------------------------------
 ;; citre configure.
 ;; (require 'init-citre)
+
+;; (require 'init-etags)
 
 ;;----------------------------------------------------------------------------
 ;; (use-package helm-config
@@ -1119,6 +1123,13 @@ _t_oggle  _a_vy  _c_ommon   _f_olding
 ;;------------------------------------------------------------
 ;; mode-line configuration.
 
+(require 'diminish)
+(diminish 'anzu-mode)
+(diminish 'eldoc-mode)
+(diminish 'abbrev-mode)
+(diminish 'which-key-mode)
+(diminish 'visual-line-mode)
+
 ;; (require 'init-modeline)
 (use-package doom-modeline
   :custom
@@ -1162,7 +1173,7 @@ _t_oggle  _a_vy  _c_ommon   _f_olding
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(package-selected-packages
-   '(eglot sis hungry-delete consult-company company-ctags company company-tabnine compat keycast embark-consult embark consult marginalia vertico orderless asn1-mode fanyi org-modern shrface devdocs-browser w3m pdf-tools cmake-mode evil-multiedit which-key yaml-mode eshell-syntax-highlighting eshell-up eshell-z org-download treemacs-evil treemacs citre helpful ace-window avy evil-pinyin evil dired-single elfeed bm wgrep use-package folding web-mode puni writeroom-mode linum-relative vimrc-mode go-mode realgud evil-anzu nov w32-browser markdown-mode htmlize anzu cal-china-x evil-nerd-commenter evil-surround evil-matchit isearch-dabbrev rainbow-delimiters rainbow-mode window-numbering doom-modeline doom-themes all-the-icons expand-region pyim))
+   '(lsp-pyright lsp-mode diminish sis hungry-delete consult-company company-ctags company company-tabnine compat keycast embark-consult embark consult marginalia vertico orderless asn1-mode fanyi org-modern shrface devdocs-browser w3m pdf-tools cmake-mode evil-multiedit which-key yaml-mode eshell-syntax-highlighting eshell-up eshell-z org-download treemacs-evil treemacs helpful ace-window avy evil-pinyin evil dired-single elfeed bm wgrep use-package folding web-mode puni writeroom-mode linum-relative vimrc-mode go-mode evil-anzu nov w32-browser markdown-mode htmlize anzu cal-china-x evil-nerd-commenter evil-surround evil-matchit isearch-dabbrev rainbow-delimiters rainbow-mode window-numbering doom-modeline doom-themes all-the-icons expand-region pyim))
  '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

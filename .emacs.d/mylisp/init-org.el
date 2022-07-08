@@ -65,6 +65,11 @@
   (setq org-use-sub-superscripts '{}
         org-export-with-sub-superscripts '{})
 
+  ;; 把<>符号从分隔符（delimiter）改成标点（punctuation），避免误匹配
+  ;; 参考Emacs Lisp: Syntax Table [http://xahlee.info/emacs/emacs/elisp_syntax_table.html]
+  (modify-syntax-entry ?< "." org-mode-syntax-table)
+  (modify-syntax-entry ?> "." org-mode-syntax-table)
+  
   (setq
    ;; Hide html built-in style and script.
    org-html-htmlize-output-type 'inline-css ;; 保留代码块高亮

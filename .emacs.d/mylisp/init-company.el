@@ -7,11 +7,13 @@
         company-eclim-auto-save nil          ; Stop eclim auto save.
         company-dabbrev-downcase nil         ; No downcase when completion.
         company-dabbrev-ignore-buffers "\\`[ *]||TAGS$"
+        company-dabbrev-code-everywhere t
+        company-dabbrev-code-ignore-case t
         )
 
   ;; Trigger completion immediately.
-  (setq company-idle-delay 0.1)
-  (setq company-minimum-prefix-length 3)
+  (setq company-idle-delay 0.05)
+  (setq company-minimum-prefix-length 1)
   ;; Number the candidates (use M-1, M-2 etc to select completions).
   (setq company-show-numbers t)
 
@@ -19,13 +21,15 @@
   ;; https://github.com/company-mode/company-mode/issues/29
   (setq company-global-modes
         '(not
-          shell-mode comint-mode erc-mode gud-mode rcirc-mode
+          comint-mode erc-mode gud-mode rcirc-mode
           minibuffer-inactive-mode
           ))
   (add-hook 'after-init-hook 'global-company-mode)
-
+  
   :config
-  (setq company-frontends '(company-pseudo-tooltip-unless-just-one-frontend
+  (setq company-frontends '(company-pseudo-tooltip-frontend
+                            ;; cause erro in eshell mode.
+                            ;; company-pseudo-tooltip-unless-just-one-frontend
                             company-preview-common-frontend
                             company-echo-metadata-frontend))
 
@@ -103,10 +107,17 @@
 ;; (setq completion-styles '(basic substring orderless))
 (setq company-search-regexp-function 'company-search-words-in-any-order-regexp)
 
-;; `:separate`  使得不同 backend 分开排序
+;; `:separate` 使得不同 backend 分开排序
 ;; (add-to-list 'company-backends '(company-capf company-dabbrev company-files :with  company-tabnine :separate))
 ;; (setq company-backends '((company-capf company-dabbrev company-files :with company-tabnine)))
-(setq company-backends '((company-capf company-dabbrev company-etags company-files :with company-tabnine)))
+(setq company-backends '((company-capf company-etags company-dabbrev-code company-files :with company-tabnine :separate)))
+;; set locally.
+(dolist (hook (list
+               'org-mode-hook
+               'text-mode-hook
+               ))
+  (add-hook hook #'(lambda ()
+          (setq-local company-backends '((company-dabbrev company-files :with company-tabnine))))))
 
 ;; company-english-helper
 ;; https://github.com/manateelazycat/company-english-helper
@@ -170,6 +181,15 @@
   :config
   (define-key company-mode-map [remap completion-at-point] #'consult-company))
 
+(defun my-eshell-mode-company ()
+  (setq-local company-idle-delay nil))
+
+  ;; set company-complete-common;
+(dolist (hook (list
+               'eshell-mode-hook
+               'shell-mode-hook
+               ))
+  (add-hook hook 'my-eshell-mode-company))
 
 (message "company configuration loaded.")
 

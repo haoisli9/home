@@ -69,7 +69,7 @@
     (end-of-visual-line)
     (newline-and-indent)
     )
-  (define-key evil-insert-state-map (kbd "M-o") 'my-add-newline)
+  (define-key evil-insert-state-map (kbd "M-RET") 'my-add-newline)
 
   (defun occur-from-evil-ex ()
     "Invoke `occur' from isearch."

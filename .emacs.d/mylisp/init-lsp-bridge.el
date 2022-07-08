@@ -5,6 +5,8 @@
 (require 'lsp-bridge)
 (require 'lsp-bridge-jdtls)       ;; provide Java third-party library jump and -data directory support, optional
 
+(setq lsp-bridge-python-command "c:/Python/Python39/python.exe")
+
 ;; (yas-global-mode 1)
 (global-lsp-bridge-mode)
 (define-key lsp-bridge-mode-map (kbd "M-;") 'acm-toggle-english-helper)
