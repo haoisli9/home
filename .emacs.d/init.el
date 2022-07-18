@@ -559,17 +559,31 @@
 (require 'init-company)
 ;; (require 'init-corfu)
 
+;;----------------------------------------------------------
+;; ctags configuration.
+;; (require 'init-citre)
+
+;;------------------------------------------------------------
+;; dumb configuration.
+(define-key evil-normal-state-map (kbd "M-.") nil)
+(setq xref-show-definitions-function #'xref-show-definitions-completing-read)
+
+(use-package dumb-jump
+  :config
+  ;; set xref backend to dumb-jump.
+  ;; (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+  ;; use a completion framework instead of default popup.
+  (setq dumb-jump-selector 'completing-read)
+  
+  ;; (setq dumb-jump-force-searcher 'rg)
+  (setq dumb-jump-prefer-searcher 'rg)
+  )
+
 ;;----------------------------------------------------------------
 ;; lsp configuration.
 ;; (require 'init-lsp-bridge)
 (require 'init-lsp)
 ;; (require 'init-eglot)
-
-;;----------------------------------------------------------
-;; citre configure.
-;; (require 'init-citre)
-
-;; (require 'init-etags)
 
 ;;----------------------------------------------------------------------------
 ;; (use-package helm-config
@@ -586,7 +600,7 @@
 (use-package helpful
   :ensure t
   :bind (([remap describe-function] . helpful-callable)
-         ([remap describe-variable] . helpful-variable)
+         ([remap describe-variable] . helpful-symbol)
          ([remap describe-key] . helpful-key))
   :config
   (with-eval-after-load 'counsel
@@ -658,11 +672,13 @@ Version 2022-06-29 00.01.07 +8000"
 
 ;;----------------------------------------------------------------
 ;; markdown mode.
-(eval-after-load 'markdown-mode
-  '(progn
-     ;; `pandoc' is better than obsolete `markdown'
-     (when (executable-find "pandoc")
-       (setq markdown-command "pandoc -f markdown"))))
+(use-package markdown-mode
+  :mode (("README\\.md\\'" . gfm-mode))
+  :init
+  ;; `pandoc' is better than obsolete `markdown'
+  ;; iconv -f gbk -t gbk README.md | pandoc -o 1.html
+  (when (executable-find "pandoc")
+    (setq markdown-command "pandoc -f markdown")))
 
 ;; pdf tools.
 (use-package pdf-tools
@@ -940,18 +956,10 @@ Version 2022-06-29 00.01.07 +8000"
 
 ;;}}} program configuration loaded.
 
-;;------------------------------------------------------------
-;; dumb config.
-(define-key evil-normal-state-map (kbd "M-.") nil)
-;; (setq dumb-jump-force-searcher 'rg)
-;; (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 
 (defun my--push-point-to-xref-marker-stack (&rest r)
   (xref-push-marker-stack (point-marker)))
 (dolist (func '(find-function
-                citre-jump
-                citre-jump-to-definition
-                citre-jump-to-reference
                 yaml-find-ref
                 irfc-table-jump
                 ))
@@ -1061,15 +1069,26 @@ fo_l_ding       _f_old-hs          _o_utline
   ("o"  outline-toggle-children)
   )
 
+(defhydra hydra-dumb-jump (:color blue :columns 3)
+    "Dumb Jump"
+    ("j" dumb-jump-go "Go")
+    ("o" dumb-jump-go-other-window "Other window")
+    ("e" dumb-jump-go-prefer-external "Go external")
+    ("x" dumb-jump-go-prefer-external-other-window "Go external other window")
+    ("i" dumb-jump-go-prompt "Prompt")
+    ("l" dumb-jump-quick-look "Quick look")
+    ("b" dumb-jump-back "Back"))
+
 ;; Recommended binding:
 (defhydra hydra-all (:color blue :hint nil)
   "
-_t_oggle  _a_vy  _c_ommon   _f_olding
+_t_oggle  _a_vy  _c_ommon   _f_olding    dumb-_j_ump
   "
   ("t" hydra-toggle/body)
   ("c" hydra-common/body)
   ("a" hydra-avy/body)
   ("f" hydra-folding/body)
+  ("j" hydra-dumb-jump/body)
 )
 
 (define-key evil-normal-state-map (kbd "<SPC>") 'hydra-all/body)
@@ -1173,7 +1192,7 @@ _t_oggle  _a_vy  _c_ommon   _f_olding
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(package-selected-packages
-   '(lsp-pyright lsp-mode diminish sis hungry-delete consult-company company-ctags company company-tabnine compat keycast embark-consult embark consult marginalia vertico orderless asn1-mode fanyi org-modern shrface devdocs-browser w3m pdf-tools cmake-mode evil-multiedit which-key yaml-mode eshell-syntax-highlighting eshell-up eshell-z org-download treemacs-evil treemacs helpful ace-window avy evil-pinyin evil dired-single elfeed bm wgrep use-package folding web-mode puni writeroom-mode linum-relative vimrc-mode go-mode evil-anzu nov w32-browser markdown-mode htmlize anzu cal-china-x evil-nerd-commenter evil-surround evil-matchit isearch-dabbrev rainbow-delimiters rainbow-mode window-numbering doom-modeline doom-themes all-the-icons expand-region pyim))
+   '(ob-mermaid dumb-jump lsp-pyright lsp-mode diminish sis hungry-delete consult-company company-ctags company company-tabnine compat keycast embark-consult embark consult marginalia vertico orderless asn1-mode fanyi org-modern shrface devdocs-browser w3m pdf-tools cmake-mode evil-multiedit which-key yaml-mode eshell-syntax-highlighting eshell-up eshell-z org-download treemacs-evil treemacs helpful ace-window avy evil-pinyin evil dired-single elfeed bm wgrep use-package folding web-mode puni writeroom-mode linum-relative vimrc-mode go-mode evil-anzu nov w32-browser markdown-mode htmlize anzu cal-china-x evil-nerd-commenter evil-surround evil-matchit isearch-dabbrev rainbow-delimiters rainbow-mode window-numbering doom-modeline doom-themes all-the-icons expand-region pyim))
  '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

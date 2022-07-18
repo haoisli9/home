@@ -29,10 +29,11 @@
   ;;  ((t :inherit lsp-headerline-breadcrumb-symbols-face
   ;;      :underline (:style wave :color ,(face-foreground 'success)))))
      
-  :hook ((prog-mode . (lambda ()
-                        (unless (derived-mode-p 'emacs-lisp-mode 'lisp-mode 'makefile-mode)
-                          (lsp-deferred))))
-         ((markdown-mode yaml-mode) . lsp-deferred)
+  :hook (
+         ;; (prog-mode . (lambda ()
+         ;;                (unless (derived-mode-p 'emacs-lisp-mode 'lisp-mode 'makefile-mode)
+         ;;                  (lsp-deferred))))
+         ;; ((markdown-mode yaml-mode) . lsp-deferred)
          (lsp-mode . (lambda ()
                        ;; Integrate `which-key'
                        (lsp-enable-which-key-integration))))
@@ -55,10 +56,18 @@
   ;;     (and (eq major-mode 'sh-mode)
   ;;          (memq sh-shell '(sh bash zsh))))
   ;;   (advice-add #'lsp-bash-check-sh-shell :override #'my-lsp-bash-check-sh-shell))
-       
+
+  (defun my/lsp-find-definition ()
+    (interactive)
+    (condition-case _
+        (lsp-find-definition)
+      (error (let* ((xref-prompt-for-identifier nil))
+               (call-interactively #'xref-find-definitions)))))  
+
   :bind (:map lsp-mode-map
             ("C-c C-d" . lsp-describe-thing-at-point)
             ([remap xref-find-definitions] . lsp-find-definition)
+            ;; ("M-." . my/lsp-find-definition)
             ([remap xref-find-references] . lsp-find-references))
   
   :init

@@ -8,14 +8,16 @@
   (setq org-src-fontify-natively t)
   :defer t
   :config
-  (setq org-agenda-files '("~/../lihao/org/task.org"
-                           "~/../lihao/org/done.org"
-                           "~/../lihao/org/diary.org"
+  (setq org-agenda-files '("~/../lihao/org/agenda/task.org"
+                           "~/../lihao/org/agenda/done.org"
+                           "~/../lihao/org/agenda/diary.org"
                            ))
   (setq org-agenda-use-time-grid t)
   (setq org-agenda-include-all-todo nil)
   (setq org-agenda-skip-scheduled-if-done t)
   (setq org-agenda-skip-deadline-if-done t)
+  (setq org-agenda-skip-timestamp-if-done t)
+  (setq org-agenda-skip-timestamp-if-deadline-is-shown t)
   (setq org-agenda-columns-add-appointments-to-effort-sum t)
   (setq org-agenda-custom-commands nil)
   (setq org-agenda-default-appointment-duration 60)
@@ -35,7 +37,6 @@
    "▶ now ────────────────────────────────────────")
 
   (setq org-agenda-include-diary t)
-  (setq org-agenda-diary-file "~/../lihao/org/diary.org")
   (setq diary-file "~/diary")
 
   ;; Various preferences
@@ -178,6 +179,14 @@
 (define-abbrev org-mode-abbrev-table "splantuml" "" 'skel-org-block-plantuml)
 
 ;;----------------------------------------------------------------------------
+;; mermaid
+(setq ob-mermaid-cli-path "c:/Users/lihao.BJ/AppData/Roaming/npm/mmdc.cmd")
+(org-babel-do-load-languages
+    'org-babel-load-languages
+    '((mermaid . t)
+      (scheme . t)))
+
+;;----------------------------------------------------------------------------
 ;;Sunrise and Sunset
 ;;日出而作, 日落而息
 (defun diary-sunrise ()
@@ -266,14 +275,14 @@
     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 
-(setq org-default-capture-file "~/../lihao/org/captures.org")
-
+(setq org-default-capture-file "~/../lihao/org/agenda/captures.org")
+(setq org-agenda-diary-file "~/../lihao/org/agenda/diary.org")
 (setq org-capture-templates
-      '(("n" "Note" entry (file+headline org-default-capture-file "Note")
+      '(("n" "Notes" entry (file+headline org-default-capture-file "Notes")
          "** TODO %?%i\n   - Added: %T")
         ("r" "Reminder" entry (file+headline org-default-capture-file "Reminder")
          "** %T  %?%i\n")
-        ("j" "Journal" entry (file+olp+datetree org-agenda-diary-file "Journal")
+        ("j" "Journal" entry (file+olp+datetree org-agenda-diary-file "Diary")
          "** Time: %U\n + %?%i\n")))
 
 ;; refiles
