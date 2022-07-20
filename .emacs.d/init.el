@@ -396,7 +396,6 @@
 
 (message "isearch mode loaded.")
 
-(setq xref-search-program 'ripgrep)
 
 ;;}}} base configuration loaded.
 
@@ -563,11 +562,12 @@
 ;; ctags configuration.
 ;; (require 'init-citre)
 
-;;------------------------------------------------------------
-;; dumb configuration.
+(setq xref-search-program 'ripgrep)
 (define-key evil-normal-state-map (kbd "M-.") nil)
 (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
 
+;;------------------------------------------------------------
+;; dumb configuration.
 (use-package dumb-jump
   :config
   ;; set xref backend to dumb-jump.
