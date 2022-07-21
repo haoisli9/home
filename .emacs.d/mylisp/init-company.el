@@ -109,7 +109,8 @@
 
 ;; `:separate` 使得不同 backend 分开排序
 ;; (add-to-list 'company-backends '(company-capf company-dabbrev company-files :with  company-tabnine :separate))
-(setq company-backends '((company-capf company-etags company-dabbrev-code company-files :with company-tabnine :separate)))
+;; (setq company-backends '((company-capf company-etags company-dabbrev-code company-files :with company-tabnine :separate)))
+(setq company-backends '((company-capf company-etags company-dabbrev-code company-files :separate)))
 ;; set locally.
 (dolist (hook (list
                'org-mode-hook

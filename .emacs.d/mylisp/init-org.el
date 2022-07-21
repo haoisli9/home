@@ -446,9 +446,11 @@
   :ensure t
   :after org
   ;;将截屏功能绑定到快捷键：Ctrl + Shift + Y
-  :bind ("C-S-y" . org-insert-clipboard)
+  :bind (
+         ("C-S-y" . org-insert-clipboard)
+         ("C-S-p" . org-download-clipboard))
   :config
-  ;; (require 'org-download)
+  (setq-default org-download-image-dir "./images/")
   ;; Drag and drop to Dired
   (add-hook 'dired-mode-hook 'org-download-enable)
   ;; (setq org-download-screenshot-method "convert.exe clipboard: %s")
