@@ -358,7 +358,7 @@
 
 
   :custom
-  (org-modern-star ["◉""○""●""◈""◇""◆"])
+  (org-modern-star ["◉""●""○""◆""◇"])
   (org-modern-list
         '((?+ . "◦")
           (?* . "•")
@@ -499,16 +499,15 @@
      ))
 
 ;; 设置org使用独立的字体
-;; (with-eval-after-load 'org
-;;   (defun org-buffer-face-mode-variable ()
-;;     (interactive)
-;;     (make-face 'width-font-face)
-;;     (set-face-attribute 'width-font-face nil :font "Roboto Mono 14")
-    ;; (dolist (character '(?\x25C9 ?\x25CB ?\x2738 ?\x273F ?\x2022 ?\x25B6 ?\x25B7 ?\x25B8 ?\xA1F0 ?\xA1F1 ?\xA88B))
-    ;;   (set-fontset-font nil character (font-spec :family "Roboto Mono 14"))) 
-  ;;   (setq buffer-face-mode-face 'width-font-face)
-  ;;   (buffer-face-mode))
-  ;; (add-hook 'org-mode-hook 'org-buffer-face-mode-variable))
+(with-eval-after-load 'org
+  (defun org-buffer-face-mode-variable ()
+    (interactive)
+    (make-face 'width-font-face)
+    (set-face-attribute 'width-font-face nil :font "FiraCode NF 14")
+    ;; (set-face-attribute 'width-font-face nil :font "Roboto Mono 14")
+    (setq buffer-face-mode-face 'width-font-face)
+    (buffer-face-mode))
+  (add-hook 'org-mode-hook 'org-buffer-face-mode-variable))
 
 ;; (add-hook 'org-agenda-mode-hook
 ;;           (lambda ()
@@ -532,7 +531,7 @@
     (add-hook 'w3m-fontify-after-hook 'inherit-org-mode))
   
   :custom
-  (inherit-org-bullets-bullet-list '("◉""○""●""❀""✿"))
+  (inherit-org-bullets-bullet-list '("◉""●""○""◆""◇"))
   )
 
 (provide 'init-org)

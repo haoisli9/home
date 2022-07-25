@@ -191,9 +191,8 @@
          ("M-s D" . consult-locate)
          ("M-s g" . consult-git-grep)
          ("M-s r" . consult-ripgrep)
-         ("M-s l" . consult-ripgrep-or-line)
-         ("M-s s" . consult-line-symbol-at-point)
-         ("M-s L" . consult-line-multi)
+         ("M-s s" . consult-ripgrep-or-line)
+         ("M-s l" . consult-line-multi)
          ("M-s m" . consult-multi-occur)
          ("M-s k" . consult-keep-lines)
          ("M-s u" . consult-focus-lines)
@@ -512,6 +511,41 @@ When the number of characters in a buffer exceeds this threshold,
   ;; (advice-add 'exit-minibuffer :after #'disable-py-search)
   (add-hook 'minibuffer-exit-hook 'disable-py-search)
   )
+
+;; 更通用的xxx-thing-at-point
+(defvar mcfly-commands
+  '(consult-line consult-ripgrep consult-git-grep consult-grep consult-ripgrep-or-line))
+
+(defvar mcfly-back-commands
+  '(self-insert-command))
+
+(defun mcfly-back-to-present ()
+  (remove-hook 'pre-command-hook 'mcfly-back-to-present t)
+  (cond ((and (memq last-command mcfly-commands)
+              (equal (this-command-keys-vector) (kbd "M-p")))
+         ;; repeat one time to get straight to the first history item
+         (setq unread-command-events
+               (append unread-command-events
+                       (listify-key-sequence (kbd "M-p")))))
+        ((memq this-command mcfly-back-commands)
+         (delete-region
+	  (progn (forward-visible-line 0) (point))
+          (point-max)))))
+
+(defun mcfly-time-travel ()
+  (when (memq this-command mcfly-commands)
+    (insert (propertize (save-excursion
+			  (set-buffer (window-buffer (minibuffer-selected-window)))
+			  (or (seq-some (lambda (thing) (thing-at-point thing t))
+					'(region url symbol sexp))
+			      "No thing at point")
+			  )    'face 'shadow))
+    (add-hook 'pre-command-hook 'mcfly-back-to-present nil t)
+    (forward-visible-line 0)
+    ))
+
+;; setup code
+(add-hook 'minibuffer-setup-hook #'mcfly-time-travel)
 
 ;; vertico consult consult-dir marginalia embark embark-consult orderless all-the-icons-completion
 (message "vertico configuration loaded.")

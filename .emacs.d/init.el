@@ -1157,21 +1157,48 @@ _t_oggle  _a_vy  _c_ommon   _f_olding    dumb-_j_ump
   (doom-modeline-minor-modes t)
   :hook (after-init . doom-modeline-mode))
 
-(use-package keycast
-  :after doom-modeline
-  :commands keycast-mode
+;; (use-package keycast
+;;   :after doom-modeline
+;;   :commands keycast-mode
+;;   :config
+;;   (define-minor-mode keycast-mode
+;;     "Show current command and its key binding in the mode line."
+;;     :global t
+;;     (if keycast-mode
+;;         (progn
+;;           (add-hook 'pre-command-hook 'keycast--update t)
+;;           (add-to-list 'global-mode-string '("" keycast-mode-line " ")))
+;;       (remove-hook 'pre-command-hook 'keycast--update)
+;;       (setq global-mode-string (remove '("" keycast-mode-line " ") global-mode-string))))
+;;   (keycast-mode -1)
+;;   )
+
+(use-package ligature
+  ;; :load-path "path-to-ligature-repo"
   :config
-  (define-minor-mode keycast-mode
-    "Show current command and its key binding in the mode line."
-    :global t
-    (if keycast-mode
-        (progn
-          (add-hook 'pre-command-hook 'keycast--update t)
-          (add-to-list 'global-mode-string '("" keycast-mode-line " ")))
-      (remove-hook 'pre-command-hook 'keycast--update)
-      (setq global-mode-string (remove '("" keycast-mode-line " ") global-mode-string))))
-  (keycast-mode -1)
-  )
+  ;; Enable the "www" ligature in every possible major mode
+  (ligature-set-ligatures 't '("www"))
+  ;; Enable traditional ligature support in eww-mode, if the
+  ;; `variable-pitch' face supports it
+  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+  ;; Enable all Cascadia Code ligatures in programming modes
+  (ligature-set-ligatures '(prog-mode org-mode)
+                          '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                            ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                            "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                            "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                            "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                            "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                            "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                            "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                            ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                            "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                            "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                            "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                            "\\\\" "://"))
+  ;; Enables ligature checks globally in all buffers. You can also do it
+  ;; per mode with `ligature-mode'.
+  (global-ligature-mode t))
 
 ;;-----------------------------------------------------------------------
 (require 'init-face)
