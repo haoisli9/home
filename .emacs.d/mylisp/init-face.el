@@ -75,4 +75,9 @@
                     :foreground "#b2b2b2" :background "#292b2e"
                     :box '(:color "#5d4d7a" :line-width 1))
 
+;; elisp enhance face.
+(with-eval-after-load 'elisp-mode
+  (require 'elispfl)
+  (elispfl-mode))
+
 (provide 'init-face)

@@ -50,12 +50,20 @@
         org-special-ctrl-a/e t
         org-insert-heading-respect-content t
         org-support-shift-select t
-        ;; Org styling, hide markup etc.
-        org-hide-emphasis-markers t
-        org-pretty-entities t
         )
-  (setq org-ellipsis " ... ")
-  (setq org-startup-folded 'show2levels)
+  ;; Org styling, hide markup etc.
+  (setq org-startup-folded 'show2levels
+        org-pretty-entities t
+        org-startup-indented t
+        ;; 隐藏标题栏里的一堆星号
+        org-hide-leading-stars t
+        ;; 显示隐藏标记
+        org-ellipsis "  "   ;; "    ⭍ ..."
+        ;; 直接显示语法样式
+        org-hide-emphasis-markers t
+        org-image-actual-width '(800)
+        org-startup-with-inline-images t
+        )
   
   ;; 上下标，如果去掉，使用^和_来解释上下标，否则使用{}来触发；
   ;; a_{1} 下标
@@ -92,6 +100,24 @@
    (defun org-mode-my-init ()
      (define-key org-mode-map (kbd "TAB") 'org-cycle)
      (evil-define-key '(normal emacs) org-mode-map (kbd "TAB") 'org-cycle)
+     ;; use unicode font "FireCode NF"
+     (setq-local prettify-symbols-alist
+                  '(("lambda"  . ?λ)
+                    ;; (":PROPERTIES:" . ?)
+                    ;; (":ID:" . ?)
+                    ;; (":END:" . ?)
+                    ;; ("#+TITLE:" . ?)
+                    ;; ("#+AUTHOR" . ?)
+                    ;; ("#+BEGIN_QUOTE" . ?)
+                    ;; ("#+END_QUOTE" . ?)
+                    ;; ("#+RESULTS:" . ?)
+                    ("[ ]" . ?)
+                    ("[-]" . ?)
+                    ("[X]" . ?)
+                    ("[#A]" . ?🅐)
+                    ("[#B]" . ?🅑)
+                    ("[#C]" . ?🅒)))
+     (prettify-symbols-mode t)
      )
    (add-hook 'org-mode-hook 'org-mode-my-init)
 )
@@ -106,7 +132,7 @@
         (:exports . "results")
         (:java . "")))
 
-(setq org-plantuml-jar-path "~/.emacs.d/plugins/plantuml-1.2022.5.jar")
+(setq org-plantuml-jar-path "~/.emacs.d/plugins/plantuml-1.2022.6.jar")
 ; Make babel results blocks lowercase
 (setq org-babel-results-keyword "results")
 
@@ -241,32 +267,17 @@
             day dayname cn-month-string cn-day-string)))
 
 (setq org-todo-keywords
-      '((sequence "TODO(t)" "DOING(i!)" "TBD(p!)" "TODAY(n!)" "|" "DONE(d!)" "CANCEL(c!)"  "ABORT(q@/!)")))
+      '((sequence "TODO(t)" "DOING(i!)" "TODAY(n!)" "DELAY(p@/!)" "|" "DONE(d!)" "ABORT(q@/!)")))
 (setq org-todo-keyword-faces
       '(
-	("ABORT"   .   (:background "grey50" :foreground "black" :weight bold))
-	("TBD"     .   (:foreground "gray" :weight bold))
-	("TODO"    .   (:foreground "#CF9293" :weight bold))
-	("TODAY"   .   (:foreground "pink" :weight bold))
-	("DOING"   .   (:foreground "#FBF0CC" :weight bold))
-	("DONE"    .   (:foreground "light green" :weight bold))
-        ("CANCEL"  .   (:foreground "grey50" :weight bold))
-	))
+        ("ABORT"   .   (:background "white" :foreground "black" :weight bold))
+        ("DELAY"   .   (:background "#FBF0CC" :foreground "black" :weight bold))
+        ("TODO"    .   (:background "#CF9293" :foreground "black" :weight bold))
+        ("TODAY"   .   (:background "pink" :foreground "black" :weight bold))
+        ("DOING"   .   (:background "orange" :foreground "black" :weight bold))
+        ("DONE"    .   (:background "grey50" :foreground "black" :weight bold))
+        ))
 (setq org-tag-alist '(("work" . ?w) ("home" . ?h) ("personal" . ?p)))
-
-;; 优先级范围和默认任务的优先级
-(setq org-highest-priority ?A)
-(setq org-lowest-priority  ?E)
-(setq org-default-priority ?E)
-;; 优先级醒目外观
-(setq org-priority-faces
-  '((?A . (:background "red" :foreground "white" :weight bold))
-    (?B . (:background "DarkOrange" :foreground "white" :weight bold))
-    (?C . (:background "yellow" :foreground "DarkGreen" :weight bold))
-    (?D . (:background "DodgerBlue" :foreground "yellow" :weight bold))
-    (?E . (:background "SkyBlue" :foreground "black" :weight bold))
-    ))
-(setq org-startup-indented t)
 
 ;; 任务完成自动更新上级任务状态
 (defun org-summary-todo (n-done n-not-done)
@@ -329,10 +340,21 @@
 ;; (setq org-time-clocksum-format
 ;;       '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))
 
+;; 优先级范围和默认任务的优先级
+(setq org-highest-priority ?A)
+(setq org-lowest-priority  ?C)
+(setq org-default-priority ?B)
+;; 优先级醒目外观
+(setq org-priority-faces
+  '((?A . (:foreground "#FF5554" :weight bold))
+    (?B . (:foreground "orange" :weight bold))
+    (?C . (:foreground "#50F576" :weight bold))
+    ))
+
 ;;------------------------------------------------------------
 ;; "◉" "○" "▷" "✸"
 ;; ● ◇ ✚ ✜ ☯ ◆ ♥ ♠ ♣ ♦ ☢ ❀ ✿ ◆ ◖ ▶
-;; ► • ★ ▸ ▼ ◈
+;; ► • ★ ▸ ▼ ◈ ⬧ ⬨ "☰" "☱" "☲" "☳" "☴" "☵" "☶" "☷"
 ;; A nice collection of unicode bullets:
 ;; http://nadeausoftware.com/articles/2007/11/latency_friendly_customized_bullets_using_unicode_characters
 
@@ -344,18 +366,16 @@
   (setq org-modern-todo-faces
         '(
           ("ABORT"   .   (:background "white" :foreground "black" :weight bold))
-          ("TBD"     .   (:background "#FBF0CC" :foreground "black" :weight bold))
+          ("DELAY"   .   (:background "#FBF0CC" :foreground "black" :weight bold))
           ("TODO"    .   (:background "#CF9293" :foreground "black" :weight bold))
           ("TODAY"   .   (:background "pink" :foreground "black" :weight bold))
           ("DOING"   .   (:background "orange" :foreground "black" :weight bold))
           ("DONE"    .   (:background "grey50" :foreground "black" :weight bold))
-          ("CANCEL"  .   (:background "grey50" :foreground "black" :weight bold))
           ))
   (set-face-attribute 'org-modern-done nil
                       :background "gray50" :foreground "black" :bold t)
   (add-hook 'org-mode-hook #'org-modern-mode)
   (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
-
 
   :custom
   (org-modern-star ["◉""●""○""◆""◇"])
@@ -366,6 +386,8 @@
           ))
   (org-modern-block nil)
   (org-modern-table nil)
+  (org-modern-priority nil)
+  (org-modern-checkbox nil)
 )
 
 ;;------------------------------------------------------------
@@ -414,46 +436,17 @@
         (insert meta-info)))
     ))
 
-(defun org-insert-clipboard (&optional captionp)
-  (interactive "P")
-  (let* ((image-dir
-          (if (not (buffer-file-name))
-              (cond ((string-prefix-p "CAPTURE-[0-9]" (buffer-name))
-                     (let ((buffer-name (replace-regexp-in-string "CAPTURE-[0-9-]*" "" (buffer-name))))
-                       (concat (file-name-directory (buffer-file-name (get-file-buffer buffer-name))) "images")))
-                    (t (yank) (error "")))
-            "images"))
-         (fname (concat (make-temp-name "image-") (format-time-string "%Y%m%d-%H%M%S")))
-         (image-file (concat image-dir "/" fname ".png"))
-         (exit-status
-          (call-process "convert.exe" nil nil nil "clipboard:" image-file))
-          ;; (shell-command (format "convert.exe clipboard: %s" image-file)))
-         )
-    (if (zerop exit-status)
-        (progn
-          (unless (file-exists-p image-dir) (make-directory image-dir))
-          (if captionp
-              (let ((rename (read-string "Filename to rename the temp images: ")))
-                (rename-file image-file (concat image-dir "/" rename ".png") t)
-                (insert (format "#+CAPTION: %s label:fig:%s\n" (read-string "Caption: ") rename))
-                (kill-new (format "Fig. ref:fig:%s " rename)))
-            (insert (format "[[file:%s]]" image-file))
-            (org-display-inline-images)))
-      (when captionp (user-error "No images in clipboard."))
-      (yank))))
-
 (use-package org-download
   :ensure t
   :after org
   ;;将截屏功能绑定到快捷键：Ctrl + Shift + Y
   :bind (
-         ("C-S-y" . org-insert-clipboard)
          ("C-S-p" . org-download-clipboard))
   :config
   (setq-default org-download-image-dir "./images/")
   ;; Drag and drop to Dired
   (add-hook 'dired-mode-hook 'org-download-enable)
-  ;; (setq org-download-screenshot-method "convert.exe clipboard: %s")
+  (setq org-download-screenshot-method "convert clipboard: %s")
   )
 
 ;; self defined color
@@ -499,15 +492,14 @@
      ))
 
 ;; 设置org使用独立的字体
-(with-eval-after-load 'org
-  (defun org-buffer-face-mode-variable ()
-    (interactive)
-    (make-face 'width-font-face)
-    (set-face-attribute 'width-font-face nil :font "FiraCode NF 14")
-    ;; (set-face-attribute 'width-font-face nil :font "Roboto Mono 14")
-    (setq buffer-face-mode-face 'width-font-face)
-    (buffer-face-mode))
-  (add-hook 'org-mode-hook 'org-buffer-face-mode-variable))
+;; (with-eval-after-load 'org
+;;   (defun org-buffer-face-mode-variable ()
+;;     (interactive)
+;;     (make-face 'width-font-face)
+;;     (set-face-attribute 'width-font-face nil :font "FiraCode NF 14")
+;;     (setq buffer-face-mode-face 'width-font-face)
+;;     (buffer-face-mode))
+;;   (add-hook 'org-mode-hook 'org-buffer-face-mode-variable))
 
 ;; (add-hook 'org-agenda-mode-hook
 ;;           (lambda ()

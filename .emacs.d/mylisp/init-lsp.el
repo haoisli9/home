@@ -66,10 +66,10 @@
 
   :bind (:map lsp-mode-map
             ("C-c C-d" . lsp-describe-thing-at-point)
-            ([remap xref-find-definitions] . lsp-find-definition)
-            ;; ("M-." . my/lsp-find-definition)
-            ([remap xref-find-references] . lsp-find-references))
-  
+            ;; ([remap xref-find-definitions] . lsp-find-definition)
+            ;; ;; ("M-." . my/lsp-find-definition)
+            ;; ([remap xref-find-references] . lsp-find-references)
+            )
   :init
   ;; flymake disabled.
   (setq lsp-diagnostics-provider :none)

@@ -54,6 +54,8 @@
   ;; unbind some evil-insert key.
   (define-key evil-insert-state-map (kbd "C-k") nil)
   (define-key evil-insert-state-map (kbd "C-v") nil)
+  (define-key evil-insert-state-map (kbd "C-n") nil)
+  (define-key evil-insert-state-map (kbd "C-p") nil)
   
   (add-hook 'evil-insert-state-entry-hook (lambda () (cua-mode 1)))
   (add-hook 'evil-insert-state-exit-hook (lambda () (cua-mode -1)))

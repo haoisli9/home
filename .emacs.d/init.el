@@ -86,8 +86,8 @@
                       (font-spec :family chinese :size chinese-size :weight 'medium))))
 
 ;; Setting English Font
-;; (set-face-attribute 'default nil :font "Inconsolata Nerd Font 18")
-(set-face-attribute 'default nil :font "Sarasa Mono SC 16")
+(set-face-attribute 'default nil :font "Iosevka Term 16")
+;; (set-face-attribute 'default nil :font "Sarasa Mono SC Nerd 16")
 
 ;; Chinese Font
 ;; 当有字体已支持中文时，不用再次设置
@@ -95,15 +95,11 @@
   (set-fontset-font (frame-parameter nil 'font)
                     charset
                     (font-spec :family "微软雅黑" :size 30)))  ;; 微软雅黑，24
-;; Emoji
-;; (set-fontset-font t 'emoji (font-spec :family "Material Icons"))
-;; (set-fontset-font t 'unicode-bmp (font-spec :family "all-the-icons"))
-;; (set-fontset-font t 'unicode-bmp (font-spec :family "symbola"))
 
-;; (dolist (charset '(unicode))
-;;   (set-fontset-font (frame-parameter nil 'font)
-;;                      charset
-;;                      (font-spec :family "Symbola" :size 28)))
+;; Emoji
+(set-fontset-font "fontset-default" 'unicode "Sarasa Mono SC Nerd 12")
+;; (set-fontset-font "fontset-default" 'unicode "FiraCode NF 12")
+;; (set-fontset-font t 'unicode-bmp (font-spec :family "all-the-icons"))
 
 ;; 支持字体缓存
 (setq inhibit-compacting-font-caches t)
@@ -120,6 +116,8 @@
 (setq inhibit-startup-screen t)
 ;; set scratch buffer message to nil.
 (setq initial-scratch-message nil)
+;; set scratch buffer to org-mode.
+(setq initial-major-mode 'org-mode)
 
 (setq warning-suppress-log-types '((comp)))
 ;; 关闭出错时的提示声
@@ -396,7 +394,6 @@
 
 (message "isearch mode loaded.")
 
-
 ;;}}} base configuration loaded.
 
 ;;------------------------------------------------------------
@@ -562,22 +559,21 @@
 ;; ctags configuration.
 ;; (require 'init-citre)
 
+;;------------------------------------------------------------
+;; dumb configuration.
+;; (use-package dumb-jump
+;;   :config
+;;   ;; use a completion framework instead of default popup.
+;;   (setq dumb-jump-selector 'completing-read)
+;;   ;; (setq dumb-jump-force-searcher 'rg)
+;;   (setq dumb-jump-prefer-searcher 'rg)
+;;   ;; set xref backend to dumb-jump.
+;;   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+;;   )
+
 (setq xref-search-program 'ripgrep)
 (define-key evil-normal-state-map (kbd "M-.") nil)
 (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
-
-;;------------------------------------------------------------
-;; dumb configuration.
-(use-package dumb-jump
-  :config
-  ;; set xref backend to dumb-jump.
-  ;; (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-  ;; use a completion framework instead of default popup.
-  (setq dumb-jump-selector 'completing-read)
-  
-  ;; (setq dumb-jump-force-searcher 'rg)
-  (setq dumb-jump-prefer-searcher 'rg)
-  )
 
 ;;----------------------------------------------------------------
 ;; lsp configuration.
@@ -657,6 +653,11 @@ Version 2022-06-29 00.01.07 +8000"
                         (revert-buffer nil t)))
                    'follow-link t))))
             (setq ad-list (cdr ad-list))))))))
+
+;;----------------------------------------------------------------
+;; tree-sitter
+;;----------------------------------------------------------------
+(require 'init-treesitter)
 
 ;;----------------------------------------------------------------
 ;; rainbow mode.
@@ -797,7 +798,9 @@ Version 2022-06-29 00.01.07 +8000"
 (setq color-rg-extra-arguments "")
 (setq color-rg-search-ignore-rules "")
 (setq color-rg-search-no-ignore-file t)
+(global-set-key (kbd "M-]") 'color-rg-search-input)
 
+;;------------------------------------------------------------
 ;; https://github.com/manateelazycat/thing-edit
 (require 'thing-edit)
 
@@ -875,12 +878,10 @@ Version 2022-06-29 00.01.07 +8000"
                     )))
 
 (dolist (hook (list
-               'python-mode-hook
                'make-mode-hook
                ))
   (add-hook hook #'(lambda ()
                     (setq-local indent-tabs-mode t)
-                    (setq-local tab-width 4)
                     )))
 
 (use-package yaml-mode
@@ -1148,6 +1149,8 @@ _t_oggle  _a_vy  _c_ommon   _f_olding    dumb-_j_ump
 (diminish 'abbrev-mode)
 (diminish 'which-key-mode)
 (diminish 'visual-line-mode)
+(diminish 'tree-sitter-mode " ❀")
+(diminish 'hungry-delete-mode " ✜")
 
 ;; (require 'init-modeline)
 (use-package doom-modeline
@@ -1182,7 +1185,7 @@ _t_oggle  _a_vy  _c_ommon   _f_olding    dumb-_j_ump
   ;; `variable-pitch' face supports it
   (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
   ;; Enable all Cascadia Code ligatures in programming modes
-  (ligature-set-ligatures '(prog-mode org-mode)
+  (ligature-set-ligatures '(org-mode)
                           '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
                             ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
                             "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
@@ -1219,8 +1222,9 @@ _t_oggle  _a_vy  _c_ommon   _f_olding    dumb-_j_ump
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(package-selected-packages
-   '(ob-mermaid dumb-jump lsp-pyright lsp-mode diminish sis hungry-delete consult-company company-ctags company company-tabnine embark-consult embark consult marginalia vertico orderless asn1-mode fanyi org-modern shrface devdocs-browser pdf-tools cmake-mode evil-multiedit which-key yaml-mode eshell-syntax-highlighting eshell-up eshell-z org-download treemacs-evil treemacs helpful ace-window avy evil-pinyin evil dired-single elfeed bm wgrep use-package folding web-mode puni writeroom-mode linum-relative vimrc-mode go-mode evil-anzu nov w32-browser markdown-mode htmlize anzu cal-china-x evil-nerd-commenter evil-surround evil-matchit isearch-dabbrev rainbow-delimiters rainbow-mode window-numbering doom-modeline doom-themes all-the-icons expand-region pyim))
- '(tool-bar-mode nil))
+   '(realgud tree-sitter-langs tree-sitter ob-mermaid lsp-pyright lsp-mode diminish sis hungry-delete consult-company company-ctags company company-tabnine embark-consult embark consult marginalia vertico orderless asn1-mode fanyi org-modern shrface devdocs-browser pdf-tools cmake-mode evil-multiedit which-key yaml-mode eshell-syntax-highlighting eshell-up eshell-z org-download treemacs-evil treemacs helpful ace-window avy evil-pinyin evil dired-single elfeed bm wgrep use-package folding web-mode puni writeroom-mode linum-relative vimrc-mode go-mode evil-anzu nov w32-browser markdown-mode htmlize anzu cal-china-x evil-nerd-commenter evil-surround evil-matchit isearch-dabbrev rainbow-delimiters rainbow-mode window-numbering doom-modeline doom-themes all-the-icons expand-region pyim))
+ '(tool-bar-mode nil)
+ '(warning-suppress-types '((mule))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
