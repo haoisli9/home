@@ -34,7 +34,7 @@
      (600 800 1000 1200 1400 1600 1800 2000)
      " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
    org-agenda-current-time-string
-   "▶ now ────────────────────────────────────────")
+   "▶ now ────────────────────────────────────")
 
   (setq org-agenda-include-diary t)
   (setq diary-file "~/diary")
@@ -93,8 +93,9 @@
    org-html-head-include-scripts nil)
 
    ;;------------------------------------------------------------
-   (setq org-html-checkbox-type 'unicode)
+   ;; (setq org-html-checkbox-type 'unicode)
 
+   ;; 显示数字章节号
    ;; (setq org-startup-numerated t)
 
    (defun org-mode-my-init ()
@@ -267,11 +268,11 @@
             day dayname cn-month-string cn-day-string)))
 
 (setq org-todo-keywords
-      '((sequence "TODO(t)" "DOING(i!)" "TODAY(n!)" "DELAY(p@/!)" "|" "DONE(d!)" "ABORT(q@/!)")))
+      '((sequence "TODO(t)" "DOING(i)" "TODAY(n)" "WAIT(w@/!)" "|" "DONE(d)" "QUIT(q@/!)")))
 (setq org-todo-keyword-faces
       '(
-        ("ABORT"   .   (:background "white" :foreground "black" :weight bold))
-        ("DELAY"   .   (:background "#FBF0CC" :foreground "black" :weight bold))
+        ("QUIT"    .   (:background "white" :foreground "black" :weight bold))
+        ("WAIT"    .   (:background "#FBF0CC" :foreground "black" :weight bold))
         ("TODO"    .   (:background "#CF9293" :foreground "black" :weight bold))
         ("TODAY"   .   (:background "pink" :foreground "black" :weight bold))
         ("DOING"   .   (:background "orange" :foreground "black" :weight bold))
@@ -365,8 +366,8 @@
   :config
   (setq org-modern-todo-faces
         '(
-          ("ABORT"   .   (:background "white" :foreground "black" :weight bold))
-          ("DELAY"   .   (:background "#FBF0CC" :foreground "black" :weight bold))
+          ("QUIT"    .   (:background "white" :foreground "black" :weight bold))
+          ("WAIT"    .   (:background "#FBF0CC" :foreground "black" :weight bold))
           ("TODO"    .   (:background "#CF9293" :foreground "black" :weight bold))
           ("TODAY"   .   (:background "pink" :foreground "black" :weight bold))
           ("DOING"   .   (:background "orange" :foreground "black" :weight bold))
@@ -452,22 +453,22 @@
 ;; self defined color
 (eval-after-load 'org
   '(progn
-     ;; (set-face-attribute 'org-level-1 nil
-     ;;                     :bold t
-     ;;                     :foreground "#37474F"
-     ;;                     :height 1.0)
-     ;; (set-face-attribute 'org-level-2 nil
-     ;;                     :foreground "#0189cc"
-     ;;                     :height 1.0)
-     ;; (set-face-attribute 'org-level-3 nil
-     ;;                     :foreground "#673AB7"  ;; "#bd93f9"
-     ;;                     :height 1.0)
-     ;; (set-face-attribute 'org-level-4 nil
-     ;;                     :foreground "#bd93f9"  ;; "f1fa8c"
-     ;;                     :height 1.0)
-;;      (set-face-attribute 'org-level-5 nil
-;;                          :foreground "#50fa7b"
-;;                          :height 1.0)
+     (set-face-attribute 'org-level-1 nil
+                         :bold t
+                         :foreground "#FF79C6"
+                         :height 1.0)
+     (set-face-attribute 'org-level-2 nil
+                         :foreground "#D3B8FB"
+                         :height 1.0)
+     (set-face-attribute 'org-level-3 nil
+                         :foreground "#B7DEF8"
+                         :height 1.0)
+     (set-face-attribute 'org-level-4 nil
+                         :foreground "#BFEBE0"
+                         :height 1.0)
+     (set-face-attribute 'org-level-5 nil
+                         :foreground "#f8f8f2"
+                         :height 1.0)
 ;;      (set-face-attribute 'org-level-6 nil
 ;;                          :foreground "#ffb86c"
 ;;                          :height 1.0)
@@ -475,14 +476,14 @@
 ;;                          :foreground "#0189cc"
 ;;                          :height 1.0)
 ;;      (set-face-attribute 'org-level-8 nil
-;;                          :foreground "#f8f8f2"
+;;                          :foreground "#50fa7b"
 ;;                          :height 1.0)
      (set-face-attribute 'org-ellipsis nil
                          :foreground "#6272a4")
      (set-face-attribute 'org-agenda-current-time nil
                          :foreground "yellow")
      (set-face-attribute 'org-agenda-date-today nil
-                         :foreground "Green")
+                         :foreground "green")
      (set-face-attribute 'org-agenda-date-weekend nil
                          :foreground "light blue")
      (set-face-attribute 'org-scheduled-previously nil

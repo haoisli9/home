@@ -7,6 +7,7 @@
         company-eclim-auto-save nil          ; Stop eclim auto save.
         company-dabbrev-downcase nil         ; No downcase when completion.
         company-dabbrev-ignore-buffers "\\`[ *]||TAGS$"
+        company-dabbrev-code-other-buffers t
         company-dabbrev-code-everywhere t
         company-dabbrev-code-ignore-case t
         )
@@ -52,18 +53,15 @@
   ;;                                 ))
 
   (setq company-transformers '(delete-dups company-sort-by-occurrence))
-  )
 
-;; too slow so disable it.
-;; (use-package company-fuzzy
-;;  :hook (company-mode . company-fuzzy-mode)
-;;  :init
-;;  (setq company-fuzzy-sorting-backend 'flx
-;;        ;;  If you set company-fuzzy-sorting-backend to 'flx then you probably don't need this to be on because the flx scoring engine already take care of that!
-;;        company-fuzzy-prefix-on-top t
-;;        company-fuzzy-prefix-on-top nil
-;;        ;; company-fuzzy-history-backends '(company-yasnippet)
-;;        company-fuzzy-trigger-symbols '("." "->" "<" "\"" "'" "@")))
+  ;; Enable downcase only when completing the completion.
+  (defun jcs--company-complete-selection--advice-around (fn)
+    "Advice execute around `company-complete-selection' command."
+    (let ((company-dabbrev-downcase t))
+      (call-interactively fn)))
+  (advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around)
+  
+  )
 
 ;; company-tabnine
 (use-package company-tabnine
@@ -117,7 +115,22 @@
                'text-mode-hook
                ))
   (add-hook hook #'(lambda ()
-          (setq-local company-backends '((company-dabbrev company-files :with company-tabnine))))))
+                     ;; (setq-local company-backends '((company-dabbrev company-files :with company-tabnine)))
+                     (setq-local company-backends '((company-dabbrev company-files)))
+                     )))
+
+(use-package company-fuzzy
+ :hook (company-mode . company-fuzzy-mode)
+ :init
+ (require 'flx-rs)
+ (flx-rs-load-dyn)
+ (setq company-fuzzy-sorting-backend 'flx-rs
+       ;;  If you set company-fuzzy-sorting-backend to 'flx then you probably don't need this to be on because the flx scoring engine already take care of that!
+       company-fuzzy-prefix-on-top nil
+       ;; company-fuzzy-show-annotation nil
+       ;; company-fuzzy-history-backends '(company-yasnippet)
+       company-fuzzy-trigger-symbols '("." "->" "<" "\"" "'" "@"))
+ )
 
 ;; company-english-helper
 ;; https://github.com/manateelazycat/company-english-helper
@@ -137,23 +150,33 @@
     (interactive)
     (company-cancel)
     (command-execute 'company-english-helper-search))
-  
+
   (defun my/toggle-company-english-helper ()
     (interactive)
-    (company-mode t)
+    ;; (company-mode t)
     (defvar-local my/company-english-helper-backends nil)
+    (defvar-local my/company-fuzzy-mode-p nil)
     (let ((backends (buffer-local-value 'my/company-english-helper-backends (current-buffer))))
       (if backends
           (progn
             (message "company english helper off")
             (setq-local company-backends backends)
+            (setq-local company-backends (delete 'company-english-helper-search company-backends))
+            (if my/company-fuzzy-mode-p (company-fuzzy-turn-on-company-fuzzy-mode))
             (setq-local my/company-english-helper-backends nil))
         (message "company english helper on")
+        ;; english helper search can not used in fuzzy mode.
+        (if company-fuzzy-mode
+            (progn
+              (setq-local my/company-fuzzy-mode-p company-fuzzy-mode)
+              (company-fuzzy-mode 0)))
         (setq-local my/company-english-helper-backends company-backends)
+        ;; (setq-local company-backends '(company-english-helper-search))
         (setq-local company-backends
                     (append
                      '(company-english-helper-search)
-                     (delete 'company-english-helper-search company-backends)))))))
+                     (delete 'company-english-helper-search company-backends)))
+        ))))
 
 ;; Enable company in middle of symbols.
 (require 'company-anywhere)
@@ -183,6 +206,7 @@
   (advice-add #'company--capf-data-real :override #'company-ctags--capf-data-real)
   
   (setq company-ctags-ignore-case t)
+  ;; (setq company-ctags-fuzzy-match-p t)
   ;; (setq company-ctags-extra-tags-files '("$HOME/TAGS" "/usr/include/TAGS"))
 
   (defun my-consult-company-ctags ()

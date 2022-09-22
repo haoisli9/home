@@ -210,5 +210,15 @@ Use `my-tmp-back` to jump back to the stored position."
 (advice-add 'archive-rar-extract :override #'archive-unrar-extract)
 
 ;;--------------------------------------------------------------------------------------
+(defun find-and-ctags-buffer-dir ()
+  "Find a directory for current buffer.
+Could be parent of `buffer-file-name' or `default-directory' or anything.
+Make sure it's not nil."
+  (or (if buffer-file-name (file-name-directory buffer-file-name))
+      ;; buffer is created in real time
+      default-directory
+      ""))
+
+;;--------------------------------------------------------------------------------------
 (provide 'init-misc)
 

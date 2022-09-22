@@ -101,6 +101,9 @@
 ;; (set-fontset-font "fontset-default" 'unicode "FiraCode NF 12")
 ;; (set-fontset-font t 'unicode-bmp (font-spec :family "all-the-icons"))
 
+;; use for fanyi Emoji.
+(set-fontset-font t 'emoji (font-spec :family "Symbola") nil 'prepend)
+
 ;; 支持字体缓存
 (setq inhibit-compacting-font-caches t)
 
@@ -424,6 +427,19 @@
 (use-package fanyi
   :ensure t
   :defer t
+  :config
+  (setq fanyi-sound-player-support-https t)
+  :custom
+  (fanyi-providers '(;; 海词
+                     fanyi-haici-provider
+                     ;; 有道同义词词典
+                     fanyi-youdao-thesaurus-provider
+                     ;; Etymonline
+                     fanyi-etymon-provider
+                     ;; Longman
+                     fanyi-longman-provider
+                     ;; LibreTranslate
+                     fanyi-libre-provider))
   )
 
 ;; bookmarks configuration.
@@ -558,22 +574,65 @@
 ;;----------------------------------------------------------
 ;; ctags configuration.
 ;; (require 'init-citre)
+(require 'init-ctags)
 
 ;;------------------------------------------------------------
 ;; dumb configuration.
-;; (use-package dumb-jump
-;;   :config
-;;   ;; use a completion framework instead of default popup.
-;;   (setq dumb-jump-selector 'completing-read)
-;;   ;; (setq dumb-jump-force-searcher 'rg)
-;;   (setq dumb-jump-prefer-searcher 'rg)
-;;   ;; set xref backend to dumb-jump.
-;;   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-;;   )
+(use-package dumb-jump
+  :config
+  ;; use a completion framework instead of default popup.
+  (setq dumb-jump-selector 'completing-read)
+  ;; (setq dumb-jump-force-searcher 'rg)
+  (setq dumb-jump-prefer-searcher 'rg)
+  ;; set xref backend to dumb-jump.
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+  )
 
 (setq xref-search-program 'ripgrep)
 (define-key evil-normal-state-map (kbd "M-.") nil)
 (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
+
+(defun zjy/xref-find-backends ()
+  (let (backends
+        backend)
+    (dolist (f xref-backend-functions)
+      (when (functionp f)
+        (setq backend (funcall f))
+        (when backend
+          (cl-pushnew (funcall f) backends))))
+    (reverse backends)))
+
+(defun zjy/xref--create-fetcher (input kind arg)
+  "Return an xref list fetcher function.
+
+It revisits the saved position and delegates the finding logic to
+the xref backend method indicated by KIND and passes ARG to it."
+  (let* ((orig-buffer (current-buffer))
+         (orig-position (point))
+         (backends (zjy/xref-find-backends))
+         (method (intern (format "xref-backend-%s" kind))))
+    (lambda ()
+      (save-excursion
+        ;; Xref methods are generally allowed to depend on the text
+        ;; around point, not just on their explicit arguments.
+        ;;
+        ;; There is only so much we can do, however, to recreate that
+        ;; context, given that the user is free to change the buffer
+        ;; contents freely in the meantime.
+        (when (buffer-live-p orig-buffer)
+          (set-buffer orig-buffer)
+          (ignore-errors (goto-char orig-position)))
+        (let (xrefs)
+          (cl-dolist (backend backends)
+            (ignore-errors
+              (message "try xref-backend-%s" backend)
+              (setq xrefs (funcall method backend arg))
+              (when xrefs
+                (cl-return))))
+          (unless xrefs
+            (xref--not-found-error kind input))
+          xrefs)))))
+(advice-add #'xref--create-fetcher :override #'zjy/xref--create-fetcher)
 
 ;;----------------------------------------------------------------
 ;; lsp configuration.
@@ -1149,8 +1208,11 @@ _t_oggle  _a_vy  _c_ommon   _f_olding    dumb-_j_ump
 (diminish 'abbrev-mode)
 (diminish 'which-key-mode)
 (diminish 'visual-line-mode)
+(diminish 'org-indent-mode)
 (diminish 'tree-sitter-mode " ❀")
 (diminish 'hungry-delete-mode " ✜")
+;; company-fuzzy-mode can show the backends.
+(diminish 'company-mode)
 
 ;; (require 'init-modeline)
 (use-package doom-modeline
@@ -1211,7 +1273,6 @@ _t_oggle  _a_vy  _c_ommon   _f_olding    dumb-_j_ump
                         (make-glyph-code ?… 'font-lock-comment-face))
 (set-display-table-slot standard-display-table 'wrap
                          (make-glyph-code ?↩ 'font-lock-comment-face))
-
 ;;}}} UI configuration loaded.
 
 ;;------------------------------------------------------------------------
@@ -1222,7 +1283,7 @@ _t_oggle  _a_vy  _c_ommon   _f_olding    dumb-_j_ump
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(package-selected-packages
-   '(realgud tree-sitter-langs tree-sitter ob-mermaid lsp-pyright lsp-mode diminish sis hungry-delete consult-company company-ctags company company-tabnine embark-consult embark consult marginalia vertico orderless asn1-mode fanyi org-modern shrface devdocs-browser pdf-tools cmake-mode evil-multiedit which-key yaml-mode eshell-syntax-highlighting eshell-up eshell-z org-download treemacs-evil treemacs helpful ace-window avy evil-pinyin evil dired-single elfeed bm wgrep use-package folding web-mode puni writeroom-mode linum-relative vimrc-mode go-mode evil-anzu nov w32-browser markdown-mode htmlize anzu cal-china-x evil-nerd-commenter evil-surround evil-matchit isearch-dabbrev rainbow-delimiters rainbow-mode window-numbering doom-modeline doom-themes all-the-icons expand-region pyim))
+   '(dumb-jump company-fuzzy citre ahk-mode modus-themes realgud tree-sitter-langs tree-sitter ob-mermaid lsp-pyright lsp-mode diminish sis hungry-delete consult-company company-ctags company company-tabnine embark-consult embark consult marginalia vertico orderless asn1-mode fanyi org-modern shrface devdocs-browser pdf-tools cmake-mode evil-multiedit which-key yaml-mode eshell-syntax-highlighting eshell-up eshell-z org-download treemacs-evil treemacs helpful ace-window avy evil-pinyin evil dired-single elfeed bm wgrep use-package folding web-mode puni writeroom-mode linum-relative vimrc-mode go-mode evil-anzu nov w32-browser markdown-mode htmlize anzu cal-china-x evil-nerd-commenter evil-surround evil-matchit isearch-dabbrev rainbow-delimiters rainbow-mode window-numbering doom-modeline doom-themes all-the-icons expand-region pyim))
  '(tool-bar-mode nil)
  '(warning-suppress-types '((mule))))
 (custom-set-faces

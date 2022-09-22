@@ -1,6 +1,9 @@
 
 ;; face reconfigure
 
+(set-face-attribute 'default nil
+                    :foreground "#E0E1F7")   ;; "#A0B1C7"
+
 ;; (set-face-attribute 'font-lock-comment-face nil
 ;;                     :foreground "grey50" :background "default")   ;; #292e34
 (set-face-attribute 'fringe nil

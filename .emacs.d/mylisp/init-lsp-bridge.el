@@ -12,6 +12,8 @@
 (define-key lsp-bridge-mode-map (kbd "M-;") 'acm-toggle-english-helper)
 
 (setq acm-candidate-match-function 'orderless-flex)
+(setq acm-enable-tabnine-helper t)
+;; (setq acm-enable-citre t)
 
 ;; (define-key acm-mode-map (kbd "<tab>") 'acm-select-next)
 ;; (define-key acm-mode-map (kbd "<s-tab>") 'acm-select-prev)
