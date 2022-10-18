@@ -397,7 +397,7 @@ delay specified by `swbuff-clear-delay'."
 		  (run-with-timer swbuff-clear-delay nil
 				  'swbuff-discard-status-window)))))
     (swbuff-discard-status-window)
-    (message "No buffers eligible for switching.")
+    (error "No buffers eligible for switching.")
     ))
 
 
@@ -500,7 +500,11 @@ in the buffer list."
       (and swbuff-delay-switch (swbuff-previous-buffer))
     (swbuff-initialize))
   (or swbuff-delay-switch (swbuff-previous-buffer))
-  (swbuff-show-status-window))
+  ;; lihao
+  (condition-case _
+      (swbuff-show-status-window)
+    (error (switch-to-buffer "*scratch*")))
+  )
 
 ;;;###autoload
 (defun swbuff-switch-to-next-buffer ()
@@ -516,7 +520,11 @@ buffer list."
     (unless swbuff-delay-switch
       (swbuff-next-buffer)))
 
-  (swbuff-show-status-window))
+  ;; lihao - when no buffer to switch, switch to scratch buffer.
+  (condition-case _
+      (swbuff-show-status-window)
+    (error (switch-to-buffer "*scratch*")))
+  )
 
 (provide 'swbuff-x)
 ;;; swbuff-x.el ends here

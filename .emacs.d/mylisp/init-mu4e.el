@@ -2,14 +2,14 @@
 (use-package mu4e
   :defer 3
   :init
-  (require 'cygwin-mount)
+  ;; (require 'cygwin-mount)
   :config
-  (setq mu4e-mu-binary "D:/Users/emacs-build-main/msys64/usr/bin/mu.exe")
+  (setq mu4e-mu-binary "D:/Users/emacs-build-main/msys64/usr/local/bin/mu.exe")
   ;; use mu4e for e-mail in emacs
   (setq mail-user-agent 'mu4e-user-agent)
 
   ;; set home mail directory 
-  (setq mu4e-mu-home (expand-file-name "~/Maildir/"))
+  (setq mu4e-mu-home "~/Maildir/")
 
   ;; the next are relative to the root maildir
   ;; (see `mu info`).

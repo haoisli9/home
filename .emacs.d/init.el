@@ -220,7 +220,7 @@
 
 ;; 打开最近文件
 (setq recentf-keep '(file-remote-p file-readable-p))
-(setq recentf-max-saved-items 50
+(setq recentf-max-saved-items 100
       recentf-exclude '(
 			"/ssh:"
 			"/sudo:"
@@ -584,8 +584,8 @@
   (setq dumb-jump-selector 'completing-read)
   ;; (setq dumb-jump-force-searcher 'rg)
   (setq dumb-jump-prefer-searcher 'rg)
-  ;; set xref backend to dumb-jump.
-  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+  ;; set xref backend to dumb-jump at the end.
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate 95)
   )
 
 (setq xref-search-program 'ripgrep)
@@ -593,6 +593,7 @@
 (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
 
 (defun zjy/xref-find-backends ()
+  "find local backends function."
   (let (backends
         backend)
     (dolist (f xref-backend-functions)
@@ -601,6 +602,17 @@
         (when backend
           (cl-pushnew (funcall f) backends))))
     (reverse backends)))
+
+(defun zjy/xref-find-all-backends ()
+  "find all backends including global backends."
+  (let (backends
+        backend)
+    (dolist (f (append xref-backend-functions (default-value 'xref-backend-functions)))
+      (when (functionp f)
+        (setq backend (funcall f))
+        (when backend
+          (cl-pushnew backend backends))))
+    (reverse (delete-dups backends))))
 
 (defun zjy/xref--create-fetcher (input kind arg)
   "Return an xref list fetcher function.
@@ -632,6 +644,7 @@ the xref backend method indicated by KIND and passes ARG to it."
           (unless xrefs
             (xref--not-found-error kind input))
           xrefs)))))
+
 (advice-add #'xref--create-fetcher :override #'zjy/xref--create-fetcher)
 
 ;;----------------------------------------------------------------
@@ -804,7 +817,7 @@ Version 2022-06-29 00.01.07 +8000"
 (setq irfc-download-base-url "https://www.rfc-editor.org/rfc/")
 (add-to-list 'auto-mode-alist '("/rfc[0-9]+\\.txt\\'" . irfc-mode))
 
-(setq irfc-table-regex "^[ ]+\\(\\(Appendix \\)*[A-Z]?[0-9\\.]*\\)[ ]+\\([^\\.\n]+\\)[\\.]+[ ]*\\([0-9]+\\)$")
+;; (setq irfc-table-regex "^[ ]+\\(\\(Appendix \\)*[A-Z]?[0-9\\.]*\\)[ ]+\\([^\\.\n]+\\)[\\.]+[ ]*\\([0-9]+\\)$")
 (setq irfc-imenu-generic-expression
       '(
         ("Contents" "^\\([A-Z]?[0-9\\.]+[ ]+[^\\.\n]+\\)$" 1)
@@ -1283,7 +1296,7 @@ _t_oggle  _a_vy  _c_ommon   _f_olding    dumb-_j_ump
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(package-selected-packages
-   '(dumb-jump company-fuzzy citre ahk-mode modus-themes realgud tree-sitter-langs tree-sitter ob-mermaid lsp-pyright lsp-mode diminish sis hungry-delete consult-company company-ctags company company-tabnine embark-consult embark consult marginalia vertico orderless asn1-mode fanyi org-modern shrface devdocs-browser pdf-tools cmake-mode evil-multiedit which-key yaml-mode eshell-syntax-highlighting eshell-up eshell-z org-download treemacs-evil treemacs helpful ace-window avy evil-pinyin evil dired-single elfeed bm wgrep use-package folding web-mode puni writeroom-mode linum-relative vimrc-mode go-mode evil-anzu nov w32-browser markdown-mode htmlize anzu cal-china-x evil-nerd-commenter evil-surround evil-matchit isearch-dabbrev rainbow-delimiters rainbow-mode window-numbering doom-modeline doom-themes all-the-icons expand-region pyim))
+   '(tsc dumb-jump company-fuzzy citre ahk-mode modus-themes realgud tree-sitter-langs tree-sitter ob-mermaid lsp-pyright lsp-mode diminish sis hungry-delete consult-company company-ctags company company-tabnine embark-consult embark consult marginalia vertico orderless asn1-mode fanyi org-modern shrface devdocs-browser pdf-tools cmake-mode evil-multiedit which-key yaml-mode eshell-syntax-highlighting eshell-up eshell-z org-download treemacs-evil treemacs helpful ace-window avy evil-pinyin evil dired-single elfeed bm wgrep use-package folding web-mode puni writeroom-mode linum-relative vimrc-mode go-mode evil-anzu nov w32-browser markdown-mode htmlize anzu cal-china-x evil-nerd-commenter evil-surround evil-matchit isearch-dabbrev rainbow-delimiters rainbow-mode window-numbering doom-modeline doom-themes all-the-icons expand-region pyim))
  '(tool-bar-mode nil)
  '(warning-suppress-types '((mule))))
 (custom-set-faces

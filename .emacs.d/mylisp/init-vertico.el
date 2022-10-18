@@ -136,6 +136,7 @@
   ;;
   (setq completion-styles '(basic substring orderless)  ;; basic does not sort.
         completion-category-defaults nil
+        completion-ignore-case t
         ;;; Enable partial-completion for files.
         ;;; Either give orderless precedence or partial-completion.
         ;;; Note that completion-category-overrides is not really an override,
@@ -435,23 +436,42 @@ When the number of characters in a buffer exceeds this threshold,
 ;;          ("C-x C-j" . consult-dir-jump-file)))
 
 ;; embark
+(use-package marginalia
+  :ensure t
+  :config
+  (marginalia-mode))
+
 (use-package embark
+  :ensure t
+
   :bind
-  (("M-o" . embark-act)         ;; pick some comfortable binding
-   (:map embark-file-map
-         ("X" . consult-directory-externally))
-   )
+  (("C-;" . embark-act)         ;; pick some comfortable binding
+   ("C-h B" . embark-bindings)  ;; alternative for `describe-bindings'
+   :map embark-file-map
+   ("X" . consult-directory-externally)
+   ) 
+
   :init
   ;; Optionally replace the key help with a completing-read interface
   (setq prefix-help-command #'embark-prefix-help-command)
+
+  :hook (;; 令 `*Embark Collect Completion*` 的窗口最大不超过当前 frame 的 40%。
+         ;; 不然一个补全窗口占据太多视野功能就有点过了.
+         (embark-collect-post-revert . resize-embark-collect-completions))
+  
   :config
+
+  (defun resize-embark-collect-completions ()
+    (fit-window-to-buffer (get-buffer-window)
+                          (floor (* 0.4 (frame-height))) 1))
+
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                 nil
-                 (window-parameters (mode-line-format . none))))
-  ;; (define-key minibuffer-local-map (kbd "C-c C-e") 'embark-export-write)
-  )
+                 (display-buffer-at-bottom)
+                 ;; nil
+                 (window-parameters ((no-other-window . t)
+                                     (mode-line-format . none))))))
 
 ;; Consult users will also want the embark-consult package.
 (use-package embark-consult

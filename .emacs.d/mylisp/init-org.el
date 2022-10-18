@@ -291,11 +291,11 @@
 (setq org-agenda-diary-file "~/../lihao/org/agenda/diary.org")
 (setq org-capture-templates
       '(("n" "Notes" entry (file+headline org-default-capture-file "Notes")
-         "** TODO %?%i\n   - Added: %T")
-        ("r" "Reminder" entry (file+headline org-default-capture-file "Reminder")
-         "** %T  %?%i\n")
+         "** TODO %?%i\n- Time: %T\n")
+        ("o" "Others" entry (file+headline org-default-capture-file "Others")
+         "** %?%i\n- Time: %T\n")
         ("j" "Journal" entry (file+olp+datetree org-agenda-diary-file "Diary")
-         "** Time: %U\n + %?%i\n")))
+         "** %?%i\n")))
 
 ;; refiles
 ;; Use the current window for indirect buffer display
