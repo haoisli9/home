@@ -38,6 +38,8 @@
 ;;                  :caller 'citre-jump-ivy-read))))
 ;; (setq citre-jump-select-definition-function  #'citre-jump-ivy-read)
 
+(if 0
+    (progn
 ;;----------------------------------------------------------------
 (use-package citre-global
   :ensure nil
@@ -73,7 +75,7 @@
     "Jump to the definition of the symbol at point. This uses the `citre-jump' UI."
     (interactive)
     (let* ((marker (point-marker))
-           (symbol (citre-get-symbol))
+           (symbol (citre-tags-get-symbol-default))
            (definitions
             (citre-global-get-definitions symbol))
            (root (funcall citre-project-root-function)))
@@ -95,7 +97,7 @@ specify the start file, or be a symbol (like `alpha') to use the
 default alphabetical sort.
 
 Global program is run under current `default-directory'."
-    (let ((name (or name (citre-get-symbol)))
+    (let ((name (or name (citre-tags-get-symbol-default)))
           (start-file
            (pcase start-file
              ('nil (with-selected-window (or (minibuffer-selected-window)
@@ -163,7 +165,7 @@ message of global) start from START-FILE."
     "Return the symbol under point and definitions of it.
 This is similar to `citre-peek--get-symbol-and-definitions'."
     (citre-peek--hack-buffer-file-name
-     (let* ((symbol (or (citre-get-symbol)
+     (let* ((symbol (or (citre-tags-get-symbol-default)
                         (user-error "No symbol at point")))
             (definitions (or (citre-global-get-definitions symbol)
                              (user-error "Can't find definitions for %s"
@@ -219,5 +221,6 @@ This is similar to `citre-ace-peek'."
   ;;   "Define method for xref to find definition of SYMBOL."
   ;;   (citre-xref--global-find-definition symbol))
   )
+))
 
 (provide 'init-citre)

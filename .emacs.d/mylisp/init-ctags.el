@@ -120,4 +120,42 @@ Default value is 600 which equals 5 minutes.")
 
 ;; (add-hook 'after-save-hook 'ctags-auto-update-tags)
 
+;; find . -name "*.[ch]" | ctags -e -L -
+(use-package company-ctags
+  :after company
+  :config
+
+  (company-ctags-auto-setup)
+  ;; advice capf-data-real function to support company-ctags.
+  (defun company-ctags--capf-data-real ()
+    (cl-letf* (((default-value 'completion-at-point-functions)
+                (if (company--contains 'company-ctags company-backends)
+                    ;; Ignore tags-completion-at-point-function because it subverts
+                    ;; company-etags in the default value of company-backends, where
+                    ;; the latter comes later.
+                    (remove 'tags-completion-at-point-function
+                            (default-value 'completion-at-point-functions))
+                  (default-value 'completion-at-point-functions)))
+               (completion-at-point-functions (company--capf-workaround))
+               (data (run-hook-wrapped 'completion-at-point-functions
+                                       ;; Ignore misbehaving functions.
+                                       #'company--capf-wrapper 'optimist)))
+      (when (and (consp (cdr data)) (integer-or-marker-p (nth 1 data))) data)))
+  
+  (advice-add #'company--capf-data-real :override #'company-ctags--capf-data-real)
+  
+  (setq company-ctags-ignore-case t)
+  ;; (setq company-ctags-fuzzy-match-p t)
+  ;; (setq company-ctags-extra-tags-files '("$HOME/TAGS" "/usr/include/TAGS"))
+
+  (defun my-consult-company-ctags ()
+    "Input code from company backend using fuzzy matching."
+    (interactive)
+    (company-abort)
+    (let* ((company-backends '(company-ctags))
+           (company-ctags-fuzzy-match-p t))
+      (consult-company)))
+  ;; (define-key company-mode-map (kbd "M-]") 'my-consult-company-ctags)
+  )
+
 (provide 'init-ctags)

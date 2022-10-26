@@ -537,9 +537,12 @@ When the number of characters in a buffer exceeds this threshold,
   '(consult-line consult-ripgrep consult-git-grep consult-grep consult-ripgrep-or-line))
 
 (defvar mcfly-back-commands
-  '(self-insert-command))
+  '(self-insert-command
+    ;; 更多其他设置,可以参考: https://github.com/lynnux/.emacs.d/blob/ac552c1/settings/package_extra.el#L1225-L1299
+    ))
 
 (defun mcfly-back-to-present ()
+  "Self-explained."
   (remove-hook 'pre-command-hook 'mcfly-back-to-present t)
   (cond ((and (memq last-command mcfly-commands)
               (equal (this-command-keys-vector) (kbd "M-p")))
@@ -549,19 +552,23 @@ When the number of characters in a buffer exceeds this threshold,
                        (listify-key-sequence (kbd "M-p")))))
         ((memq this-command mcfly-back-commands)
          (delete-region
-	  (progn (forward-visible-line 0) (point))
+	        (goto-char (minibuffer-prompt-end))
           (point-max)))))
 
 (defun mcfly-time-travel ()
+  "Insert `thing-at-point'."
   (when (memq this-command mcfly-commands)
-    (insert (propertize (save-excursion
-			  (set-buffer (window-buffer (minibuffer-selected-window)))
-			  (or (seq-some (lambda (thing) (thing-at-point thing t))
-					'(region url symbol sexp))
-			      "No thing at point")
-			  )    'face 'shadow))
+    (insert (propertize
+             (save-excursion
+			         (set-buffer (window-buffer (minibuffer-selected-window)))
+			         (or (seq-some
+                    (lambda (thing) (thing-at-point thing t))
+					          '(region url symbol sexp))
+			             "No thing at point"))
+             'face 'shadow))
     (add-hook 'pre-command-hook 'mcfly-back-to-present nil t)
-    (forward-visible-line 0)
+    ;; 如果喜欢光标停留在最后一行, 删掉下一行
+    (goto-char (minibuffer-prompt-end))
     ))
 
 ;; setup code
