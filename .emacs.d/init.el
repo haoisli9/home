@@ -582,7 +582,14 @@
   (require 'citre-config)
   ;; Bind your frequently used commands.  Alternatively, you can define them
   ;; in `citre-mode-map' so you can only use them when `citre-mode' is enabled.
-  (global-set-key (kbd "C-x c j") 'citre-jump)
+  (defun citre-jump-xref ()
+    (interactive)
+    (condition-case _
+        (citre-jump)
+      (error (let* ((xref-prompt-for-identifier nil))
+               (call-interactively #'xref-find-definitions)))))
+
+  (global-set-key (kbd "C-x c j") 'citre-jump-xref)
   (global-set-key (kbd "C-x c k") 'citre-jump-back)
   (global-set-key (kbd "C-x c p") 'citre-ace-peek)
   (global-set-key (kbd "C-x c u") 'citre-update-this-tags-file)
@@ -907,6 +914,7 @@ Version 2022-06-29 00.01.07 +8000"
 (setq color-rg-extra-arguments "")
 (setq color-rg-search-ignore-rules "")
 (setq color-rg-search-no-ignore-file t)
+(setq color-rg-recenter-match-line t)
 (global-set-key (kbd "M-]") 'color-rg-search-input)
 
 ;;------------------------------------------------------------

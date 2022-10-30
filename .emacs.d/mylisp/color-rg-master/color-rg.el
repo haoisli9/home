@@ -338,9 +338,14 @@ Default is disabled, set this variable to true if you found it's useful"
   :group 'color-rg)
 
 (defcustom color-rg-search-no-ignore-file t
-  "Don’t respect ignore files.
+  "Don't respect ignore files.
 
 Default is enable, set this variable to nil if you want search files match gitignore rule."
+  :type 'boolean
+  :group 'color-rg)
+
+(defcustom color-rg-recenter-match-line nil
+  "Non-nil means to recenter when jump between matched lines."
   :type 'boolean
   :group 'color-rg)
 
@@ -1211,9 +1216,9 @@ This assumes that `color-rg-in-string-p' has already returned true, i.e.
           (or globs
               "everything")))
     (color-rg-search search-keyboard
-                     ;; (if (string-equal system-type "windows-nt")
-                     ;;     (format "\"%s\"" search-directory)
-                       search-directory
+                     (if (string-equal system-type "windows-nt")
+                         (format "\"%s\"" search-directory)
+                       search-directory)
                      search-globs)))
 
 (defun color-rg-search-symbol ()
@@ -1277,6 +1282,7 @@ This assumes that `color-rg-in-string-p' has already returned true, i.e.
   (color-rg-search-input (color-rg-read-input) (concat (color-rg-project-root-dir) "app") (color-rg-read-file-type "Filter file by type (default: [ %s ]): ")))
 
 (defun color-rg-replace-all-matches ()
+  "Replace all matched results."
   (interactive)
   (save-excursion
     (let (changed-line-number)
@@ -1291,8 +1297,8 @@ This assumes that `color-rg-in-string-p' has already returned true, i.e.
             (setq changed-line-number (length color-rg-changed-lines))
             (color-rg-apply-changed)
             (color-rg-switch-to-view-mode)
-            (setf (color-rg-search-keyword color-rg-cur-search) replace-text)
-            )))
+            (when (> changed-line-number 0)
+              (setf (color-rg-search-keyword color-rg-cur-search) replace-text)))))
       (message "Replace %s lines" changed-line-number))))
 
 (defun color-rg-filter-match-results ()
@@ -1545,6 +1551,8 @@ This function is the opposite of `color-rg-rerun-change-globs'"
     (insert current-line)))
 
 (defun color-rg-open-file (&optional stay)
+  "Open file in other window.
+If STAY is non-nil, move cursor to the opened file."
   (interactive)
   (setq color-rg-window-configuration-before-open (current-window-configuration))
   (let* ((match-file (color-rg-get-match-file))
@@ -1561,7 +1569,7 @@ This function is the opposite of `color-rg-rerun-change-globs'"
               (and (color-rg-is-org-file match-file)
                    (color-rg-in-org-link-content-p)))
         ;; Open file in other window.
-        ;; Note, don't use `find-file-other-window', it will failed if path is tramp path that start with /sudo:root
+        ;; NOTE: don't use `find-file-other-window', it will fail if path is a tramp path that starts with /sudo:root
         (other-window 1)
         (find-file match-file)
         ;; Add to temp list if file's buffer is not exist.
@@ -1582,7 +1590,9 @@ This function is the opposite of `color-rg-rerun-change-globs'"
                 (t
                  (color-rg-move-to-point match-line match-column)))))
       ;; Flash match line.
-      (color-rg-flash-line))
+      (color-rg-flash-line)
+      (when color-rg-recenter-match-line
+        (recenter)))
     (unless stay
       ;; Keep cursor in search buffer's window.
       (setq color-buffer-window (get-buffer-window color-rg-buffer))
@@ -1764,7 +1774,8 @@ Function `move-to-column' can't handle mixed string of Chinese and English corre
     ;; Save window configuration before do apply.
     (setq color-rg-window-configuration-before-apply (current-window-configuration))
     ;; Apply changed.
-    (let ((inhibit-message t)) ; don't flush to echo area when apply changed, optimise for color-rg
+    (let ((inhibit-message t) ;don't flush to echo area when apply changed, optimise for color-rg
+          (apply-files '()))
       (save-excursion
         (dolist (line color-rg-changed-lines)
           (let (match-file match-line changed-line-content)
@@ -1776,6 +1787,7 @@ Function `move-to-column' can't handle mixed string of Chinese and English corre
               (setq match-line (color-rg-get-match-line)))
             ;; Open file in other window.
             (find-file match-file)
+            (add-to-list 'apply-files match-file)
             ;; Remove from temp list if file's buffer is exist.
             (setq color-rg-temp-visit-buffers (remove (current-buffer) color-rg-temp-visit-buffers))
             ;; Kill target line.
@@ -1786,8 +1798,11 @@ Function `move-to-column' can't handle mixed string of Chinese and English corre
                 ;; Kill empty line if line mark as deleted.
                 (kill-line)
               ;; Otherwise insert new line into file.
-              (insert changed-line-content))
-            ))))
+              (insert changed-line-content))))
+        ;; Save files after change.
+        (dolist (apply-file apply-files)
+          (find-file apply-file)
+          (basic-save-buffer))))
     ;; Restore window configuration before apply changed.
     (when color-rg-window-configuration-before-apply
       (set-window-configuration color-rg-window-configuration-before-apply)
