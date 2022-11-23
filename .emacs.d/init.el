@@ -693,6 +693,7 @@ the xref backend method indicated by KIND and passes ARG to it."
 
 ;;----------------------------------------------------------------
 ;; lsp configuration.
+;; git clone -b master https://github.com/manateelazycat/lsp-bridge.git  ~/.emacs.d/lisp/lsp-bridge-master/
 ;; (require 'init-lsp-bridge)
 (require 'init-lsp)
 ;; (require 'init-eglot)
@@ -861,7 +862,6 @@ Version 2022-06-29 00.01.07 +8000"
 (setq irfc-download-base-url "https://www.rfc-editor.org/rfc/")
 (add-to-list 'auto-mode-alist '("/rfc[0-9]+\\.txt\\'" . irfc-mode))
 
-;; (setq irfc-table-regex "^[ ]+\\(\\(Appendix \\)*[A-Z]?[0-9\\.]*\\)[ ]+\\([^\\.\n]+\\)[\\.]+[ ]*\\([0-9]+\\)$")
 (setq irfc-imenu-generic-expression
       '(
         ("Contents" "^\\([A-Z]?[0-9\\.]+[ ]+[^\\.\n]+\\)$" 1)
@@ -895,6 +895,30 @@ Version 2022-06-29 00.01.07 +8000"
         "牛津英汉双解美化版"
         "朗道英汉字典5.0"
         ))
+
+(defun sdcv-search-input-fast ()
+  "Translate current WORD at point.
+And show information using tooltip."
+  (interactive)
+  ;; Display simple translate result.
+  (let* ((word (sdcv-region-or-word)))
+    (if word (sdcv-search-simple word))))
+
+(global-set-key [(f6)] 'sdcv-search-input-fast)
+
+;; git clone --depth=1 -b main https://github.com/ginqi7/websocket-bridge ~/.emacs.d/lisp/websocket-bridge/
+;; (require 'websocket-bridge)
+;; git clone --depth=1 -b main https://github.com/ginqi7/dictionary-overlay ~/.emacs.d/lisp/dictionary-overlay/
+;; (require 'dictionary-overlay)
+;; (setq dictionary-overlay-user-data-directory (expand-file-name "~/.cache/dictionary-overlay-data"))
+;; (defface dictionary-overlay-unknownwords-face
+;;   '((((class color) (min-colors 88) (background light))
+;;      :underline "#fb8c96" :background "#fbd8db")
+;;     (((class color) (min-colors 88) (background dark))
+;;      :underline "#C77577" :background "#7A696B")
+;;     (t
+;;      :inherit highlight))
+;;   "Face for dictionary-overlay unknown words.")
 
 ;;---------------------------------------------------------------
 (require 'keep-buffers)
@@ -1220,8 +1244,8 @@ _t_oggle  _a_vy  _c_ommon   _f_olding    dumb-_j_ump
 ;; global key bindings
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key [(f3)] 'query-replace-regexp)
-(global-set-key [(f5)] 'loop-alpha)
-(global-set-key [(f6)] 'org-agenda-list)
+;; (global-set-key [(f5)] 'loop-alpha)
+(global-set-key [(f8)] 'org-agenda-list)
 ;; switch between current buffer and previous one.
 ;; (global-set-key (kbd "<C-tab>") #'(lambda () (interactive) (switch-to-buffer nil)))
 
@@ -1341,7 +1365,7 @@ _t_oggle  _a_vy  _c_ommon   _f_olding    dumb-_j_ump
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(package-selected-packages
-   '(tsc dumb-jump company-fuzzy citre ahk-mode modus-themes realgud tree-sitter-langs tree-sitter ob-mermaid lsp-pyright lsp-mode diminish sis hungry-delete consult-company company-ctags company company-tabnine embark-consult embark consult marginalia vertico orderless asn1-mode fanyi org-modern shrface devdocs-browser pdf-tools cmake-mode evil-multiedit which-key yaml-mode eshell-syntax-highlighting eshell-up eshell-z org-download treemacs-evil treemacs helpful ace-window avy evil-pinyin evil dired-single elfeed bm wgrep use-package folding web-mode puni writeroom-mode linum-relative vimrc-mode go-mode evil-anzu nov w32-browser markdown-mode htmlize anzu cal-china-x evil-nerd-commenter evil-surround evil-matchit isearch-dabbrev rainbow-delimiters rainbow-mode window-numbering doom-modeline doom-themes all-the-icons expand-region pyim))
+   '(websocket tsc dumb-jump company-fuzzy citre ahk-mode realgud tree-sitter-langs tree-sitter ob-mermaid lsp-pyright lsp-mode diminish sis hungry-delete consult-company company-ctags company company-tabnine embark-consult embark consult marginalia vertico orderless asn1-mode fanyi org-modern shrface devdocs-browser pdf-tools cmake-mode evil-multiedit which-key yaml-mode eshell-syntax-highlighting eshell-up eshell-z org-download treemacs-evil treemacs helpful ace-window avy evil-pinyin evil dired-single elfeed bm wgrep use-package folding web-mode puni writeroom-mode linum-relative vimrc-mode go-mode evil-anzu nov w32-browser markdown-mode htmlize anzu cal-china-x evil-nerd-commenter evil-surround evil-matchit isearch-dabbrev rainbow-delimiters rainbow-mode window-numbering doom-modeline doom-themes all-the-icons expand-region pyim))
  '(tool-bar-mode nil)
  '(warning-suppress-types '((mule))))
 (custom-set-faces

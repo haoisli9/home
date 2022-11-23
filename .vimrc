@@ -102,7 +102,7 @@ set selectmode=key
 " VIM user interface setting 
 " No sound on errors.
 set noerrorbells
-set novisualbell
+set visualbell
 set t_vb=
 set ignorecase
 set backspace=indent,eol,start      "Set backspace

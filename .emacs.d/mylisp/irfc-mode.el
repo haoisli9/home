@@ -580,7 +580,9 @@ been called.")
 (defvar irfc-last-visit-number nil
   "Number of the last RFC document visited.")
 
-(defvar irfc-table-regex "^[ ]+\\([A-Z]?[0-9\\.]*\\)[ ]+\\([^\\.\n]+\\)[\\. ]+\\([0-9]+\\)$"
+;; (defvar irfc-table-regex "^[ ]+\\([A-Z]?[0-9\\.]*\\)[ ]+\\([^\\.\n]+\\)[\\. ]+\\([0-9]+\\)$")
+;; lihao for the format like Appendix A.
+(defvar irfc-table-regex "\\([A-Z]?[0-9\\.]*\\)[ ]+\\([^\\.\n]+\\)[\\. ]+\\([0-9]+\\)$"
   "The regular-expression that match table item.")
 
 (defvar irfc-reference-regex "\\[[0-9]+]"

@@ -180,7 +180,7 @@
 ;; Enable company in middle of symbols.
 (require 'company-anywhere)
 
-(require 'init-ctags)
+;; (require 'init-ctags)
 
 (use-package consult-company
   :after consult company

@@ -213,6 +213,15 @@
     '((mermaid . t)
       (scheme . t)))
 
+(defun org-export-docx ()
+    "Export current buffer to docx file with the template.docx."
+    (interactive)
+    (let ((docx-file (concat (file-name-sans-extension (buffer-file-name)) ".docx"))
+          (template-file (expand-file-name "template.docx" "d:/Users/lihao/org/publish/")))
+      (shell-command (format "pandoc %s -o %s --reference-doc=%s"
+                             (buffer-file-name) docx-file template-file))
+      (message "Convert finish: %s" docx-file)))
+
 ;;----------------------------------------------------------------------------
 ;;Sunrise and Sunset
 ;;日出而作, 日落而息
