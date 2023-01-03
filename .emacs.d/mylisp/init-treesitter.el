@@ -5,7 +5,8 @@
 (require 'tree-sitter-debug)
 (require 'tree-sitter-query)
 
-(add-to-list 'treesit-extra-load-path "d:/Users/home/.emacs.d/lisp/tree-sitter-langs-master/bin")
+;; https://github.com/emacs-tree-sitter/tree-sitter-langs
+(add-to-list 'treesit-extra-load-path "d:/Users/home/.emacs.d/lisp/tree-sitter-langs-extra-bin")
 (global-tree-sitter-mode)
 (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
 ;; (add-hook 'prog-mode-hook #'tree-sitter-hl-mode)

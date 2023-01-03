@@ -84,15 +84,13 @@
 ;; 在org-mode里，将文件/文件夹拖入会自动转换成一个指向文件/文件夹路径的链接，形如[[file+sys:E:/my.docx]]
 ;; 这个链接可以通过C-c C-o或单击，调用系统默认打开方式打开。
 ;; 而在非org-mode的buffer里，则会用dired打开文件/文件夹。
-(setq dired-dnd-protocol-alist nil)
+;; (setq dired-dnd-protocol-alist nil)
 (defun my/dnd-handler (url _action)
-  (if
-      (or (eq major-mode 'org-mode) (when (derived-mode-p 'org-mode))) 
-      (insert (concat "[[file+sys:"  (substring (decode-coding-string (url-unhex-string url) 'utf-8) 5 nil)"]]"))
+  (if (or (eq major-mode 'org-mode) (when (derived-mode-p 'org-mode))) 
+      (insert (concat "[[file+sys:" (substring (decode-coding-string (url-unhex-string url) 'utf-8) 5 nil)"]]"))
     (dired (substring (decode-coding-string (url-unhex-string url) 'utf-8) 5 nil))
     ))
-(setq dnd-protocol-alist
-      '(("" . my/dnd-handler)))
+(setq dnd-protocol-alist '(("" . my/dnd-handler)))
 
 (use-package dired-single
   :ensure t

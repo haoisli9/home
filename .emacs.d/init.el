@@ -63,9 +63,6 @@
 ;;------------------------------------------------------------------
 ;;{{{ basic configuration.
 ;;------------------------------------------------------------------
-;; ignore cl warnings.
-(setq byte-compile-warnings '(cl-functions))
-
 (if (display-graphic-p)
     (progn
       ;;设置窗口位置为屏库左上角(0,0)
@@ -433,13 +430,11 @@
   (fanyi-providers '(;; 海词
                      fanyi-haici-provider
                      ;; 有道同义词词典
-                     fanyi-youdao-thesaurus-provider
+                     ;; fanyi-youdao-thesaurus-provider
                      ;; Etymonline
-                     fanyi-etymon-provider
+                     ;; fanyi-etymon-provider
                      ;; Longman
-                     fanyi-longman-provider
-                     ;; LibreTranslate
-                     fanyi-libre-provider))
+                     fanyi-longman-provider))
   )
 
 ;; bookmarks configuration.
@@ -699,17 +694,6 @@ the xref backend method indicated by KIND and passes ARG to it."
 ;; (require 'init-eglot)
 
 ;;----------------------------------------------------------------------------
-;; (use-package helm-config
-;;   :defer 3
-;;   :config
-;;   ;; (global-set-key (kbd "C-x C-f") 'helm-find-files)
-;;   (setq helm-recentf-fuzzy-match t
-;;         helm-buffers-fuzzy-matching t
-;;         helm-completion-in-region-fuzzy-match t
-;;         helm-mode-fuzzy-match t)
-;;  )
-
-;;----------------------------------------------------------------------------
 (use-package helpful
   :ensure t
   :bind (([remap describe-function] . helpful-callable)
@@ -774,7 +758,27 @@ Version 2022-06-29 00.01.07 +8000"
 ;;----------------------------------------------------------------
 ;; tree-sitter
 ;;----------------------------------------------------------------
-(require 'init-treesitter)
+;; (require 'init-treesitter)
+(when (treesit-available-p)
+  (add-to-list 'treesit-extra-load-path "d:/Users/home/.emacs.d/lisp/tree-sitter-langs-extra-bin")
+  (push '(sh-mode . bash-ts-mode) major-mode-remap-alist)
+  (push '(c-mode . c-ts-mode) major-mode-remap-alist)
+  (push '(c++-mode . c++-ts-mode) major-mode-remap-alist)
+  (push '(css-mode . css-ts-mode) major-mode-remap-alist)
+  (push '(javascript-mode . js-ts-mode) major-mode-remap-alist)
+  (push '(js-json-mode . json-ts-mode) major-mode-remap-alist)
+  (push '(go-mode . go-ts-mode) major-mode-remap-alist)
+  (push '(rust-mode . rust-ts-mode) major-mode-remap-alist)
+  (push '(python-mode . python-ts-mode) major-mode-remap-alist))
+
+;;----------------------------------------------------------------
+;; find-file-in-project
+;; (use-package find-file-in-project
+;;   :init
+;;   (defalias 'ffip 'find-file-in-project-by-selected)
+;;   :config
+;;   (setq ffip-use-rust-fd t)
+;;   )
 
 ;;----------------------------------------------------------------
 ;; rainbow mode.
@@ -892,6 +896,7 @@ Version 2022-06-29 00.01.07 +8000"
 (setq sdcv-dictionary-complete-list     ;; setup dictionary list for complete search
       '(
         "CDICT5英汉辞典"
+        "简明英汉字典增强版"
         "牛津英汉双解美化版"
         "朗道英汉字典5.0"
         ))
@@ -906,19 +911,27 @@ And show information using tooltip."
 
 (global-set-key [(f6)] 'sdcv-search-input-fast)
 
+(global-set-key [(f5)] 'avy-goto-char)
+
+;; dictionary-overlay
 ;; git clone --depth=1 -b main https://github.com/ginqi7/websocket-bridge ~/.emacs.d/lisp/websocket-bridge/
-;; (require 'websocket-bridge)
+(require 'websocket-bridge)
 ;; git clone --depth=1 -b main https://github.com/ginqi7/dictionary-overlay ~/.emacs.d/lisp/dictionary-overlay/
-;; (require 'dictionary-overlay)
-;; (setq dictionary-overlay-user-data-directory (expand-file-name "~/.cache/dictionary-overlay-data"))
-;; (defface dictionary-overlay-unknownwords-face
-;;   '((((class color) (min-colors 88) (background light))
-;;      :underline "#fb8c96" :background "#fbd8db")
-;;     (((class color) (min-colors 88) (background dark))
-;;      :underline "#C77577" :background "#7A696B")
-;;     (t
-;;      :inherit highlight))
-;;   "Face for dictionary-overlay unknown words.")
+(require 'dictionary-overlay)
+(setq dictionary-overlay-user-data-directory
+      (expand-file-name "~/.cache/dictionary-overlay-data"))
+(set-face-attribute 'dictionary-overlay-unknownword nil
+                    :foreground "#8386C5")
+(set-face-attribute 'dictionary-overlay-translation nil
+                    :underline "#C77577" :background "#7A696B")
+
+(setq dictionary-overlay-auto-jump-after
+   '(mark-word-known         ; recommended
+     ;; mark-word-unknown    ; not recommended
+     render-buffer           ; opinionated, but turn it on, why not
+     ))
+
+(dictionary-overlay-start)
 
 ;;---------------------------------------------------------------
 (require 'keep-buffers)
@@ -939,7 +952,7 @@ And show information using tooltip."
 (setq color-rg-search-ignore-rules "")
 (setq color-rg-search-no-ignore-file t)
 (setq color-rg-recenter-match-line t)
-(global-set-key (kbd "M-]") 'color-rg-search-input)
+(define-key isearch-mode-map (kbd "M-s M-s") 'isearch-toggle-color-rg)
 
 ;;------------------------------------------------------------
 ;; https://github.com/manateelazycat/thing-edit
@@ -1062,8 +1075,8 @@ And show information using tooltip."
                       (search-forward-regexp (concat "^[ \t]*" stag ":") nil t)
                     (search-forward-regexp (concat "'" stag "'") nil t))
                   )
-               )))))))  
-  )
+               ))))))))
+
 
 ;; PDB command line
 (defun my-python-debug-buffer ()
@@ -1350,6 +1363,32 @@ _t_oggle  _a_vy  _c_ommon   _f_olding    dumb-_j_ump
 ;;-----------------------------------------------------------------------
 (require 'init-face)
 
+;; which function mode.
+(setq which-func-imenu-joiner-function
+      (lambda (x)
+        (let* ((otype (car x))
+               (loc-sym (car (split-string (car (last x)) " ")))
+               (path (mapcan
+                      (lambda (pel)
+                        (split-string pel "::"))
+                      (seq-map
+                       (lambda (pel)
+                         (car (split-string pel " ")))
+                       (butlast (cdr x)))))
+               (result (seq-filter
+                        (lambda (pel)
+                          (and (<= (length (split-string pel "::")) 1) ;;(<= (length (split-string pel "\\.")) 1)
+                               (seq-reduce (lambda (o v)
+                                             (and o (not (string= pel v)))) (list "callback") t)))
+                        path)))
+          (when (seq-reduce (lambda (o v) (or o (string= v otype))) (list "Method" "Constructor" "Function") nil)
+            (setq result (append result (list loc-sym))))
+          ;;(message "<< %s %s" x (list (list loc-sym ":" otype) (list (seq-map #'list path))))
+          ;;(message ">>> %s" result)
+          (setq header-line-format (mapconcat #'identity result " » "))
+          ;; return
+          "")))
+
 ;; Fall back font for glyph missing in Roboto
 (set-display-table-slot standard-display-table 'truncation
                         (make-glyph-code ?… 'font-lock-comment-face))
@@ -1365,7 +1404,7 @@ _t_oggle  _a_vy  _c_ommon   _f_olding    dumb-_j_ump
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(package-selected-packages
-   '(websocket tsc dumb-jump company-fuzzy citre ahk-mode realgud tree-sitter-langs tree-sitter ob-mermaid lsp-pyright lsp-mode diminish sis hungry-delete consult-company company-ctags company company-tabnine embark-consult embark consult marginalia vertico orderless asn1-mode fanyi org-modern shrface devdocs-browser pdf-tools cmake-mode evil-multiedit which-key yaml-mode eshell-syntax-highlighting eshell-up eshell-z org-download treemacs-evil treemacs helpful ace-window avy evil-pinyin evil dired-single elfeed bm wgrep use-package folding web-mode puni writeroom-mode linum-relative vimrc-mode go-mode evil-anzu nov w32-browser markdown-mode htmlize anzu cal-china-x evil-nerd-commenter evil-surround evil-matchit isearch-dabbrev rainbow-delimiters rainbow-mode window-numbering doom-modeline doom-themes all-the-icons expand-region pyim))
+   '(fanyi websocket tsc dumb-jump company-fuzzy citre ahk-mode realgud tree-sitter-langs tree-sitter ob-mermaid lsp-pyright lsp-mode diminish sis hungry-delete consult-company company-ctags company company-tabnine embark-consult embark consult marginalia vertico orderless asn1-mode org-modern shrface devdocs-browser pdf-tools cmake-mode evil-multiedit which-key yaml-mode eshell-syntax-highlighting eshell-up eshell-z org-download treemacs-evil treemacs helpful ace-window avy evil-pinyin evil dired-single elfeed bm wgrep use-package folding web-mode puni writeroom-mode linum-relative vimrc-mode go-mode evil-anzu nov w32-browser markdown-mode htmlize anzu cal-china-x evil-nerd-commenter evil-surround evil-matchit isearch-dabbrev rainbow-delimiters rainbow-mode window-numbering doom-modeline doom-themes all-the-icons expand-region pyim))
  '(tool-bar-mode nil)
  '(warning-suppress-types '((mule))))
 (custom-set-faces

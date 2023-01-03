@@ -25,4 +25,7 @@
 (add-hook 'before-init-hook #'my|pre-init)
 (add-hook 'after-init-hook #'my|post-init)
 
+;; ignore cl warnings.
+(setq byte-compile-warnings '(cl-functions))
+
 

@@ -685,7 +685,9 @@ You can jump to the corresponding content when you are at table."
       (let ((original-position (point))
             head-name
             page-number
-            match-list)
+            match-list
+            ;; case-sensitive
+            (case-fold-search nil))
         (cond ((irfc-in-table-p)
                ;; When in table.
                (beginning-of-line)

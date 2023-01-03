@@ -63,6 +63,9 @@
         org-hide-emphasis-markers t
         org-image-actual-width '(800)
         org-startup-with-inline-images t
+        ;; 隐藏空行
+        org-cycle-separator-lines 0
+        org-blank-before-new-entry (quote ((heading) (plain-list-item . auto)))
         )
   
   ;; 上下标，如果去掉，使用^和_来解释上下标，否则使用{}来触发；
@@ -222,6 +225,11 @@
                              (buffer-file-name) docx-file template-file))
       (message "Convert finish: %s" docx-file)))
 
+(defun org-find-file-at-one ()
+  "Open file link or URL in emacs."
+  (interactive)
+  (org-open-at-point 'in-emacs))
+
 ;;----------------------------------------------------------------------------
 ;;Sunrise and Sunset
 ;;日出而作, 日落而息
@@ -315,6 +323,10 @@
   "Return list of opened orgmode buffer files"
   (mapcar (function buffer-file-name)
 	  (org-agenda-files 'files)))
+
+(setq org-link-frame-setup (quote ((vm . vm-visit-folder) (vm-imap . vm-visit-imap-folder) (gnus . org-gnus-no-new-news) (file . find-file) (wl . wl-other-frame))))
+;; Use the current window for C-c ' source editing
+(setq org-src-window-setup 'current-window)
 
 ;; Targets include this file and any file contributing to the agenda - up to 9 levels deep
 (setq org-refile-targets '(

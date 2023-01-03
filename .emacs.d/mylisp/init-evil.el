@@ -51,6 +51,14 @@
   (define-key evil-normal-state-map (kbd "<down>") 'evil-next-visual-line)
   (define-key evil-normal-state-map (kbd "q") 'quit-window)
 
+  ;; change evil-search to isearch
+  (define-key evil-normal-state-map (kbd "/") 'isearch-forward)
+  (define-key evil-normal-state-map (kbd "?") 'isearch-backward)
+  (define-key evil-normal-state-map (kbd "n") 'isearch-repeat-forward)
+  (define-key evil-normal-state-map (kbd "N") 'isearch-repeat-backward)
+  (define-key evil-motion-state-map (kbd "C-c o") 'occur-from-isearch)
+  (define-key evil-motion-state-map (kbd "M-s v") 'consult-from-isearch)
+
   ;; unbind some evil-insert key.
   (define-key evil-insert-state-map (kbd "C-k") nil)
   (define-key evil-insert-state-map (kbd "C-v") nil)
@@ -74,7 +82,7 @@
   (define-key evil-normal-state-map (kbd "M-RET") 'my-add-newline)
 
   (defun occur-from-evil-ex ()
-    "Invoke `occur' from isearch."
+    "Invoke `occur' from evil-search"
     (interactive)
     (evil-ex-nohighlight)
     (occur (car evil-ex-search-pattern))
@@ -95,10 +103,9 @@
 
   ;; set (evil-select-search-module 'evil-search-module 'evil-search)
   ;; so here set evil-search occur to isearch
-  (define-key evil-motion-state-map (kbd "C-c o") 'occur-from-evil-ex)
-  ;; (define-key evil-motion-state-map (kbd "C-c o") 'swiper-from-evil-ex)
-  (define-key evil-motion-state-map (kbd "M-s v") 'consult-from-evil-ex)
-
+  ;; (define-key evil-motion-state-map (kbd "C-c o") 'occur-from-evil-ex)
+  ;; (define-key evil-motion-state-map (kbd "M-s v") 'consult-from-evil-ex)
+  
   ;; 搜索选中的内容
   (defun evil-ex-start-search-with-region-string ()
     (let ((selection (with-current-buffer (other-buffer (current-buffer) 1)
