@@ -52,12 +52,9 @@
   (define-key evil-normal-state-map (kbd "q") 'quit-window)
 
   ;; change evil-search to isearch
-  (define-key evil-normal-state-map (kbd "/") 'isearch-forward)
-  (define-key evil-normal-state-map (kbd "?") 'isearch-backward)
-  (define-key evil-normal-state-map (kbd "n") 'isearch-repeat-forward)
-  (define-key evil-normal-state-map (kbd "N") 'isearch-repeat-backward)
-  (define-key evil-motion-state-map (kbd "C-c o") 'occur-from-isearch)
-  (define-key evil-motion-state-map (kbd "M-s v") 'consult-from-isearch)
+  (define-key evil-motion-state-map (kbd "C-c o") 'occur-from-evil-ex)
+  (define-key evil-motion-state-map (kbd "C-c s") 'isearch-from-evil-ex)
+  (define-key evil-motion-state-map (kbd "M-s v") 'consult-from-evil-ex)
 
   ;; unbind some evil-insert key.
   (define-key evil-insert-state-map (kbd "C-k") nil)
@@ -80,6 +77,7 @@
     (newline-and-indent)
     )
   (define-key evil-normal-state-map (kbd "M-RET") 'my-add-newline)
+  (define-key evil-insert-state-map (kbd "M-RET") 'my-add-newline)
 
   (defun occur-from-evil-ex ()
     "Invoke `occur' from evil-search"
@@ -90,16 +88,34 @@
     )
 
   (defun swiper-from-evil-ex ()
-    "Invoke `swiper' from isearch."
+    "Invoke `swiper' from evil-search."
     (interactive)
     (evil-ex-nohighlight)
     (swiper (car evil-ex-search-pattern)))
 
   (defun consult-from-evil-ex ()
-    "Invoke `consult-line from isearch."
+    "Invoke `consult-line from evil-search."
     (interactive)
     (evil-ex-nohighlight)
     (consult-line (car evil-ex-search-pattern)))
+
+  (defun isearch-from-evil-ex (&optional arg)
+    "Invoke `isearch from evil-search."
+    (interactive "P")
+    (isearch-forward nil 1)
+    ;; (isearch-forward-symbol nil 1)
+    (evil-ex-nohighlight)
+    (let ((symbol (car evil-ex-search-pattern))
+          (count (and arg (prefix-numeric-value arg))))
+      (cond
+       (symbol
+        (isearch-yank-string symbol)
+        (when count
+          (isearch-repeat-forward count)))
+       (t
+        (setq isearch-error "No evil-search symbol.")
+        (isearch-push-state)
+        (isearch-update)))))
 
   ;; set (evil-select-search-module 'evil-search-module 'evil-search)
   ;; so here set evil-search occur to isearch

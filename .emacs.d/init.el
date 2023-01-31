@@ -761,15 +761,20 @@ Version 2022-06-29 00.01.07 +8000"
 ;; (require 'init-treesitter)
 (when (treesit-available-p)
   (add-to-list 'treesit-extra-load-path "d:/Users/home/.emacs.d/lisp/tree-sitter-langs-extra-bin")
-  (push '(sh-mode . bash-ts-mode) major-mode-remap-alist)
-  (push '(c-mode . c-ts-mode) major-mode-remap-alist)
-  (push '(c++-mode . c++-ts-mode) major-mode-remap-alist)
-  (push '(css-mode . css-ts-mode) major-mode-remap-alist)
-  (push '(javascript-mode . js-ts-mode) major-mode-remap-alist)
-  (push '(js-json-mode . json-ts-mode) major-mode-remap-alist)
-  (push '(go-mode . go-ts-mode) major-mode-remap-alist)
-  (push '(rust-mode . rust-ts-mode) major-mode-remap-alist)
-  (push '(python-mode . python-ts-mode) major-mode-remap-alist))
+  (setq major-mode-remap-alist
+        '((c-mode          . c-ts-mode)
+          (c++-mode        . c++-ts-mode)
+          (conf-toml-mode  . toml-ts-mode)
+          (csharp-mode     . csharp-ts-mode)
+          (css-mode        . css-ts-mode)
+          (go-mode         . go-ts-mode)
+          (java-mode       . java-ts-mode)
+          (js-mode         . js-ts-mode)
+          (javascript-mode . js-ts-mode)
+          (js-json-mode    . json-ts-mode)
+          (python-mode     . python-ts-mode)
+          (ruby-mode       . ruby-ts-mode)
+)))
 
 ;;----------------------------------------------------------------
 ;; find-file-in-project
@@ -1394,6 +1399,14 @@ _t_oggle  _a_vy  _c_ommon   _f_olding    dumb-_j_ump
                         (make-glyph-code ?… 'font-lock-comment-face))
 (set-display-table-slot standard-display-table 'wrap
                          (make-glyph-code ?↩ 'font-lock-comment-face))
+
+;; jit-lock，提升font lock性能，但可能影响font lock速度
+;; (use-package jit-lock
+;;   :ensure nil
+;;   :custom
+;;   (jit-lock-defer-time 0.25)
+;;   (jit-lock-stealth-time 16))
+
 ;;}}} UI configuration loaded.
 
 ;;------------------------------------------------------------------------
@@ -1404,7 +1417,7 @@ _t_oggle  _a_vy  _c_ommon   _f_olding    dumb-_j_ump
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(package-selected-packages
-   '(fanyi websocket tsc dumb-jump company-fuzzy citre ahk-mode realgud tree-sitter-langs tree-sitter ob-mermaid lsp-pyright lsp-mode diminish sis hungry-delete consult-company company-ctags company company-tabnine embark-consult embark consult marginalia vertico orderless asn1-mode org-modern shrface devdocs-browser pdf-tools cmake-mode evil-multiedit which-key yaml-mode eshell-syntax-highlighting eshell-up eshell-z org-download treemacs-evil treemacs helpful ace-window avy evil-pinyin evil dired-single elfeed bm wgrep use-package folding web-mode puni writeroom-mode linum-relative vimrc-mode go-mode evil-anzu nov w32-browser markdown-mode htmlize anzu cal-china-x evil-nerd-commenter evil-surround evil-matchit isearch-dabbrev rainbow-delimiters rainbow-mode window-numbering doom-modeline doom-themes all-the-icons expand-region pyim))
+   '(fanyi websocket dumb-jump company-fuzzy citre ahk-mode realgud ob-mermaid lsp-pyright lsp-mode diminish sis hungry-delete consult-company company-ctags company company-tabnine embark-consult embark consult marginalia vertico orderless asn1-mode org-modern shrface devdocs-browser pdf-tools cmake-mode evil-multiedit which-key yaml-mode eshell-syntax-highlighting eshell-up eshell-z org-download treemacs-evil treemacs helpful ace-window avy evil-pinyin evil dired-single elfeed bm wgrep use-package folding web-mode puni writeroom-mode linum-relative vimrc-mode go-mode evil-anzu nov w32-browser markdown-mode htmlize anzu cal-china-x evil-nerd-commenter evil-surround evil-matchit isearch-dabbrev rainbow-delimiters rainbow-mode window-numbering doom-modeline doom-themes all-the-icons expand-region pyim))
  '(tool-bar-mode nil)
  '(warning-suppress-types '((mule))))
 (custom-set-faces
