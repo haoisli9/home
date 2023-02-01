@@ -344,7 +344,8 @@ When the number of characters in a buffer exceeds this threshold,
    consult-buffer consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref consult-imenu
    consult--source-recent-file consult--source-project-recent-file consult--source-bookmark
-   :preview-key (kbd "M-.")
+   :preview-key '("M-."
+                  :debounce 1 "<up>" "<down>")
   ))
 
 (defvar-local consult-toggle-preview-orig nil)

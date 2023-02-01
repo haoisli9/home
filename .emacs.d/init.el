@@ -48,7 +48,10 @@
     (normal-top-level-add-subdirs-to-load-path)))
 (add-subdirs-to-load-path)
 
+;; 将lisp目录放到加载路径的前面以加快启动速度
 (add-to-list 'load-path "~/.emacs.d/lisp/")
+;; (let ((dir (locate-user-emacs-file "lisp")))
+;;   (add-to-list 'load-path (file-name-as-directory dir)))
 ;; install all the sub-directories in the beginnging of load-path.
 (defun add-subdirs-to-load-path (&rest _)
   "Add subdirectories to `load-path'."
@@ -66,9 +69,9 @@
 (if (display-graphic-p)
     (progn
       ;;设置窗口位置为屏库左上角(0,0)
-      (set-frame-position (selected-frame) 190 43)
+      (set-frame-position (selected-frame) 180 20)
       ;;设置宽和高
-      (set-frame-width (selected-frame) 95)
+      (set-frame-width (selected-frame) 98)
       (set-frame-height (selected-frame) 22)
       ;; 最大化窗口
       ;; (setq initial-frame-alist (quote ((fullscreen . maximized))))
@@ -476,7 +479,8 @@
   :config
   (setq elfeed-feeds
         '(
-          "http://www.chinanews.com/rss/importnews.xml"
+          "https://remacs.cc/index.xml"
+          ;; "http://www.chinanews.com/rss/importnews.xml"
           ;; "https://planet.emacslife.com/atom.xml"
           "http://rss.zol.com.cn/news.xml"
           "http://www.geekpark.net/rss"
