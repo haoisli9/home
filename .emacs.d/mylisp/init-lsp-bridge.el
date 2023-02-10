@@ -1,5 +1,7 @@
 
 ;; https://github.com/manateelazycat/lsp-bridge
+;; git clone -b master https://github.com/manateelazycat/lsp-bridge.git  ~/.emacs.d/lisp/lsp-bridge-master/
+(quelpa '(lsp-bridge :fetcher git :url "https://github.com/manateelazycat/lsp-bridge.git"))
 
 ;; (require 'yasnippet)
 (require 'lsp-bridge)

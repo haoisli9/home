@@ -79,6 +79,7 @@
                     :box '(:color "#5d4d7a" :line-width 1))
 
 ;; elisp enhance face.
+(quelpa '(elispfl :fetcher git :url "https://github.com/cireu/elispfl.git"))
 (with-eval-after-load 'elisp-mode
   (require 'elispfl)
   (elispfl-mode))

@@ -56,7 +56,7 @@ recentf
 transient/
 url/
 devdocs-browser/
-lisp/
+quelpa/
 
 # Org-mode
 .org-id-locations

@@ -531,6 +531,7 @@
 
 (message "org-mode configuration loaded.")
 
+(quelpa '(inherit-org :fetcher git :url "https://github.com/chenyanming/inherit-org.git"))
 (use-package inherit-org
   :config
   (require 'org)

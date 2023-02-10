@@ -38,25 +38,15 @@
 
 (message "package initialize.")
 
-;; add load path
-(add-to-list 'load-path "~/.emacs.d/mylisp/")
-;; install all the sub-directories in the beginnging of load-path.
-(defun add-subdirs-to-load-path (&rest _)
-  "Add subdirectories to `load-path'."
-  (let ((default-directory
-          (expand-file-name "~/.emacs.d/mylisp" user-emacs-directory)))
-    (normal-top-level-add-subdirs-to-load-path)))
-(add-subdirs-to-load-path)
-
 ;; 将lisp目录放到加载路径的前面以加快启动速度
-(add-to-list 'load-path "~/.emacs.d/lisp/")
+(add-to-list 'load-path "~/.emacs.d/mylisp/")
 ;; (let ((dir (locate-user-emacs-file "lisp")))
 ;;   (add-to-list 'load-path (file-name-as-directory dir)))
 ;; install all the sub-directories in the beginnging of load-path.
 (defun add-subdirs-to-load-path (&rest _)
   "Add subdirectories to `load-path'."
   (let ((default-directory
-          (expand-file-name "~/.emacs.d/lisp" user-emacs-directory)))
+          (expand-file-name "~/.emacs.d/mylisp" user-emacs-directory)))
     (normal-top-level-add-subdirs-to-load-path)))
 (add-subdirs-to-load-path)
 
@@ -102,7 +92,24 @@
 ;; (set-fontset-font t 'unicode-bmp (font-spec :family "all-the-icons"))
 
 ;; use for fanyi Emoji.
-(set-fontset-font t 'emoji (font-spec :family "Symbola") nil 'prepend)
+(progn
+  ;; set font for emoji (if before emacs 28, should come after setting symbols. emacs 28 now has 'emoji . before, emoji is part of 'symbol)
+  (set-fontset-font
+   t
+   (if (version< emacs-version "28.1")
+       '(#x1f300 . #x1fad0)
+     'emoji
+     )
+   (cond
+    ((member "Segoe UI Emoji" (font-family-list)) "Segoe UI Emoji")
+    ((member "Symbola" (font-family-list)) "Symbola")
+    ((member "Apple Color Emoji" (font-family-list)) "Apple Color Emoji")
+    ((member "Noto Color Emoji" (font-family-list)) "Noto Color Emoji")
+    ((member "Noto Emoji" (font-family-list)) "Noto Emoji")
+    )))
+
+;; (set-fontset-font t 'emoji (font-spec :family "Symbola") nil 'prepend)
+;; (set-fontset-font t 'emoji "Segoe UI Emoji" nil 'prepend)
 
 ;; 支持字体缓存
 (setq inhibit-compacting-font-caches t)
@@ -402,7 +409,27 @@
 ;;------------------------------------------------------------
 ;;{{{ packages configuration.
 ;;------------------------------------------------------------
+;; 配置 `use-package'
+(eval-and-compile
+  (setq use-package-always-ensure nil)
+  (setq use-package-always-defer nil)
+  (setq use-package-always-demand nil)
+  (setq use-package-expand-minimally nil)
+  (setq use-package-enable-imenu-support t)
+)
 
+;; 安装 `quelpa'
+(use-package quelpa
+  :ensure t
+  :commands quelpa
+  :config
+  :custom
+  (quelpa-git-clone-depth 1)
+  (quelpa-update-melpa-p nil)
+  (quelpa-self-upgrade-p nil)
+  (quelpa-checkout-melpa-p nil))
+
+;;--------------------------------------------------------------------
 ;; anzu configuration.
 ;; Show number of matches while searching
 (use-package anzu
@@ -692,7 +719,6 @@ the xref backend method indicated by KIND and passes ARG to it."
 
 ;;----------------------------------------------------------------
 ;; lsp configuration.
-;; git clone -b master https://github.com/manateelazycat/lsp-bridge.git  ~/.emacs.d/lisp/lsp-bridge-master/
 ;; (require 'init-lsp-bridge)
 (require 'init-lsp)
 ;; (require 'init-eglot)
@@ -764,21 +790,13 @@ Version 2022-06-29 00.01.07 +8000"
 ;;----------------------------------------------------------------
 ;; (require 'init-treesitter)
 (when (treesit-available-p)
-  (add-to-list 'treesit-extra-load-path "d:/Users/home/.emacs.d/lisp/tree-sitter-langs-extra-bin")
-  (setq major-mode-remap-alist
-        '((c-mode          . c-ts-mode)
-          (c++-mode        . c++-ts-mode)
-          (conf-toml-mode  . toml-ts-mode)
-          (csharp-mode     . csharp-ts-mode)
-          (css-mode        . css-ts-mode)
-          (go-mode         . go-ts-mode)
-          (java-mode       . java-ts-mode)
-          (js-mode         . js-ts-mode)
-          (javascript-mode . js-ts-mode)
-          (js-json-mode    . json-ts-mode)
-          (python-mode     . python-ts-mode)
-          (ruby-mode       . ruby-ts-mode)
-)))
+  (add-to-list 'treesit-extra-load-path "d:/Users/home/.emacs.d/mylisp/tree-sitter-langs-extra-bin")
+  (use-package treesit-auto
+  :demand t
+  :config
+  ;; (add-to-list 'treesit-auto-fallback-alist '(bash-ts-mode . sh-mode))
+  (setq treesit-auto-install 'prompt)
+  (global-treesit-auto-mode)))
 
 ;;----------------------------------------------------------------
 ;; find-file-in-project
@@ -841,8 +859,6 @@ Version 2022-06-29 00.01.07 +8000"
 
 ;; (require 'init-w3m)
 
-;; (require 'init-mu4e)
-
 ;;---------------------------------------------------------------------------------
 ;; automatically set input method.
 (use-package sis
@@ -887,6 +903,7 @@ Version 2022-06-29 00.01.07 +8000"
           ))
 
 ;;; In jsonian-mode
+(quelpa '(jsonian :fetcher git :url "https://github.com/iwahbe/jsonian.git"))
 (use-package jsonian
   :ensure nil
   :after so-long
@@ -894,6 +911,7 @@ Version 2022-06-29 00.01.07 +8000"
   (jsonian-no-so-long-mode))
 
 ;;---------------------------------------------------------------
+(quelpa '(sdcv :fetcher git :url "https://github.com/manateelazycat/sdcv.git"))
 (require 'sdcv)
 (setq sdcv-say-word-p nil)               ;; say word after translation
 (setq sdcv-dictionary-data-dir "d:/unix/dic/") ;; setup directory of stardict dictionary
@@ -924,8 +942,10 @@ And show information using tooltip."
 
 ;; dictionary-overlay
 ;; git clone --depth=1 -b main https://github.com/ginqi7/websocket-bridge ~/.emacs.d/lisp/websocket-bridge/
+(quelpa '(websocket-bridge :fetcher git :url "https://github.com/ginqi7/websocket-bridge.git"))
 (require 'websocket-bridge)
 ;; git clone --depth=1 -b main https://github.com/ginqi7/dictionary-overlay ~/.emacs.d/lisp/dictionary-overlay/
+(quelpa '(dictionary-overlay :fetcher git :url "https://github.com/ginqi7/dictionary-overlay.git"))
 (require 'dictionary-overlay)
 (setq dictionary-overlay-user-data-directory
       (expand-file-name "~/.cache/dictionary-overlay-data"))
@@ -946,7 +966,8 @@ And show information using tooltip."
 (require 'keep-buffers)
 
 ;;------------------------------------------------------------
-;; insert-translated-name-insert
+;; insert-translated-name
+;; (quelpa '(insert-translated-name :fetcher git :url "https://github.com/manateelazycat/insert-translated-name.git"))
 ;; https://github.com/manateelazycat/insert-translated-name
 ;; (use-package insert-translated-name
 ;;   :defer 3
@@ -965,9 +986,11 @@ And show information using tooltip."
 
 ;;------------------------------------------------------------
 ;; https://github.com/manateelazycat/thing-edit
+(quelpa '(thing-edit :fetcher git :url "https://github.com/manateelazycat/thing-edit.git"))
 (require 'thing-edit)
 
 ;; https://github.com/lyjdwh/avy-thing-edit
+(quelpa '(avy-thing-edit :fetcher git :url "https://github.com/lyjdwh/avy-thing-edit.git"))
 (require 'avy-thing-edit)
 
 ;; select the total word including - inside.
@@ -1119,7 +1142,6 @@ And show information using tooltip."
 (add-hook 'kill-buffer-hook 'gud-kill-buffer)
 
 ;;}}} program configuration loaded.
-
 
 (defun my--push-point-to-xref-marker-stack (&rest r)
   (xref-push-marker-stack (point-marker)))
@@ -1305,7 +1327,7 @@ _t_oggle  _a_vy  _c_ommon   _f_olding    dumb-_j_ump
 
 ;;------------------------------------------------------------
 ;; mode-line configuration.
-
+;;------------------------------------------------------------
 (require 'diminish)
 (diminish 'anzu-mode)
 (diminish 'eldoc-mode)
@@ -1421,7 +1443,7 @@ _t_oggle  _a_vy  _c_ommon   _f_olding    dumb-_j_ump
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(package-selected-packages
-   '(fanyi websocket dumb-jump company-fuzzy citre ahk-mode realgud ob-mermaid lsp-pyright lsp-mode diminish sis hungry-delete consult-company company-ctags company company-tabnine embark-consult embark consult marginalia vertico orderless asn1-mode org-modern shrface devdocs-browser pdf-tools cmake-mode evil-multiedit which-key yaml-mode eshell-syntax-highlighting eshell-up eshell-z org-download treemacs-evil treemacs helpful ace-window avy evil-pinyin evil dired-single elfeed bm wgrep use-package folding web-mode puni writeroom-mode linum-relative vimrc-mode go-mode evil-anzu nov w32-browser markdown-mode htmlize anzu cal-china-x evil-nerd-commenter evil-surround evil-matchit isearch-dabbrev rainbow-delimiters rainbow-mode window-numbering doom-modeline doom-themes all-the-icons expand-region pyim))
+   '(treesit-auto avy-thing-edit company-english-helper dictionary-overlay elispfl flx-rs inherit-org jsonian sdcv thing-edit websocket-bridge ligature quelpa fanyi websocket dumb-jump company-fuzzy citre ahk-mode realgud ob-mermaid lsp-pyright lsp-mode diminish sis hungry-delete consult-company company-ctags company company-tabnine embark-consult embark consult marginalia vertico orderless asn1-mode org-modern shrface devdocs-browser pdf-tools cmake-mode evil-multiedit which-key yaml-mode eshell-syntax-highlighting eshell-up eshell-z org-download treemacs-evil treemacs helpful ace-window avy evil-pinyin evil dired-single elfeed bm wgrep use-package folding web-mode puni writeroom-mode linum-relative vimrc-mode go-mode evil-anzu nov w32-browser markdown-mode htmlize anzu cal-china-x evil-nerd-commenter evil-surround evil-matchit isearch-dabbrev rainbow-delimiters rainbow-mode window-numbering doom-modeline doom-themes all-the-icons expand-region pyim))
  '(tool-bar-mode nil)
  '(warning-suppress-types '((mule))))
 (custom-set-faces
