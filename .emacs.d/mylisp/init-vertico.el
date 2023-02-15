@@ -414,12 +414,12 @@ When the number of characters in a buffer exceeds this threshold,
                (`(,re . ,hl) (funcall consult--regexp-compiler
                                       arg 'extended t)))
     (when re
-      (list :command (append
-                      (list consult--fd-command
-                            "-a" "--hidden" "--color=never" "--full-path"
-                            (consult--join-regexps re 'extended))
-                      opts)
-            :highlight hl))))
+      (cons (append
+             (list consult--fd-command
+                   "-a" "--hidden" "--color=never" "--full-path"
+                   (consult--join-regexps re 'extended))
+             opts)
+            hl))))
 
 (defun consult-fd (&optional dir initial)
   (interactive "P")
@@ -428,13 +428,6 @@ When the number of characters in a buffer exceeds this threshold,
     ;; (call-interactively #'find-file (consult--find (car prompt-dir) #'consult--fd-builder initial))
     (find-file (consult--find (car prompt-dir) #'consult--fd-builder initial))
     ))
-
-;; (use-package consult-dir
-;;   :ensure t
-;;   :bind (("C-x C-d" . consult-dir)
-;;          :map minibuffer-local-completion-map
-;;          ("C-x C-d" . consult-dir)
-;;          ("C-x C-j" . consult-dir-jump-file)))
 
 ;; embark
 (use-package marginalia

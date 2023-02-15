@@ -1224,9 +1224,11 @@ This assumes that `color-rg-in-string-p' has already returned true, i.e.
           (or globs
               "everything")))
     (color-rg-search search-keyboard
-                     (if (string-equal system-type "windows-nt")
-                         (format "\"%s\"" search-directory)
-                       search-directory)
+                     ;; lihao: windows-nt need not add "" now.
+                     ;; (if (string-equal system-type "windows-nt")
+                     ;;     (format "\"%s\"" search-directory)
+                     ;;   search-directory)
+                     search-directory
                      search-globs)))
 
 (defun color-rg-search-symbol ()
