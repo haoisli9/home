@@ -6,20 +6,6 @@
 
 ;;设置获取邮件的服务器地址
 
-;; (setq gnus-select-method '(nnml ""))
-;; set pop server
-;; (setq mail-sources
-;;       '((pop :server "xamail.datangmobile.cn"   ;; 在这里设置 pop3 服务器
-;;              :leave 14                         ;; leave the article on server.
-;;              :port "pop3"
-;;              )))
-;; set smtp
-;; (setq smtpmail-auth-credentials
-;;    '(("xamail.datangmobile.cn"                ;; SMTP 服务器
-;;       25                                   ;; 端口号
-;;       "lihao@datangmobile.cn"                 ;; 用户名
-;;       "")))                    ;; 密码
-
 (setq gnus-select-method '(nnimap "139"
                                   (nnimap-address "imap.139.com")
                                   (nnimap-server-port 993)
